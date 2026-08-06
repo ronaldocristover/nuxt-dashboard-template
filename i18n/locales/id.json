@@ -35,6 +35,7 @@
     "overview": "Ringkasan",
     "analytics": "Analitik",
     "subscribers": "Pelanggan",
+    "kanban": "Pipeline",
     "forms": "Formulir",
     "layouts": "Tata letak",
     "icons": "Ikon",
@@ -205,7 +206,15 @@
     "token": {
       "missing": "Tautan atur ulang ini tidak memiliki token"
     },
-    "timezone": "Pilih zona waktu"
+    "timezone": "Pilih zona waktu",
+    "board": {
+      "titleRequired": "Beri nama minimal dua karakter",
+      "titleTooLong": "Kurang dari 120 karakter",
+      "accountRequired": "Ini akun yang mana?",
+      "mrrNegative": "MRR tidak boleh negatif",
+      "tooManyLabels": "Maksimal empat tanda",
+      "columnTitleRequired": "Beri nama tahapnya"
+    }
   },
   "errors": {
     "expired": "Sesi Anda telah berakhir. Masuk lagi untuk melanjutkan.",
@@ -647,6 +656,77 @@
       "security": "Keamanan",
       "rights": "© {year} Cadence. Template dasbor Nuxt.",
       "builtWith": "Dibangun dengan Nuxt 4, Nuxt UI, dan Tailwind CSS"
+    }
+  },
+  "board": {
+    "heading": "Perpanjangan berjalan",
+    "intro": "Setiap akun dengan perpanjangan yang perlu dikerjakan. Geser kartu antar tahap, atau pindahkan dengan keyboard.",
+    "openRenewals": "Perpanjangan terbuka",
+    "mrrAtStake": "MRR dipertaruhkan",
+    "atStake": "dipertaruhkan",
+    "addStage": "Tambah tahap",
+    "createStage": "Buat tahap",
+    "renameStage": "Ubah nama tahap",
+    "deleteStage": "Hapus tahap",
+    "deleteStageBody": "Menghapus “{stage}” juga menghapus {count} kartu di dalamnya. Tindakan ini tidak bisa dibatalkan.",
+    "stageActions": "Tindakan untuk {stage}",
+    "collapse": "Ciutkan",
+    "expand": "Bentangkan",
+    "addCard": "Tambah perpanjangan",
+    "newCard": "Perpanjangan baru",
+    "editCard": "Ubah perpanjangan",
+    "createCard": "Buat perpanjangan",
+    "confirmDelete": "Hapus permanen?",
+    "emptyStage": "Letakkan kartu di sini",
+    "keyboardHint": "Fokuskan sebuah kartu lalu tahan Ctrl (atau ⌘) dengan tombol panah untuk memindahkannya antar tahap.",
+    "cardAria": "{title}, {mrr}, kartu {position} dari {total} di {column}",
+    "loadFailed": "Board gagal dimuat",
+    "loadFailedBody": "Permintaan tidak selesai. Coba lagi.",
+    "moveFailed": "Perpindahan itu gagal disimpan",
+    "cardCreated": "Perpanjangan ditambahkan",
+    "cardCreateFailed": "Gagal menambahkan perpanjangan itu",
+    "cardSaved": "Perpanjangan tersimpan",
+    "cardSaveFailed": "Gagal menyimpan perpanjangan itu",
+    "cardDeleted": "Perpanjangan dihapus",
+    "cardDeleteFailed": "Gagal menghapus perpanjangan itu",
+    "stageCreated": "Tahap ditambahkan",
+    "stageCreateFailed": "Gagal menambahkan tahap itu",
+    "stageSaveFailed": "Gagal mengubah nama tahap itu",
+    "stageDeleted": "Tahap dihapus",
+    "stageDeleteFailed": "Gagal menghapus tahap itu",
+    "labels": {
+      "paymentFailed": "Pembayaran gagal",
+      "usageDown": "Pemakaian turun",
+      "championLeft": "Pendukung pergi",
+      "contractEnding": "Kontrak berakhir",
+      "priceObjection": "Keberatan harga",
+      "competitor": "Pesaing"
+    },
+    "tones": {
+      "risk": "Berisiko",
+      "progress": "Berjalan",
+      "neutral": "Netral",
+      "won": "Menang",
+      "lost": "Kalah"
+    },
+    "field": {
+      "title": "Apa yang perlu dikerjakan",
+      "titlePlaceholder": "Perpanjangan Northwind Labs",
+      "account": "Akun",
+      "mrr": "MRR dipertaruhkan",
+      "mrrHelp": "Nilai perpanjangan ini per bulan.",
+      "due": "Diperpanjang pada",
+      "owner": "Penanggung jawab",
+      "labels": "Tanda risiko",
+      "labelsHelp": "Maksimal empat.",
+      "notes": "Catatan",
+      "notesPlaceholder": "Apa kata mereka, dan apa langkah berikutnya?",
+      "activity": "Aktivitas",
+      "commentCount": "{count} komentar",
+      "renews": "diperpanjang {date}",
+      "stageName": "Nama tahap",
+      "stagePlaceholder": "Dalam negosiasi",
+      "stageTone": "Aksen"
     }
   }
 }

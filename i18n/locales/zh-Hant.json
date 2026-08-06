@@ -35,6 +35,7 @@
     "overview": "總覽",
     "analytics": "分析",
     "subscribers": "訂閱客戶",
+    "kanban": "看板",
     "forms": "表單",
     "layouts": "版面",
     "icons": "圖示",
@@ -205,7 +206,15 @@
     "token": {
       "missing": "這個重設連結缺少權杖"
     },
-    "timezone": "請選擇時區"
+    "timezone": "請選擇時區",
+    "board": {
+      "titleRequired": "請填寫至少兩個字元的名稱",
+      "titleTooLong": "請少於 120 個字元",
+      "accountRequired": "這是哪個客戶？",
+      "mrrNegative": "MRR 不能為負",
+      "tooManyLabels": "最多四個標籤",
+      "columnTitleRequired": "請填寫階段名稱"
+    }
   },
   "errors": {
     "expired": "登入狀態已過期，請重新登入。",
@@ -647,6 +656,77 @@
       "security": "安全性",
       "rights": "© {year} Cadence，一個 Nuxt 儀表板模板。",
       "builtWith": "以 Nuxt 4、Nuxt UI 與 Tailwind CSS 打造"
+    }
+  },
+  "board": {
+    "heading": "進行中的續約",
+    "intro": "每個需要跟進的續約客戶。拖曳卡片切換階段，也可以用鍵盤移動。",
+    "openRenewals": "待處理續約",
+    "mrrAtStake": "涉及 MRR",
+    "atStake": "涉及金額",
+    "addStage": "新增階段",
+    "createStage": "建立階段",
+    "renameStage": "重新命名階段",
+    "deleteStage": "刪除階段",
+    "deleteStageBody": "刪除「{stage}」會同時刪除其中的 {count} 張卡片，且無法復原。",
+    "stageActions": "{stage} 的操作",
+    "collapse": "收合",
+    "expand": "展開",
+    "addCard": "新增續約",
+    "newCard": "新的續約",
+    "editCard": "編輯續約",
+    "createCard": "建立續約",
+    "confirmDelete": "確定永久刪除？",
+    "emptyStage": "把卡片拖到這裡",
+    "keyboardHint": "聚焦一張卡片後按住 Ctrl（或 ⌘）搭配方向鍵即可在階段間移動。",
+    "cardAria": "{title}，{mrr}，{column} 中第 {position} 張，共 {total} 張",
+    "loadFailed": "無法載入看板",
+    "loadFailedBody": "請求未完成，請重試。",
+    "moveFailed": "該移動未儲存",
+    "cardCreated": "續約已新增",
+    "cardCreateFailed": "無法新增該續約",
+    "cardSaved": "續約已儲存",
+    "cardSaveFailed": "無法儲存該續約",
+    "cardDeleted": "續約已刪除",
+    "cardDeleteFailed": "無法刪除該續約",
+    "stageCreated": "階段已新增",
+    "stageCreateFailed": "無法新增該階段",
+    "stageSaveFailed": "無法重新命名該階段",
+    "stageDeleted": "階段已刪除",
+    "stageDeleteFailed": "無法刪除該階段",
+    "labels": {
+      "paymentFailed": "付款失敗",
+      "usageDown": "使用量下降",
+      "championLeft": "關鍵聯絡人離職",
+      "contractEnding": "合約即將到期",
+      "priceObjection": "價格異議",
+      "competitor": "競爭對手"
+    },
+    "tones": {
+      "risk": "有風險",
+      "progress": "進行中",
+      "neutral": "中性",
+      "won": "已贏",
+      "lost": "已輸"
+    },
+    "field": {
+      "title": "需要做什麼",
+      "titlePlaceholder": "Northwind Labs 續約",
+      "account": "客戶",
+      "mrr": "涉及 MRR",
+      "mrrHelp": "這筆續約每月的價值。",
+      "due": "續約日期",
+      "owner": "負責人",
+      "labels": "風險標籤",
+      "labelsHelp": "最多四個。",
+      "notes": "備註",
+      "notesPlaceholder": "他們說了什麼，下一步做什麼？",
+      "activity": "動態",
+      "commentCount": "{count} 則留言",
+      "renews": "{date} 續約",
+      "stageName": "階段名稱",
+      "stagePlaceholder": "談判中",
+      "stageTone": "強調色"
     }
   }
 }

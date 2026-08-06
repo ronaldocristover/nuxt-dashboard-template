@@ -35,6 +35,7 @@
     "overview": "Overview",
     "analytics": "Analytics",
     "subscribers": "Subscribers",
+    "kanban": "Pipeline",
     "forms": "Forms",
     "layouts": "Layouts",
     "icons": "Icons",
@@ -205,7 +206,15 @@
     "token": {
       "missing": "This reset link is missing its token"
     },
-    "timezone": "Pick a timezone"
+    "timezone": "Pick a timezone",
+    "board": {
+      "titleRequired": "Give it a name of at least two characters",
+      "titleTooLong": "Keep it under 120 characters",
+      "accountRequired": "Which account is this?",
+      "mrrNegative": "MRR cannot be negative",
+      "tooManyLabels": "Four tags at most",
+      "columnTitleRequired": "Give the stage a name"
+    }
   },
   "errors": {
     "expired": "Your session has expired. Sign in again to continue.",
@@ -647,6 +656,77 @@
       "security": "Security",
       "rights": "© {year} Cadence. A Nuxt dashboard template.",
       "builtWith": "Built with Nuxt 4, Nuxt UI and Tailwind CSS"
+    }
+  },
+  "board": {
+    "heading": "Renewals in flight",
+    "intro": "Every account with a renewal to work. Drag a card between stages, or move it with the keyboard.",
+    "openRenewals": "Open renewals",
+    "mrrAtStake": "MRR at stake",
+    "atStake": "at stake",
+    "addStage": "Add stage",
+    "createStage": "Create stage",
+    "renameStage": "Rename stage",
+    "deleteStage": "Delete stage",
+    "deleteStageBody": "Deleting “{stage}” also deletes the {count} card(s) in it. This cannot be undone.",
+    "stageActions": "Actions for {stage}",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "addCard": "Add a renewal",
+    "newCard": "New renewal",
+    "editCard": "Edit renewal",
+    "createCard": "Create renewal",
+    "confirmDelete": "Delete for good?",
+    "emptyStage": "Drop a card here",
+    "keyboardHint": "Focus a card and hold Ctrl (or ⌘) with the arrow keys to move it between stages.",
+    "cardAria": "{title}, {mrr}, card {position} of {total} in {column}",
+    "loadFailed": "The board could not be loaded",
+    "loadFailedBody": "The request did not complete. Try again.",
+    "moveFailed": "That move did not save",
+    "cardCreated": "Renewal added",
+    "cardCreateFailed": "Could not add that renewal",
+    "cardSaved": "Renewal saved",
+    "cardSaveFailed": "Could not save that renewal",
+    "cardDeleted": "Renewal deleted",
+    "cardDeleteFailed": "Could not delete that renewal",
+    "stageCreated": "Stage added",
+    "stageCreateFailed": "Could not add that stage",
+    "stageSaveFailed": "Could not rename that stage",
+    "stageDeleted": "Stage deleted",
+    "stageDeleteFailed": "Could not delete that stage",
+    "labels": {
+      "paymentFailed": "Payment failed",
+      "usageDown": "Usage down",
+      "championLeft": "Champion left",
+      "contractEnding": "Contract ending",
+      "priceObjection": "Price objection",
+      "competitor": "Competitor"
+    },
+    "tones": {
+      "risk": "At risk",
+      "progress": "In progress",
+      "neutral": "Neutral",
+      "won": "Won",
+      "lost": "Lost"
+    },
+    "field": {
+      "title": "What needs doing",
+      "titlePlaceholder": "Northwind Labs renewal",
+      "account": "Account",
+      "mrr": "MRR at stake",
+      "mrrHelp": "What this renewal is worth per month.",
+      "due": "Renews on",
+      "owner": "Owner",
+      "labels": "Risk tags",
+      "labelsHelp": "Up to four.",
+      "notes": "Notes",
+      "notesPlaceholder": "What did they say, and what happens next?",
+      "activity": "Activity",
+      "commentCount": "{count} comment(s)",
+      "renews": "renews {date}",
+      "stageName": "Stage name",
+      "stagePlaceholder": "In negotiation",
+      "stageTone": "Accent"
     }
   }
 }

@@ -192,3 +192,46 @@ export interface NotificationPreferences {
   newSignups: boolean
   channel: 'email' | 'slack' | 'both'
 }
+
+// --- Kanban ------------------------------------------------------------------
+
+export type BoardTone = 'risk' | 'progress' | 'neutral' | 'won' | 'lost'
+
+/** Risk tags a renewal card can carry. Keys, so they translate. */
+export type BoardLabel
+  = | 'paymentFailed'
+    | 'usageDown'
+    | 'championLeft'
+    | 'contractEnding'
+    | 'priceObjection'
+    | 'competitor'
+
+export interface BoardCard {
+  id: string
+  columnId: string
+  position: number
+  title: string
+  account: string
+  /** MRR at stake, in whole currency units. */
+  mrr: number
+  ownerName: string
+  ownerColor: string
+  dueAt: string | null
+  labels: BoardLabel[]
+  notes: string
+  commentCount: number
+}
+
+export interface BoardColumn {
+  id: string
+  title: string
+  position: number
+  tone: BoardTone
+  cards: BoardCard[]
+}
+
+export interface BoardResponse {
+  /** Relative due dates are measured from this, so SSR and hydration agree. */
+  generatedAt: string
+  columns: BoardColumn[]
+}

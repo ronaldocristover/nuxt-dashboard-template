@@ -210,6 +210,8 @@ async function main() {
   console.info(`[seed] ${url}`)
 
   // Idempotent: clear what this script owns before inserting.
+  await db.delete(schema.boardCards)
+  await db.delete(schema.boardColumns)
   await db.delete(schema.authTokens)
   await db.delete(schema.notificationPrefs)
   await db.delete(schema.revenueHistory)
@@ -267,9 +269,73 @@ async function main() {
 
   await db.insert(schema.notificationPrefs).values({ userId: owner.id })
 
+  // --- Kanban: the renewal pipeline -----------------------------------------
+
+  const columns = [
+    { id: 'col_risk', title: 'At risk', position: 0, tone: 'risk' as const },
+    { id: 'col_reached', title: 'Reached out', position: 1, tone: 'progress' as const },
+    { id: 'col_negotiating', title: 'In negotiation', position: 2, tone: 'neutral' as const },
+    { id: 'col_renewed', title: 'Renewed', position: 3, tone: 'won' as const },
+    { id: 'col_churned', title: 'Churned', position: 4, tone: 'lost' as const }
+  ]
+
+  await db.insert(schema.boardColumns).values(columns)
+
+  const OWNERS = [
+    { name: 'Hana Nakamura', color: '#0d9488' },
+    { name: 'Mateo Rossi', color: '#d97706' },
+    { name: 'Priya Ibrahim', color: '#7c3aed' },
+    { name: 'Ronaldo Cristover', color: '#2d5bff' }
+  ] as const
+
+  const LABELS = ['paymentFailed', 'usageDown', 'championLeft', 'contractEnding', 'priceObjection', 'competitor'] as const
+
+  // Cards are drawn from the real subscriber rows, so every account on the board
+  // exists in the subscribers table and its MRR matches.
+  const candidates = subscribers.filter(row => row.status !== 'churned' && row.mrr > 300)
+
+  const cards: Array<typeof schema.boardCards.$inferInsert> = []
+  const perColumn = [4, 3, 3, 3, 2]
+  let cursor = 0
+
+  columns.forEach((column, columnIndex) => {
+    for (let i = 0; i < perColumn[columnIndex]!; i++) {
+      const subscriber = candidates[cursor++ % candidates.length]!
+      const owner = pick(OWNERS)
+      const labelCount = intBetween(1, 2)
+      const labels: string[] = []
+      while (labels.length < labelCount) {
+        const label = pick(LABELS)
+        if (!labels.includes(label)) labels.push(label)
+      }
+
+      // A spread of renewal dates either side of today, so the overdue styling
+      // has something to show without every card screaming.
+      const offsetDays = intBetween(-9, 45)
+
+      cards.push({
+        id: `card_${String(cards.length + 1).padStart(3, '0')}`,
+        columnId: column.id,
+        position: i,
+        title: `${subscriber.company} renewal`,
+        account: subscriber.company,
+        mrr: subscriber.mrr,
+        ownerName: owner.name,
+        ownerColor: owner.color,
+        dueAt: new Date(BOOT.getTime() + offsetDays * DAY).toISOString(),
+        labels: labels as never,
+        notes: '',
+        commentCount: intBetween(0, 6)
+      })
+    }
+  })
+
+  await db.insert(schema.boardCards).values(cards)
+
   console.info(
     `[seed] done — 1 user, ${subscribers.length} subscribers, `
-    + `${monthly.length} months, ${daily.length} days, MRR ${mrrTotal}`
+    + `${monthly.length} months, ${daily.length} days, MRR ${mrrTotal}, `
+    + `${columns.length} board columns / ${cards.length} cards`
   )
   console.info(`[seed] sign in with ${DEMO_EMAIL} / ${DEMO_PASSWORD}`)
 }

@@ -153,3 +153,43 @@ export const authTokens = sqliteTable('auth_tokens', {
 }, table => [
   index('auth_tokens_user_kind_idx').on(table.userId, table.kind)
 ])
+
+/**
+ * Kanban board — the renewal pipeline.
+ *
+ * Columns are rows, not an enum, because a team's stages are theirs to name.
+ * `position` is a plain integer, densely packed and rewritten on every move
+ * within the affected columns. Fractional indexing would avoid those writes,
+ * but a board has tens of cards, not thousands, and "the numbers are 0,1,2…"
+ * is a property you can check by eye when something goes wrong.
+ */
+export const boardColumns = sqliteTable('board_columns', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  position: integer('position').notNull(),
+  /** Accent for the column header. Maps to the movement palette. */
+  tone: text('tone', { enum: ['risk', 'progress', 'neutral', 'won', 'lost'] }).notNull().default('neutral')
+}, table => [
+  index('board_columns_position_idx').on(table.position)
+])
+
+export const boardCards = sqliteTable('board_cards', {
+  id: text('id').primaryKey(),
+  columnId: text('column_id').notNull().references(() => boardColumns.id, { onDelete: 'cascade' }),
+  position: integer('position').notNull(),
+  title: text('title').notNull(),
+  account: text('account').notNull(),
+  /** MRR at stake, in whole currency units. The figure the board exists for. */
+  mrr: integer('mrr').notNull().default(0),
+  ownerName: text('owner_name').notNull(),
+  ownerColor: text('owner_color').notNull(),
+  /** Renewal date. Null for cards not yet dated. */
+  dueAt: text('due_at'),
+  /** Risk tags. JSON because SQLite has no array type. */
+  labels: text('labels', { mode: 'json' }).$type<string[]>().notNull().default([]),
+  notes: text('notes').notNull().default(''),
+  commentCount: integer('comment_count').notNull().default(0)
+}, table => [
+  // Every read is "cards of this column, in order".
+  index('board_cards_column_position_idx').on(table.columnId, table.position)
+])
