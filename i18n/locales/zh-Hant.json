@@ -678,7 +678,7 @@
     "createCard": "建立續約",
     "confirmDelete": "確定永久刪除？",
     "emptyStage": "把卡片拖到這裡",
-    "keyboardHint": "聚焦一張卡片後按住 Ctrl（或 ⌘）搭配方向鍵即可在階段間移動。",
+    "keyboardHint": "聚焦一張卡片後按住 Shift 搭配方向鍵即可在階段間移動。",
     "cardAria": "{title}，{mrr}，{column} 中第 {position} 張，共 {total} 張",
     "loadFailed": "無法載入看板",
     "loadFailedBody": "請求未完成，請重試。",

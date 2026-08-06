@@ -678,7 +678,7 @@
     "createCard": "Buat perpanjangan",
     "confirmDelete": "Hapus permanen?",
     "emptyStage": "Letakkan kartu di sini",
-    "keyboardHint": "Fokuskan sebuah kartu lalu tahan Ctrl (atau ⌘) dengan tombol panah untuk memindahkannya antar tahap.",
+    "keyboardHint": "Fokuskan sebuah kartu lalu tahan Shift dengan tombol panah untuk memindahkannya antar tahap.",
     "cardAria": "{title}, {mrr}, kartu {position} dari {total} di {column}",
     "loadFailed": "Board gagal dimuat",
     "loadFailedBody": "Permintaan tidak selesai. Coba lagi.",

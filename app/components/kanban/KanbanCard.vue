@@ -43,11 +43,18 @@ const LABEL_TONE: Record<string, string> = {
 }
 
 /**
- * Ctrl/Cmd + arrows move the card; plain arrows are left alone so the browser's
- * own scrolling still works.
+ * Shift, Ctrl or Cmd + arrows move the card. Plain arrows are left alone so the
+ * board still scrolls.
+ *
+ * Three modifiers rather than one, because the obvious two are both taken on a
+ * Mac: macOS claims Ctrl+←/→ for switching Spaces, so the page frequently never
+ * sees the event, and Chrome maps Cmd+←/→ to Back/Forward. `preventDefault`
+ * does hold the browser off, but overloading its history shortcut is a poor
+ * thing to rely on. Shift+arrow collides with nothing outside a text field, and
+ * a card is not one — so it is the binding that always works.
  */
 function onKeydown(event: KeyboardEvent) {
-  if (!(event.ctrlKey || event.metaKey)) return
+  if (!(event.shiftKey || event.ctrlKey || event.metaKey)) return
 
   const handled: Record<string, () => void> = {
     ArrowLeft: () => emit('moveColumn', -1),

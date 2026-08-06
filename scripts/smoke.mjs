@@ -73,6 +73,16 @@ const login = await fetch(`${BASE}/api/auth/login`, {
 cookie = (login.headers.getSetCookie().find(value => value.startsWith('cadence-session=')) ?? '').split(';')[0]
 check('POST /api/auth/login issues a session cookie', login.status === 200 && cookie.length > 20, `status ${login.status}`)
 
+// Stop here rather than reporting a wall of failures. Every check below needs a
+// session, and the usual cause is a server started without NUXT_SESSION_PASSWORD
+// — `.output/server/index.mjs` does not read `.env`, so start it with
+// `node --env-file=.env .output/server/index.mjs`, or use `npm run preview`.
+if (!cookie) {
+  console.error('\nNo session cookie. Is the server running with NUXT_SESSION_PASSWORD set?')
+  console.error('Try: node --env-file=.env .output/server/index.mjs')
+  process.exit(1)
+}
+
 // ── Authenticated pages ───────────────────────────────────────────────────────
 const PAGES = [
   ['/dashboard', 'Monthly recurring revenue'],

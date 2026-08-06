@@ -14,7 +14,7 @@ const emit = defineEmits<{
   openCard: [card: BoardCard]
   addCard: [columnId: string]
   moveCard: [cardId: string, columnId: string, index: number]
-  /** Ctrl+←/→ on a card. Only the page knows the column order. */
+  /** Shift+←/→ on a card. Only the page knows the column order. */
   shiftCard: [cardId: string, direction: -1 | 1]
   rename: [columnId: string]
   remove: [columnId: string]
