@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
+import { sampleNavTree } from '~/utils/sample-nav'
 
 const route = useRoute()
 const { t } = useI18n()
@@ -28,8 +29,16 @@ const reference = computed<NavigationMenuItem[]>(() => [
   { label: t('nav.icons'), icon: 'i-lucide-shapes', to: '/dashboard/icons', active: route.path === '/dashboard/icons' },
   { label: t('nav.overlays'), icon: 'i-lucide-layers', to: '/dashboard/overlays', active: route.path === '/dashboard/overlays' },
   { label: t('nav.wizard'), icon: 'i-lucide-list-checks', to: '/dashboard/wizard', active: route.path === '/dashboard/wizard' },
-  { label: t('nav.table'), icon: 'i-lucide-table', to: '/dashboard/table', active: route.path === '/dashboard/table' }
+  { label: t('nav.table'), icon: 'i-lucide-table', to: '/dashboard/table', active: route.path === '/dashboard/table' },
+  { label: t('nav.navigation'), icon: 'i-lucide-list-tree', to: '/dashboard/navigation', active: route.path === '/dashboard/navigation' }
 ])
+
+/**
+ * A live three-level tree, so the nesting on `/dashboard/navigation` can be
+ * tried in the real sidebar rather than only in a framed demo. Sample content —
+ * delete it with the rest of the reference group.
+ */
+const sampleTree = computed<NavigationMenuItem[]>(() => sampleNavTree())
 
 const secondary = computed<NavigationMenuItem[]>(() => [
   { label: t('nav.backToSite'), icon: 'i-lucide-arrow-left', to: '/' },
@@ -61,6 +70,22 @@ const secondary = computed<NavigationMenuItem[]>(() => [
 
         <UNavigationMenu
           :items="reference"
+          :collapsed="collapsed"
+          orientation="vertical"
+          tooltip
+          :ui="{ link: 'text-muted' }"
+        />
+
+        <USeparator
+          v-if="!collapsed"
+          :label="$t('nav.sampleTree')"
+          class="my-3"
+          :ui="{ label: 'eyebrow text-dimmed' }"
+        />
+        <USeparator v-else class="my-3" />
+
+        <UNavigationMenu
+          :items="sampleTree"
           :collapsed="collapsed"
           orientation="vertical"
           tooltip

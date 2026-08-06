@@ -53,6 +53,8 @@ function onDelete() {
 
 <template>
   <div class="space-y-4">
+    <SettingsSecurity />
+
     <UForm
       :schema="schema"
       :state="state"

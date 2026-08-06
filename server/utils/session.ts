@@ -10,7 +10,17 @@ import { db, publicUser } from './db'
  */
 
 interface SessionData {
+  /** Set only once every factor has passed. This IS the session.  */
   userId?: string
+  /**
+   * A half-finished sign-in: the password was right, the second factor has
+   * not been given yet. Deliberately a different key from `userId` so that
+   * every existing authorisation check keeps failing until 2FA completes —
+   * a pending challenge can never be mistaken for a session.
+   */
+  pendingUserId?: string
+  pendingSince?: number
+  pendingRemember?: boolean
 }
 
 const SESSION_NAME = 'cadence-session'
@@ -53,6 +63,47 @@ export async function setUserSession(event: H3Event, userId: string, remember = 
   const session = await useSession<SessionData>(event, config)
   await session.clear()
   await session.update({ userId })
+}
+
+/** A challenge is only good for ten minutes. */
+const CHALLENGE_TTL = 10 * 60 * 1000
+
+/**
+ * Records that the password step passed. Grants nothing on its own — no
+ * `userId` is written, so `requireUser` still rejects every request.
+ */
+export async function setPendingSession(event: H3Event, userId: string, remember: boolean): Promise<void> {
+  const session = await useSession<SessionData>(event, sessionConfig())
+  await session.clear()
+  await session.update({ pendingUserId: userId, pendingSince: Date.now(), pendingRemember: remember })
+}
+
+/** The user part-way through signing in, or `null` if there is no live challenge. */
+export async function getPendingUser(event: H3Event): Promise<{ user: User, remember: boolean } | null> {
+  const session = await useSession<SessionData>(event, sessionConfig())
+  const { pendingUserId, pendingSince, pendingRemember } = session.data
+
+  if (!pendingUserId || !pendingSince) return null
+
+  if (Date.now() - pendingSince > CHALLENGE_TTL) {
+    // An expired challenge is cleared here rather than left to linger, so the
+    // page can say "start again" instead of failing on submit.
+    await session.clear()
+    return null
+  }
+
+  const stored = db.findUserById(pendingUserId)
+  if (!stored) {
+    await session.clear()
+    return null
+  }
+
+  return { user: publicUser(stored), remember: pendingRemember ?? false }
+}
+
+/** Turns a passed challenge into a real session. */
+export async function promotePendingSession(event: H3Event, userId: string, remember: boolean): Promise<void> {
+  await setUserSession(event, userId, remember)
 }
 
 export async function clearUserSession(event: H3Event): Promise<void> {

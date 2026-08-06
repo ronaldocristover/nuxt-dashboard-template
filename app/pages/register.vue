@@ -32,9 +32,16 @@ const STRENGTH_COLORS = ['bg-error', 'bg-error', 'bg-warning', 'bg-info', 'bg-su
 async function onSubmit(event: FormSubmitEvent<SignUpInput>) {
   loading.value = true
   try {
-    await signUp(event.data)
+    const result = await signUp(event.data)
     notifySuccess(t('auth.signUp.created'), t('auth.signUp.createdBody'))
-    await navigateTo('/dashboard')
+
+    // Straight to verification rather than the dashboard: the next thing that
+    // needs doing is in their inbox, and that page says so. The session is
+    // already live, so "continue anyway" is one click from there.
+    await navigateTo({
+      path: '/verify-email',
+      query: result.devVerifyUrl ? { devUrl: result.devVerifyUrl } : {}
+    })
   } catch (error) {
     notify(error, t('auth.signUp.failed'))
   } finally {

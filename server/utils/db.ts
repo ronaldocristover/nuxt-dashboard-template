@@ -252,6 +252,10 @@ const owner: StoredUser = {
   timezone: 'Asia/Jakarta',
   avatarColor: '#2d5bff',
   createdAt: new Date(BOOT.getTime() - 420 * DAY).toISOString(),
+  // The demo account is verified with two-step off, so signing in stays a
+  // single step. Turn two-step on from Settings → Account to walk that flow.
+  emailVerifiedAt: new Date(BOOT.getTime() - 420 * DAY).toISOString(),
+  twoFactorEnabled: false,
   passwordHash: hashPassword(DEMO_PASSWORD)
 }
 
@@ -288,6 +292,23 @@ const resetTokens = new Map<string, { email: string, expiresAt: number }>()
 
 const RESET_TTL = 30 * 60 * 1000
 
+/** Email-verification tokens. Same single-use, time-limited contract. */
+const verifyTokens = new Map<string, { userId: string, expiresAt: number }>()
+
+const VERIFY_TTL = 24 * 60 * 60 * 1000
+
+/**
+ * Two-step codes, keyed by user.
+ *
+ * One live code per account, so requesting a new one invalidates the old.
+ * `attempts` is what stops a six-digit code from being brute-forced: five
+ * wrong guesses burn the code and force a fresh one.
+ */
+const twoFactorCodes = new Map<string, { code: string, expiresAt: number, attempts: number }>()
+
+const CODE_TTL = 10 * 60 * 1000
+const MAX_CODE_ATTEMPTS = 5
+
 export const db = {
   demoCredentials: { email: owner.email, password: DEMO_PASSWORD },
 
@@ -313,6 +334,9 @@ export const db = {
       timezone: 'Asia/Jakarta',
       avatarColor: AVATAR_COLORS[users.size % AVATAR_COLORS.length]!,
       createdAt: new Date().toISOString(),
+      // A fresh sign-up is unverified. That is the point of the flow.
+      emailVerifiedAt: null,
+      twoFactorEnabled: false,
       passwordHash: input.passwordHash
     }
     users.set(user.email, user)
@@ -339,6 +363,66 @@ export const db = {
     if (!user) return false
     user.passwordHash = passwordHash
     return true
+  },
+
+  setEmailVerified(id: string): StoredUser | undefined {
+    const user = this.findUserById(id)
+    if (!user) return undefined
+    user.emailVerifiedAt = new Date().toISOString()
+    return user
+  },
+
+  setTwoFactor(id: string, enabled: boolean): StoredUser | undefined {
+    const user = this.findUserById(id)
+    if (!user) return undefined
+    user.twoFactorEnabled = enabled
+    // Leaving a live code behind after disabling would let it still be used.
+    if (!enabled) twoFactorCodes.delete(id)
+    return user
+  },
+
+  createVerifyToken(userId: string, token: string): void {
+    verifyTokens.set(token, { userId, expiresAt: Date.now() + VERIFY_TTL })
+  },
+
+  consumeVerifyToken(token: string): string | undefined {
+    const entry = verifyTokens.get(token)
+    if (!entry) return undefined
+    verifyTokens.delete(token)
+    if (entry.expiresAt < Date.now()) return undefined
+    return entry.userId
+  },
+
+  /** Replaces any live code for this user. */
+  createTwoFactorCode(userId: string, code: string): void {
+    twoFactorCodes.set(userId, { code, expiresAt: Date.now() + CODE_TTL, attempts: 0 })
+  },
+
+  /**
+   * Checks a submitted code. Returns why it failed rather than a bare boolean,
+   * so the page can tell "wrong code" from "ask for a new one".
+   */
+  verifyTwoFactorCode(userId: string, code: string): 'ok' | 'invalid' | 'expired' | 'exhausted' {
+    const entry = twoFactorCodes.get(userId)
+    if (!entry) return 'expired'
+
+    if (entry.expiresAt < Date.now()) {
+      twoFactorCodes.delete(userId)
+      return 'expired'
+    }
+
+    if (entry.attempts >= MAX_CODE_ATTEMPTS) {
+      twoFactorCodes.delete(userId)
+      return 'exhausted'
+    }
+
+    if (entry.code !== code) {
+      entry.attempts++
+      return 'invalid'
+    }
+
+    twoFactorCodes.delete(userId)
+    return 'ok'
   },
 
   createResetToken(email: string, token: string): void {

@@ -20,6 +20,8 @@ The domain is fictional; every page is built to be rebranded and rewired.
 
 - `/login` — email + password, show/hide, remember me, redirect-back, demo credentials
 - `/register` — sign-up with a live password strength meter
+- `/verify-email` — confirmation from an emailed link; four states in one page
+- `/two-factor` — six-digit challenge with auto-submit, resend cooldown and attempt limits
 - `/forgot-password` — request a reset link, with a distinct success screen
 - `/reset-password` — set a new password from a single-use token
 
@@ -38,6 +40,7 @@ The domain is fictional; every page is built to be rebranded and rewired.
 - `/dashboard/overlays` — modals, slideovers, drawers, popovers, menus and toasts, all live
 - `/dashboard/wizard` — a four-step flow with per-step validation and an editable review
 - `/dashboard/table` — `UTable` with sorting, selection, expansion and column visibility
+- `/dashboard/navigation` — a three-level nested sidebar tree, live in the sidebar too
 
 **Everywhere**
 
@@ -229,6 +232,41 @@ drift apart.
 
 ---
 
+## The auth flows
+
+Six pages, and two of them change how signing in works — so it is worth knowing the shape.
+
+### Two-step verification
+
+A correct password is **not** a session when two-step is on. The server writes a *challenge*
+under a different session key (`pendingUserId`, never `userId`), so every existing
+authorisation check keeps rejecting the request until the second factor lands. That is the
+whole security property, and it is the one worth keeping if you rewrite this:
+
+```
+POST /api/auth/login          → { requiresTwoFactor: true, user: null }   ← nothing granted
+POST /api/auth/two-factor/verify → promotes the challenge into a real session
+```
+
+Codes are six digits from `randomInt`, single-use, ten-minute lifetime, one live code per
+account, and five wrong guesses end the whole attempt rather than just the code — otherwise an
+attacker simply asks for another and keeps going. Turn it on from **Settings → Account**, which
+re-asks for the password because a stolen session must not be able to weaken the account.
+
+### Email verification
+
+A fresh sign-up is created **unverified but signed in**. Blocking the product until someone
+finds an email loses more sign-ups than it protects, so `/verify-email` offers "continue to the
+dashboard" alongside the resend. Verification runs on the client only — a link in an email is
+often fetched by a scanner before a person opens it, and doing this during SSR would let a
+preview bot burn a single-use token.
+
+In development both flows print their code or link to the server console and surface it in the
+page, the same way `/forgot-password` does, so the whole thing is walkable with no mail
+provider.
+
+---
+
 ## Security notes
 
 What the template already does:
@@ -239,7 +277,11 @@ What the template already does:
   cannot be used to discover which emails are registered
 - Password reset says the same thing whether or not the address exists; tokens are single-use
   and expire after 30 minutes
-- Auth endpoints are rate limited per IP
+- Auth endpoints are rate limited per IP, with resend limited harder than verify
+- A pending two-step challenge is stored under a different key from a real session, so it can
+  never be mistaken for one
+- Two-step codes and verification tokens are single-use and time-limited; changing a security
+  setting re-asks for the password
 - The `redirect` query parameter on `/login` only accepts same-origin paths
 - Every request body and query string is validated with Zod before it reaches any logic
 

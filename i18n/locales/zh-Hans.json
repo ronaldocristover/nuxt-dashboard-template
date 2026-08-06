@@ -50,7 +50,9 @@
     "faq": "常见问题",
     "main": "主导航",
     "mobile": "移动导航",
-    "reference": "参考"
+    "reference": "参考",
+    "navigation": "导航",
+    "sampleTree": "示例树"
   },
   "account": {
     "menu": "{name} 的账户菜单",
@@ -143,6 +145,40 @@
       "point3": "付款失败当小时告警，而不是隔周才知道",
       "privacy": "隐私",
       "terms": "条款"
+    },
+    "twoFactor": {
+      "title": "两步验证",
+      "body": "输入身份验证器中的六位代码以完成登录。",
+      "sentTo": "我们已向 {email} 发送六位代码，十分钟内有效。",
+      "label": "验证码",
+      "autoSubmit": "六位数字填满后自动提交。",
+      "submit": "验证并登录",
+      "invalid": "代码不正确，请检查后重试。",
+      "failed": "无法验证该代码",
+      "resend": "重新发送代码",
+      "resendIn": "{seconds} 秒后可重新发送",
+      "resent": "新代码已发送",
+      "resendFailed": "无法发送新代码",
+      "useAnotherAccount": "换一个账户登录",
+      "devBody": "尚未配置发送服务商，因此代码直接显示在这里。"
+    },
+    "verifyEmail": {
+      "title": "确认你的邮箱地址",
+      "sentTo": "我们已向 {email} 发送确认链接，打开它即可完成账户设置。",
+      "pendingBody": "打开我们发送的确认链接即可完成账户设置。",
+      "checkingTitle": "正在确认你的地址",
+      "checkingBody": "请稍候。",
+      "doneTitle": "邮箱已确认",
+      "doneBody": "你的地址已通过验证，无需其他操作。",
+      "failedTitle": "该链接已失效",
+      "failedBody": "确认链接 24 小时后失效且仅可使用一次。请重新申请，并直接从邮箱打开。",
+      "resend": "重新发送链接",
+      "resent": "新链接已发送",
+      "resendFailed": "无法发送新链接",
+      "signInToResend": "登录后申请新链接",
+      "continueAnyway": "继续前往仪表盘",
+      "spamHint": "没收到？请检查垃圾邮件文件夹——确认邮件常被归到那里。",
+      "devOpen": "打开确认链接"
     }
   },
   "validation": {
@@ -427,7 +463,25 @@
       "deleteConfirmLabel": "输入 delete 以确认",
       "keepAccount": "保留我的账户",
       "deleteDisabled": "演示环境已禁用账户删除。上线前请接入你自己的接口。",
-      "deleteDisabledTitle": "演示中不可用"
+      "deleteDisabledTitle": "演示中不可用",
+      "twoFactorTitle": "两步验证",
+      "twoFactorDescription": "登录时除密码外还需要六位代码。",
+      "twoFactorOn": "已开启 — 每次登录都需要代码",
+      "twoFactorOff": "已关闭 — 仅凭密码即可登录",
+      "confirmPassword": "确认你的密码",
+      "confirmPasswordHelp": "修改安全设置时始终会再次要求输入密码。",
+      "enable": "开启",
+      "disable": "关闭",
+      "enabled": "两步验证已开启",
+      "enabledBody": "下次登录时会要求输入代码。",
+      "disabled": "两步验证已关闭",
+      "disabledBody": "登录只需要密码。",
+      "twoFactorFailed": "无法修改该设置",
+      "emailTitle": "电子邮箱",
+      "emailVerified": "已于 {date} 验证",
+      "emailUnverified": "尚未确认",
+      "emailUnverifiedBody": "确认你的地址，密码重置和告警才能送达。",
+      "verifyNow": "发送确认链接"
     },
     "notifications": {
       "title": "通知",

@@ -20,6 +20,24 @@ export interface User {
   timezone: string
   avatarColor: string
   createdAt: string
+  /** `null` until the address has been confirmed from an emailed link. */
+  emailVerifiedAt: string | null
+  /** When true, signing in only gets you a challenge, not a session. */
+  twoFactorEnabled: boolean
+}
+
+/**
+ * What `POST /api/auth/login` answers with.
+ *
+ * A password alone is not a session when two-step is on: the server stores a
+ * pending challenge and the client is sent to `/two-factor`. `user` is absent
+ * in that case, because nothing is authenticated yet.
+ */
+export interface SignInResult {
+  requiresTwoFactor: boolean
+  user: User | null
+  /** Dev only — the code that would otherwise arrive by email. */
+  devCode?: string
 }
 
 export interface Subscriber {

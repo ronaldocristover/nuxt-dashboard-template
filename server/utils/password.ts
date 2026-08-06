@@ -1,4 +1,4 @@
-import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
+import { randomBytes, randomInt, scryptSync, timingSafeEqual } from 'node:crypto'
 
 /**
  * Password hashing with scrypt from Node's standard library — no dependency,
@@ -32,4 +32,14 @@ export function verifyPassword(password: string, stored: string): boolean {
 
 export function generateToken(bytes = 32): string {
   return randomBytes(bytes).toString('base64url')
+}
+
+/**
+ * A six-digit numeric code for the two-step challenge.
+ *
+ * Drawn from `randomInt`, not `Math.random`: this is a credential, and a
+ * predictable one is worse than none because it looks like protection.
+ */
+export function generateCode(): string {
+  return randomInt(0, 1_000_000).toString().padStart(6, '0')
 }
