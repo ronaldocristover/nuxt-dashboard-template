@@ -678,7 +678,7 @@
     "createCard": "Create renewal",
     "confirmDelete": "Delete for good?",
     "emptyStage": "Drop a card here",
-    "keyboardHint": "Focus a card and hold Ctrl (or ⌘) with the arrow keys to move it between stages.",
+    "keyboardHint": "Focus a card and hold Shift with the arrow keys to move it between stages.",
     "cardAria": "{title}, {mrr}, card {position} of {total} in {column}",
     "loadFailed": "The board could not be loaded",
     "loadFailedBody": "The request did not complete. Try again.",

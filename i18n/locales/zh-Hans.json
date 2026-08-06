@@ -678,7 +678,7 @@
     "createCard": "创建续约",
     "confirmDelete": "确定永久删除？",
     "emptyStage": "把卡片拖到这里",
-    "keyboardHint": "聚焦一张卡片后按住 Ctrl（或 ⌘）配合方向键即可在阶段间移动。",
+    "keyboardHint": "聚焦一张卡片后按住 Shift 配合方向键即可在阶段间移动。",
     "cardAria": "{title}，{mrr}，{column} 中第 {position} 张，共 {total} 张",
     "loadFailed": "无法加载看板",
     "loadFailedBody": "请求未完成，请重试。",

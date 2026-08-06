@@ -31,7 +31,7 @@ function openNewCard(columnId: string) {
 // --- Moves -------------------------------------------------------------------
 
 /**
- * Ctrl+←/→ on a card. Only this page knows the column order, so the columns
+ * Shift+←/→ on a card. Only this page knows the column order, so the columns
  * emit a direction and the translation to a target column happens here.
  */
 function shiftCard(cardId: string, direction: -1 | 1) {

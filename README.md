@@ -469,6 +469,10 @@ reserves their height during SSR so nothing shifts when they appear.
 - Charts carry text summaries; the area chart supports arrow keys, Home, End and Escape
 - Sortable table headers expose `aria-sort` and are real buttons
 - Movement direction is encoded by a hatch pattern as well as colour
+- Kanban cards move with **Shift + arrows** — not Ctrl or Cmd, which macOS and Chrome have already
+  claimed for switching Spaces and for Back/Forward. Both still work as aliases; Shift is the one
+  that always reaches the page. Plain arrows are left alone so the board scrolls.
+- An overdue renewal changes icon as well as colour, so the signal survives colour blindness
 - Motion is disabled under `prefers-reduced-motion`
 - `<html lang>` and `dir` follow the active language, so screen readers announce it correctly
 - The subscribers table becomes a stacked card list on small screens rather than scrolling sideways
@@ -517,9 +521,13 @@ served copy. Point it at a running server:
 
 ```bash
 npm run build
-node .output/server/index.mjs &
+node --env-file=.env .output/server/index.mjs &     # the built server does not read .env itself
 npm run smoke                      # or SMOKE_URL=https://staging.example.com npm run smoke
 ```
+
+Check what is listening before trusting a green run. A forgotten `nuxt dev` on the same port
+will answer instead of the build under test — on macOS a process bound to `[::1]:3000` and one
+bound to `*:3000` can coexist, and `localhost` resolves to the former.
 
 Charts and drag interactions are still checked by hand — a screenshot makes a better assertion
 about a chart than any DOM query, and adding `@nuxt/test-utils` would triple the install for
@@ -532,6 +540,13 @@ worse tests.
 ```bash
 NUXT_SESSION_PASSWORD=… node .output/server/index.mjs
 ```
+
+**`.output/server/index.mjs` does not read `.env`.** Only `nuxt dev` and `nuxt preview` do, so a
+production process needs its variables supplied by the platform, inlined as above, or loaded
+explicitly with `node --env-file=.env .output/server/index.mjs`. Started without a real
+`NUXT_SESSION_PASSWORD`, the server refuses to issue sessions rather than falling back to a
+dev key — so sign-in fails and every `/dashboard` route redirects to `/login`. That is the
+intended behaviour, and it is the first thing to check if a fresh deployment cannot log in.
 
 Nitro also targets Vercel, Netlify, Cloudflare and others — see the
 [Nuxt deployment docs](https://nuxt.com/docs/getting-started/deployment). On an edge runtime,
