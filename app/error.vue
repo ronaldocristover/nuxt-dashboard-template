@@ -5,39 +5,29 @@ const props = defineProps<{
   error: NuxtError
 }>()
 
+const { t } = useI18n()
+
 /**
  * Errors explain what happened and offer a way forward. They do not apologise
  * and they are never vague — "Something went wrong" tells the reader nothing
  * they did not already know.
  */
 const copy = computed(() => {
-  if (props.error.statusCode === 404) {
-    return {
-      code: '404',
-      title: 'That page does not exist',
-      body: 'The link may be out of date, or the page may have moved. The dashboard and the home page are both still where you left them.'
-    }
-  }
+  const code = props.error.statusCode
 
-  if (props.error.statusCode === 403) {
-    return {
-      code: '403',
-      title: 'You do not have access to this',
-      body: 'Your account is signed in but is not permitted to view this page. An admin on your workspace can change that.'
-    }
+  if (code === 404) {
+    return { code: '404', title: t('errors.page404Title'), body: t('errors.page404Body') }
   }
-
-  return {
-    code: String(props.error.statusCode || 500),
-    title: 'This page could not be loaded',
-    body: 'The request reached us but did not complete. Trying again often works; if it does not, the status page will say why.'
+  if (code === 403) {
+    return { code: '403', title: t('errors.page403Title'), body: t('errors.page403Body') }
   }
+  return { code: String(code || 500), title: t('errors.page500Title'), body: t('errors.page500Body') }
 })
 
 const { isAuthenticated } = useAuth()
 
 useSeoMeta({
-  title: copy.value.title,
+  title: () => copy.value.title,
   robots: 'noindex'
 })
 </script>
@@ -49,7 +39,10 @@ useSeoMeta({
         <NuxtLink to="/" class="rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
           <AppLogo />
         </NuxtLink>
-        <UColorModeButton />
+        <div class="flex items-center gap-1">
+          <LanguageSwitcher />
+          <UColorModeButton />
+        </div>
       </div>
     </header>
 
@@ -70,14 +63,14 @@ useSeoMeta({
         <div class="mt-8 flex flex-col gap-3 sm:flex-row">
           <UButton
             :to="isAuthenticated ? '/dashboard' : '/'"
-            :label="isAuthenticated ? 'Back to the dashboard' : 'Back to the home page'"
+            :label="isAuthenticated ? $t('errors.backToDashboard') : $t('errors.backHome')"
             size="lg"
             block
             class="sm:w-auto"
             @click="clearError()"
           />
           <UButton
-            label="Try again"
+            :label="$t('common.retry')"
             size="lg"
             color="neutral"
             variant="subtle"
@@ -91,7 +84,7 @@ useSeoMeta({
         <!-- The message is useful while building and noise in production. -->
         <details v-if="error.message" class="mt-10 border-t border-default pt-5">
           <summary class="cursor-pointer text-sm text-dimmed transition-colors hover:text-muted">
-            Technical detail
+            {{ $t('errors.technical') }}
           </summary>
           <pre class="mt-3 overflow-x-auto rounded-md bg-elevated p-3 font-mono text-xs text-muted">{{ error.message }}</pre>
         </details>

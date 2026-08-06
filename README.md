@@ -1,8 +1,9 @@
 # Cadence — Nuxt 4 dashboard template
 
 A production-ready dashboard template built with **Nuxt 4**, **Nuxt UI v4** and **Tailwind CSS v4**.
-Ships with a marketing site, a complete authentication flow, and a four-page dashboard —
-all mobile-first, keyboard accessible, and themed from a single CSS file.
+Ships with a marketing site, a complete authentication flow, and a six-page dashboard —
+all mobile-first, keyboard accessible, translated into four languages, and themed from a
+single CSS file.
 
 The demo product is *Cadence*, a revenue-reporting tool for subscription businesses.
 The domain is fictional; every page is built to be rebranded and rewired.
@@ -28,10 +29,12 @@ The domain is fictional; every page is built to be rebranded and rewired.
 - `/dashboard/analytics` — date-range switching, area / grouped-bar / donut charts, channels, cohort retention
 - `/dashboard/subscribers` — server-driven table: search, filter, sort, paginate, multi-select, CSV export, detail slideover
 - `/dashboard/forms` — a live reference for every form control, plus a fully validated example form
+- `/dashboard/layouts` — 21 grid patterns (one column, two, three-plus, combinations, responsive), each showing the exact classes that produce it
 - `/dashboard/settings` — profile, account and password, notifications, billing, team members
 
 **Everywhere**
 
+- Four languages — English, Bahasa Indonesia, 简体中文, 繁體中文 — switchable live, with no reload
 - Light and dark themes with no flash on load
 - Skeletons, empty states, error states and toasts on every async surface
 - `404` / `500` pages that explain what happened and offer a way forward
@@ -72,6 +75,7 @@ Both are shown on the sign-in page while `NUXT_PUBLIC_DEMO_MODE` is `true`. Set 
 | `npm run preview` | Serve the production build |
 | `npm run typecheck` | `vue-tsc` across app and server |
 | `npm run lint` / `lint:fix` | ESLint |
+| `npm run i18n:check` | Compares every locale file against `en.json` |
 
 ---
 
@@ -124,6 +128,39 @@ The four revenue-movement colours (`--cadence-new`, `--cadence-expansion`,
 `--cadence-contraction`, `--cadence-churn`) are semantic. They are used by the waterfall, the
 bar chart and the activity feed so the same concept keeps the same colour across the app.
 
+### Languages
+
+Translations live in `i18n/locales/*.json`. `en.json` is the source of truth; anything missing
+from another file falls back to the English sentence rather than showing a raw key.
+
+To add a language:
+
+1. Copy `i18n/locales/en.json` to `i18n/locales/<code>.json` and translate the values.
+2. Add the locale to `i18n.locales` in `nuxt.config.ts`.
+3. Map it to a Nuxt UI locale in `app/app.vue` so the component internals — pagination,
+   calendar, "clear" — follow too.
+4. Add its `Intl` tag to `INTL_TAGS` in `shared/format.ts`.
+5. Run `npm run i18n:check`.
+
+Three things worth knowing:
+
+- **The server never formats display text.** Metric labels, activity sentences and relative
+  times are assembled on the client from keys and timestamps. That is what lets the language
+  switch without refetching, and it is why every API response carries `generatedAt` — relative
+  times are measured from that fixed moment so SSR and hydration cannot disagree.
+- **`@` must be escaped in messages.** vue-i18n reads `@` as the start of a linked message, so
+  an email address in placeholder copy is written `you{'@'}company.com`.
+- **Currency is not a locale setting.** What you bill in is a property of the business, so
+  `CURRENCY` in `shared/format.ts` stays fixed while the number formatting follows the reader.
+  Expect `$86,945` in English and `US$86.945` in Indonesian — `Intl` disambiguates the dollar
+  sign for readers whose region uses a different one.
+
+Routing uses the `no_prefix` strategy: one canonical URL set, with the choice stored in a
+cookie. Nothing has to remember to localise a link, which is the failure mode that produces
+half-translated apps. If you want per-language URLs for marketing SEO, set
+`strategy: 'prefix_except_default'` in `nuxt.config.ts` and replace every `to="/…"` with
+`:to="localePath('/…')"`.
+
 ### Fonts
 
 Fonts are self-hosted through `@fontsource`, so there are no third-party requests at runtime.
@@ -132,9 +169,15 @@ Swap the packages in `package.json`, update the imports in `nuxt.config.ts`, the
 
 ### Name and copy
 
-The product name appears in `app/components/AppLogo.vue`, `app/app.vue` (title template),
-`app/pages/index.vue`, and `public/robots.txt`. The logo mark is inline SVG — no image assets
-to regenerate.
+The product name lives in `app.name` in each `i18n/locales/*.json`, plus
+`app/components/AppLogo.vue` and `public/robots.txt`. All other copy is in the locale files —
+there are no hard-coded sentences in the pages, apart from the two developer reference pages
+noted below. The logo mark is inline SVG, so there are no image assets to regenerate.
+
+**Not translated:** `/dashboard/forms` and `/dashboard/layouts` are developer documentation
+for whoever buys the template, so their prose stays in English. Delete both pages, their
+components (`app/components/forms/`, `app/components/grid/`) and their sidebar entries in
+`app/layouts/dashboard.vue` before shipping to end users.
 
 ---
 
@@ -208,12 +251,14 @@ app/
   components/
     charts/                AreaChart, BarChart, DonutChart, Sparkline, ChartFrame
     forms/                 the form reference page, split by control family
+    grid/                  the layout reference page, split by column count
     marketing/             site header and footer
     settings/              one component per settings tab
     PanelSection.vue       titled card with an optional footer — used by both
     MrrWaterfall.vue       the signature revenue-movement bar
   composables/
     useAuth.ts             the only place the app calls /api/auth
+    useFormat.ts           formatters bound to the active locale
     useApiFetch.ts         useFetch that forwards cookies during SSR
     useApiError.ts         turns thrown errors into readable messages
   layouts/                 default (marketing), auth (split screen), dashboard
@@ -224,6 +269,10 @@ app/
 server/
   api/                     auth, metrics, subscribers, settings
   utils/                   db, metrics, password, session, ratelimit
+i18n/
+  i18n.config.ts           vue-i18n options (fallback locale)
+  locales/                 en, id, zh-Hans, zh-Hant
+scripts/check-locales.mjs  locale parity + placeholder check
 shared/                    types, Zod schemas and formatters used by both sides
 ```
 
@@ -251,6 +300,42 @@ One caveat worth knowing: `@internationalized/date` values are class instances, 
 `reactive()` rewrites them into plain objects. Hold form state containing a date in
 `shallowReactive()` instead, as `FormsExample.vue` does.
 
+### Building a page
+
+`/dashboard/layouts` is the layout reference. Every example is live at the width you read it
+and shows the classes that produce it, so a new page can be assembled by copying rows.
+
+The shape almost every dashboard page uses:
+
+```vue
+<UDashboardPanel id="your-page">
+  <template #header>
+    <UDashboardNavbar title="Your page">
+      <template #leading><UDashboardSidebarCollapse /></template>
+    </UDashboardNavbar>
+  </template>
+
+  <template #body>
+    <div class="space-y-4">
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">…</div>
+      <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">…</div>
+    </div>
+  </template>
+</UDashboardPanel>
+```
+
+Each row is its own grid rather than one grid describing the whole page — easier to change, and
+each row can pick the breakpoint that suits its content.
+
+Two things worth knowing:
+
+- `minmax(0,1fr)` rather than plain `1fr`. A grid track's default minimum is `auto`, so one wide
+  chart or one long unbroken string will push a column past its share. `minmax(0,…)` prevents it.
+- `sm:` and `lg:` are **viewport** media queries. Collapsing the sidebar changes the panel width
+  but not the breakpoint. When a component needs to respond to the space it actually occupies,
+  mark its parent `@container` and use `@md:` / `@2xl:` instead — the last example on the layouts
+  page is a container you can drag to see the difference.
+
 ### Why the charts are hand-written
 
 Every chart is a small SVG component with no runtime dependency. They inherit the theme through
@@ -271,6 +356,7 @@ reserves their height during SSR so nothing shifts when they appear.
 - Sortable table headers expose `aria-sort` and are real buttons
 - Movement direction is encoded by a hatch pattern as well as colour
 - Motion is disabled under `prefers-reduced-motion`
+- `<html lang>` and `dir` follow the active language, so screen readers announce it correctly
 - The subscribers table becomes a stacked card list on small screens rather than scrolling sideways
 
 ---

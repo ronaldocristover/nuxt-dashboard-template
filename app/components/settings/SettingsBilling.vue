@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatCurrency, formatDate } from '#shared/format'
+const fmt = useFormat()
 
 /**
  * Billing is presentational in the template — connecting a payment provider is
@@ -20,44 +20,46 @@ const monthlyTotal = computed(() => SEATS_USED * PER_SEAT)
 
 const seatUsage = computed(() => (SEATS_USED / SEATS_INCLUDED) * 100)
 
+const cardExpiry = '2029-04-01'
+
 const history = [
-  { number: 'CAD-2026-0412', amount: 522, status: 'paid' as const, at: '2026-07-01' },
-  { number: 'CAD-2026-0361', amount: 522, status: 'paid' as const, at: '2026-06-01' },
-  { number: 'CAD-2026-0309', amount: 493, status: 'paid' as const, at: '2026-05-01' },
-  { number: 'CAD-2026-0258', amount: 464, status: 'paid' as const, at: '2026-04-01' }
+  { number: 'CAD-2026-0412', amount: 522, at: '2026-07-01' },
+  { number: 'CAD-2026-0361', amount: 522, at: '2026-06-01' },
+  { number: 'CAD-2026-0309', amount: 493, at: '2026-05-01' },
+  { number: 'CAD-2026-0258', amount: 464, at: '2026-04-01' }
 ]
 </script>
 
 <template>
   <div class="space-y-4">
     <PanelSection
-      title="Plan"
-      description="You are on Growth, billed monthly per seat in use."
+      :title="$t('settings.billing.planTitle')"
+      :description="$t('settings.billing.planDescription')"
     >
       <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-display text-2xl font-semibold text-highlighted">Growth</span>
-            <UBadge label="Active" color="success" variant="subtle" size="sm" />
+            <span class="font-display text-2xl font-semibold text-highlighted">{{ $t('plans.growth') }}</span>
+            <UBadge :label="$t('status.active')" color="success" variant="subtle" size="sm" />
           </div>
           <p class="tnum mt-1.5 text-sm text-muted">
-            {{ formatCurrency(monthlyTotal) }} per month · renews {{ formatDate(renewsOn) }}
+            {{ $t('settings.billing.perMonth', { amount: fmt.currency(monthlyTotal), date: fmt.date(renewsOn) }) }}
           </p>
         </div>
 
         <div class="flex gap-2">
-          <UButton label="Change plan" variant="subtle" />
-          <UButton label="Cancel" color="neutral" variant="ghost" />
+          <UButton :label="$t('settings.billing.changePlan')" variant="subtle" />
+          <UButton :label="$t('settings.billing.cancel')" color="neutral" variant="ghost" />
         </div>
       </div>
 
       <div class="mt-6 border-t border-default pt-5">
         <div class="flex items-baseline justify-between gap-3">
           <p class="text-sm font-medium text-highlighted">
-            Seats in use
+            {{ $t('settings.billing.seatsInUse') }}
           </p>
           <p class="tnum text-sm text-muted">
-            {{ SEATS_USED }} of {{ SEATS_INCLUDED }}
+            {{ $t('settings.billing.seatsCount', { used: SEATS_USED, total: SEATS_INCLUDED }) }}
           </p>
         </div>
         <div class="mt-2 h-2 overflow-hidden rounded-full bg-elevated">
@@ -67,14 +69,14 @@ const history = [
           />
         </div>
         <p class="mt-2 text-xs text-dimmed">
-          Adding a seat adds {{ formatCurrency(PER_SEAT) }} to your next invoice, prorated.
+          {{ $t('settings.billing.seatNote', { amount: fmt.currency(PER_SEAT) }) }}
         </p>
       </div>
     </PanelSection>
 
     <PanelSection
-      title="Payment method"
-      description="Charged on the first of each month."
+      :title="$t('settings.billing.paymentTitle')"
+      :description="$t('settings.billing.paymentDescription')"
     >
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-3">
@@ -86,17 +88,17 @@ const history = [
               Visa ···· 4242
             </p>
             <p class="text-xs text-muted">
-              Expires 04 / 2029
+              {{ $t('settings.billing.expires', { date: fmt.date(cardExpiry) }) }}
             </p>
           </div>
         </div>
-        <UButton label="Update card" variant="subtle" size="sm" />
+        <UButton :label="$t('settings.billing.updateCard')" variant="subtle" size="sm" />
       </div>
     </PanelSection>
 
     <PanelSection
-      title="Invoice history"
-      description="Every invoice on this workspace, newest first."
+      :title="$t('settings.billing.historyTitle')"
+      :description="$t('settings.billing.historyDescription')"
     >
       <ul class="divide-y divide-default">
         <li
@@ -109,17 +111,17 @@ const history = [
               {{ invoice.number }}
             </p>
             <p class="text-xs text-muted">
-              {{ formatDate(invoice.at) }}
+              {{ fmt.date(invoice.at) }}
             </p>
           </div>
-          <span class="tnum text-sm text-default">{{ formatCurrency(invoice.amount) }}</span>
-          <UBadge label="Paid" color="success" variant="subtle" size="sm" />
+          <span class="tnum text-sm text-default">{{ fmt.currency(invoice.amount) }}</span>
+          <UBadge :label="$t('status.paid')" color="success" variant="subtle" size="sm" />
           <UButton
             icon="i-lucide-download"
             color="neutral"
             variant="ghost"
             size="sm"
-            :aria-label="`Download invoice ${invoice.number}`"
+            :aria-label="$t('settings.billing.download', { number: invoice.number })"
           />
         </li>
       </ul>

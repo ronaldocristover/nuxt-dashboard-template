@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { forgotPasswordSchema, type ForgotPasswordInput } from '#shared/schemas'
+import { createForgotPasswordSchema, type ForgotPasswordInput } from '#shared/schemas'
 
 definePageMeta({ layout: 'auth', middleware: 'guest' })
 
+const { t } = useI18n()
+const { notify } = useApiError()
+
 useSeoMeta({
-  title: 'Reset your password',
-  description: 'Request a password reset link for your Cadence account.',
+  title: () => t('auth.forgot.title'),
   robots: 'noindex'
 })
 
-const { notify } = useApiError()
+const schema = computed(() => createForgotPasswordSchema(t))
 
 const state = reactive({ email: '' })
 const loading = ref(false)
@@ -31,7 +33,7 @@ async function onSubmit(event: FormSubmitEvent<ForgotPasswordInput>) {
     devResetUrl.value = response.devResetUrl
     sent.value = true
   } catch (error) {
-    notify(error, 'Could not send the reset link')
+    notify(error, t('auth.forgot.failed'))
   } finally {
     loading.value = false
   }
@@ -53,12 +55,13 @@ function tryAgain() {
       </div>
 
       <h1 class="mt-5 font-display text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl">
-        Check your inbox
+        {{ $t('auth.forgot.sentTitle') }}
       </h1>
-      <p class="mt-2 text-sm text-muted">
-        If <span class="font-medium text-highlighted">{{ sentTo }}</span> has an account,
-        a reset link is on its way. The link works once and expires in 30 minutes.
-      </p>
+      <i18n-t keypath="auth.forgot.sentBody" tag="p" class="mt-2 text-sm text-muted" scope="global">
+        <template #email>
+          <span class="font-medium text-highlighted">{{ sentTo }}</span>
+        </template>
+      </i18n-t>
 
       <UAlert
         v-if="devResetUrl"
@@ -66,16 +69,15 @@ function tryAgain() {
         color="warning"
         variant="subtle"
         icon="i-lucide-flask-conical"
-        title="Development only"
-        description="No email provider is configured, so the link is shown here."
+        :title="$t('auth.forgot.devTitle')"
       >
         <template #description>
           <p class="text-xs">
-            No email provider is configured, so the link is shown here.
+            {{ $t('auth.forgot.devBody') }}
           </p>
           <UButton
             :to="devResetUrl"
-            label="Open reset link"
+            :label="$t('auth.forgot.devOpen')"
             size="xs"
             variant="subtle"
             color="warning"
@@ -86,9 +88,9 @@ function tryAgain() {
       </UAlert>
 
       <div class="mt-6 space-y-2">
-        <UButton to="/login" label="Back to sign in" size="lg" block />
+        <UButton to="/login" :label="$t('auth.forgot.back')" size="lg" block />
         <UButton
-          label="Use a different email"
+          :label="$t('auth.forgot.useAnother')"
           size="lg"
           color="neutral"
           variant="ghost"
@@ -104,29 +106,28 @@ function tryAgain() {
         class="inline-flex items-center gap-1.5 text-sm text-muted underline-offset-2 transition-colors hover:text-highlighted"
       >
         <UIcon name="i-lucide-arrow-left" class="size-4" />
-        Back to sign in
+        {{ $t('auth.forgot.back') }}
       </NuxtLink>
 
       <h1 class="mt-5 font-display text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl">
-        Reset your password
+        {{ $t('auth.forgot.title') }}
       </h1>
       <p class="mt-2 text-sm text-muted">
-        Enter the email address on your account and we will send a link to set a
-        new password.
+        {{ $t('auth.forgot.body') }}
       </p>
 
       <UForm
-        :schema="forgotPasswordSchema"
+        :schema="schema"
         :state="state"
         class="mt-7 space-y-4"
         @submit="onSubmit"
       >
-        <UFormField label="Email address" name="email" required>
+        <UFormField :label="$t('auth.signIn.email')" name="email" required>
           <UInput
             v-model="state.email"
             type="email"
             autocomplete="email"
-            placeholder="you@company.com"
+            :placeholder="$t('auth.signIn.emailPlaceholder')"
             size="lg"
             class="w-full"
             autofocus
@@ -135,7 +136,7 @@ function tryAgain() {
 
         <UButton
           type="submit"
-          label="Send reset link"
+          :label="$t('auth.forgot.submit')"
           size="lg"
           block
           :loading="loading"

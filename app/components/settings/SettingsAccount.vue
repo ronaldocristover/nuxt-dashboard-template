@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { changePasswordSchema, scorePassword, type ChangePasswordInput } from '#shared/schemas'
-import { formatDate } from '#shared/format'
+import { createChangePasswordSchema, scorePassword, type ChangePasswordInput } from '#shared/schemas'
 
+const { t } = useI18n()
+const fmt = useFormat()
 const { user, changePassword } = useAuth()
+
+const schema = computed(() => createChangePasswordSchema(t))
 const { notify, notifySuccess } = useApiError()
 
 const state = reactive({
@@ -15,19 +18,18 @@ const state = reactive({
 const loading = ref(false)
 const strength = computed(() => scorePassword(state.password))
 
-const STRENGTH_LABELS = ['Too short', 'Weak', 'Fair', 'Good', 'Strong'] as const
 const STRENGTH_COLORS = ['bg-error', 'bg-error', 'bg-warning', 'bg-info', 'bg-success'] as const
 
 async function onSubmit(event: FormSubmitEvent<ChangePasswordInput>) {
   loading.value = true
   try {
     await changePassword(event.data)
-    notifySuccess('Password updated', 'Use your new password next time you sign in.')
+    notifySuccess(t('settings.account.updated'), t('settings.account.updatedBody'))
     state.currentPassword = ''
     state.password = ''
     state.confirmPassword = ''
   } catch (error) {
-    notify(error, 'Could not update your password')
+    notify(error, t('settings.account.failed'))
   } finally {
     loading.value = false
   }
@@ -43,8 +45,8 @@ function onDelete() {
   deleteOpen.value = false
   confirmText.value = ''
   notify(
-    { statusMessage: 'Account deletion is disabled in the demo. Wire it to your own endpoint before shipping.' },
-    'Not available in the demo'
+    { statusMessage: t('settings.account.deleteDisabled') },
+    t('settings.account.deleteDisabledTitle')
   )
 }
 </script>
@@ -52,16 +54,16 @@ function onDelete() {
 <template>
   <div class="space-y-4">
     <UForm
-      :schema="changePasswordSchema"
+      :schema="schema"
       :state="state"
       @submit="onSubmit"
     >
       <PanelSection
-        title="Password"
-        description="At least 8 characters, with upper and lower case and a number."
+        :title="$t('settings.account.passwordTitle')"
+        :description="$t('settings.account.passwordDescription')"
       >
         <div class="grid max-w-lg gap-4">
-          <UFormField label="Current password" name="currentPassword" required>
+          <UFormField :label="$t('settings.account.current')" name="currentPassword" required>
             <UInput
               v-model="state.currentPassword"
               type="password"
@@ -70,7 +72,7 @@ function onDelete() {
             />
           </UFormField>
 
-          <UFormField label="New password" name="password" required>
+          <UFormField :label="$t('settings.account.new')" name="password" required>
             <UInput
               v-model="state.password"
               type="password"
@@ -87,12 +89,12 @@ function onDelete() {
                 />
               </div>
               <p class="mt-1.5 text-xs text-muted" aria-live="polite">
-                {{ STRENGTH_LABELS[strength] }}
+                {{ $t(`auth.strength.${strength}`) }}
               </p>
             </div>
           </UFormField>
 
-          <UFormField label="Confirm new password" name="confirmPassword" required>
+          <UFormField :label="$t('settings.account.confirm')" name="confirmPassword" required>
             <UInput
               v-model="state.confirmPassword"
               type="password"
@@ -103,28 +105,28 @@ function onDelete() {
         </div>
 
         <template #footer>
-          <UButton type="submit" label="Update password" :loading="loading" />
+          <UButton type="submit" :label="$t('settings.account.submit')" :loading="loading" />
         </template>
       </PanelSection>
     </UForm>
 
     <PanelSection
-      title="Sessions"
-      description="Where your account is currently signed in."
+      :title="$t('settings.account.sessionsTitle')"
+      :description="$t('settings.account.sessionsDescription')"
     >
       <div class="flex items-start justify-between gap-4">
         <div class="flex gap-3">
           <UIcon name="i-lucide-monitor" class="mt-0.5 size-5 shrink-0 text-dimmed" />
           <div>
             <p class="text-sm font-medium text-highlighted">
-              This browser
+              {{ $t('settings.account.thisBrowser') }}
             </p>
             <p class="mt-0.5 text-xs text-muted">
-              Signed in now · account created {{ user ? formatDate(user.createdAt) : '—' }}
+              {{ $t('settings.account.signedInNow', { date: user ? fmt.date(user.createdAt) : '—' }) }}
             </p>
           </div>
         </div>
-        <UBadge label="Current" variant="subtle" color="success" size="sm" />
+        <UBadge :label="$t('status.current')" variant="subtle" color="success" size="sm" />
       </div>
     </PanelSection>
 
@@ -133,16 +135,15 @@ function onDelete() {
     <section class="rounded-[calc(var(--ui-radius)*1.5)] bg-default ring ring-error/30">
       <div class="border-b border-error/20 px-4 py-4 sm:px-6">
         <h2 class="text-base font-semibold text-error">
-          Delete this account
+          {{ $t('settings.account.dangerTitle') }}
         </h2>
         <p class="mt-1 text-sm text-muted">
-          Removes your account, its workspace and every report in it. Exports are
-          not kept and this cannot be undone.
+          {{ $t('settings.account.dangerDescription') }}
         </p>
       </div>
       <div class="px-4 py-4 sm:px-6">
         <UButton
-          label="Delete account"
+          :label="$t('settings.account.deleteButton')"
           color="error"
           variant="subtle"
           icon="i-lucide-trash-2"
@@ -151,30 +152,30 @@ function onDelete() {
       </div>
     </section>
 
-    <UModal v-model:open="deleteOpen" title="Delete this account">
+    <UModal v-model:open="deleteOpen" :title="$t('settings.account.dangerTitle')">
       <template #body>
-        <p class="text-sm text-muted">
-          This removes your account and every report in the workspace. Type
-          <span class="font-mono font-medium text-highlighted">delete</span>
-          to confirm.
-        </p>
+        <i18n-t keypath="settings.account.deleteBody" tag="p" class="text-sm text-muted" scope="global">
+          <template #word>
+            <span class="font-mono font-medium text-highlighted">delete</span>
+          </template>
+        </i18n-t>
         <UInput
           v-model="confirmText"
           class="mt-4 w-full"
           placeholder="delete"
-          aria-label="Type delete to confirm"
+          :aria-label="$t('settings.account.deleteConfirmLabel')"
         />
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
           <UButton
-            label="Keep my account"
+            :label="$t('settings.account.keepAccount')"
             color="neutral"
             variant="ghost"
             @click="deleteOpen = false"
           />
           <UButton
-            label="Delete account"
+            :label="$t('settings.account.deleteButton')"
             color="error"
             :disabled="!canDelete"
             @click="onDelete"

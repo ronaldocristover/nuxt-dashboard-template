@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { signInSchema, type SignInInput } from '#shared/schemas'
+import { createSignInSchema, type SignInInput } from '#shared/schemas'
 
 definePageMeta({ layout: 'auth', middleware: 'guest' })
 
-useSeoMeta({
-  title: 'Sign in',
-  description: 'Sign in to your Cadence workspace.',
-  robots: 'noindex'
-})
-
+const { t } = useI18n()
 const route = useRoute()
 const config = useRuntimeConfig()
 const { signIn } = useAuth()
 const { notify } = useApiError()
+
+useSeoMeta({
+  title: () => t('auth.signIn.submit'),
+  robots: 'noindex'
+})
+
+// Built with `t` so every message is in the reader's language. The server
+// validates with the same rules, using message keys it never renders.
+const schema = computed(() => createSignInSchema(t))
 
 const state = reactive({
   email: '',
@@ -39,7 +43,7 @@ async function onSubmit(event: FormSubmitEvent<SignInInput>) {
     await signIn(event.data)
     await navigateTo(redirectTo.value)
   } catch (error) {
-    notify(error, 'Could not sign you in')
+    notify(error, t('auth.signIn.failed'))
   } finally {
     loading.value = false
   }
@@ -54,12 +58,12 @@ function useDemoAccount() {
 <template>
   <div>
     <h1 class="font-display text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl">
-      Sign in to Cadence
+      {{ $t('auth.signIn.title') }}
     </h1>
     <p class="mt-2 text-sm text-muted">
-      New here?
+      {{ $t('auth.signIn.newHere') }}
       <NuxtLink to="/register" class="font-medium text-primary underline-offset-2 hover:underline">
-        Create an account
+        {{ $t('auth.signIn.createAccount') }}
       </NuxtLink>
     </p>
 
@@ -69,8 +73,8 @@ function useDemoAccount() {
       color="neutral"
       variant="subtle"
       icon="i-lucide-key-round"
-      title="Demo workspace"
-      :actions="[{ label: 'Fill in demo credentials', variant: 'subtle', size: 'xs', onClick: useDemoAccount }]"
+      :title="$t('auth.signIn.demoTitle')"
+      :actions="[{ label: $t('auth.signIn.demoFill'), variant: 'subtle', size: 'xs', onClick: useDemoAccount }]"
     >
       <template #description>
         <span class="tnum text-xs">demo@cadence.app · Cadence2026</span>
@@ -78,17 +82,17 @@ function useDemoAccount() {
     </UAlert>
 
     <UForm
-      :schema="signInSchema"
+      :schema="schema"
       :state="state"
       class="mt-6 space-y-4"
       @submit="onSubmit"
     >
-      <UFormField label="Email address" name="email" required>
+      <UFormField :label="$t('auth.signIn.email')" name="email" required>
         <UInput
           v-model="state.email"
           type="email"
           autocomplete="email"
-          placeholder="you@company.com"
+          :placeholder="$t('auth.signIn.emailPlaceholder')"
           size="lg"
           class="w-full"
         />
@@ -97,20 +101,20 @@ function useDemoAccount() {
       <!-- The reset link goes in `hint`, which UFormField already places
            opposite the label. Putting it inside `label` pushed the required
            marker onto its own line. -->
-      <UFormField label="Password" name="password" required>
+      <UFormField :label="$t('auth.signIn.password')" name="password" required>
         <template #hint>
           <NuxtLink
             to="/forgot-password"
             class="text-xs font-normal text-muted underline-offset-2 hover:text-primary hover:underline"
           >
-            Forgot your password?
+            {{ $t('auth.signIn.forgot') }}
           </NuxtLink>
         </template>
         <UInput
           v-model="state.password"
           :type="showPassword ? 'text' : 'password'"
           autocomplete="current-password"
-          placeholder="Enter your password"
+          :placeholder="$t('auth.signIn.passwordPlaceholder')"
           size="lg"
           class="w-full"
         >
@@ -120,7 +124,7 @@ function useDemoAccount() {
               variant="link"
               size="sm"
               :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-              :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              :aria-label="showPassword ? $t('common.hidePassword') : $t('common.showPassword')"
               :aria-pressed="showPassword"
               @click="showPassword = !showPassword"
             />
@@ -128,18 +132,18 @@ function useDemoAccount() {
         </UInput>
       </UFormField>
 
-      <UCheckbox v-model="state.remember" name="remember" label="Keep me signed in for 30 days" />
+      <UCheckbox v-model="state.remember" name="remember" :label="$t('auth.signIn.remember')" />
 
       <UButton
         type="submit"
-        label="Sign in"
+        :label="$t('auth.signIn.submit')"
         size="lg"
         block
         :loading="loading"
       />
     </UForm>
 
-    <USeparator label="or" class="my-6" />
+    <USeparator :label="$t('auth.signIn.or')" class="my-6" />
 
     <div class="grid gap-2 sm:grid-cols-2">
       <UButton
@@ -161,9 +165,10 @@ function useDemoAccount() {
         disabled
       />
     </div>
-    <p class="mt-2.5 text-center text-xs text-dimmed">
-      Social sign-in is wired up but disabled in the demo. See
-      <span class="font-mono">README.md</span> to connect a provider.
-    </p>
+    <i18n-t keypath="auth.signIn.socialNote" tag="p" class="mt-2.5 text-center text-xs text-dimmed" scope="global">
+      <template #file>
+        <span class="font-mono">README.md</span>
+      </template>
+    </i18n-t>
   </div>
 </template>

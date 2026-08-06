@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import type { MrrMovement } from '#shared/types'
-import { formatCurrency } from '#shared/format'
 
 definePageMeta({ layout: 'default' })
 
+const { t } = useI18n()
+const fmt = useFormat()
+
 useSeoMeta({
-  title: 'Revenue reporting for subscription businesses',
-  description: 'Cadence breaks every month of recurring revenue into new business, expansion, contraction and churn — reconciled to the account and the invoice.',
-  ogTitle: 'Cadence — know what moved your MRR',
-  ogDescription: 'New business, expansion, contraction, churn. Every month, traced to the account that caused it.'
+  title: () => t('app.description'),
+  description: () => t('marketing.hero.body'),
+  ogTitle: () => `${t('app.name')} — ${t('app.description')}`,
+  ogDescription: () => t('marketing.hero.body')
 })
 
 /**
  * Marketing figures are fixed on purpose. The hero is a claim about what the
- * product shows, so it should read identically to everyone.
+ * product shows, so it should read identically to everyone — only the wording
+ * and the number formatting follow the reader's language.
  */
 const heroMovement: MrrMovement = {
   starting: 52_400,
@@ -26,100 +29,59 @@ const heroMovement: MrrMovement = {
 
 const usedBy = ['Northwind Labs', 'Kestrel Systems', 'Halcyon Group', 'Solstice Digital', 'Inkwell Works']
 
-const capabilities = [
-  {
-    icon: 'i-lucide-git-compare-arrows',
-    title: 'Movement, not just totals',
-    body: 'A total tells you where you landed. Cadence shows the four forces that got you there, each one traceable down to the subscription that moved.'
-  },
-  {
-    icon: 'i-lucide-receipt-text',
-    title: 'Reconciled to invoices',
-    body: 'Every figure ties back to a settled invoice. When finance and growth disagree about MRR, there is a row to point at.'
-  },
-  {
-    icon: 'i-lucide-radar',
-    title: 'Retention by cohort',
-    body: 'Watch each signup cohort hold or decay month over month, so a good quarter for acquisition never hides a bad one for retention.'
-  },
-  {
-    icon: 'i-lucide-bell-ring',
-    title: 'Alerts worth acting on',
-    body: 'A failed payment on a $6,000 account and one on a $12 trial are not the same event. Cadence tells them apart before it tells you.'
-  }
-]
+const capabilities = computed(() => [
+  { icon: 'i-lucide-git-compare-arrows', title: t('marketing.capabilities.movementTitle'), body: t('marketing.capabilities.movementBody') },
+  { icon: 'i-lucide-receipt-text', title: t('marketing.capabilities.invoicesTitle'), body: t('marketing.capabilities.invoicesBody') },
+  { icon: 'i-lucide-radar', title: t('marketing.capabilities.cohortTitle'), body: t('marketing.capabilities.cohortBody') },
+  { icon: 'i-lucide-bell-ring', title: t('marketing.capabilities.alertsTitle'), body: t('marketing.capabilities.alertsBody') }
+])
 
 /** A real sequence, so the steps are numbered. */
-const steps = [
-  {
-    title: 'Connect your billing',
-    body: 'Point Cadence at Stripe, Chargebee, or your own subscriptions table. Historical invoices backfill in minutes.'
-  },
-  {
-    title: 'Confirm your definitions',
-    body: 'Decide what counts as expansion, when a trial becomes revenue, and how to treat annual prepayment. Cadence holds those rules for everyone.'
-  },
-  {
-    title: 'Report the same number',
-    body: 'Finance, growth and the board read from one dashboard. Month-end becomes a review, not a reconciliation.'
-  }
-]
+const steps = computed(() => [
+  { title: t('marketing.how.step1Title'), body: t('marketing.how.step1Body') },
+  { title: t('marketing.how.step2Title'), body: t('marketing.how.step2Body') },
+  { title: t('marketing.how.step3Title'), body: t('marketing.how.step3Body') }
+])
 
-const proof = [
-  { figure: '4 days', label: 'cut from month-end close at Northwind Labs' },
-  { figure: '106.4%', label: 'net revenue retention, visible daily instead of quarterly' },
-  { figure: '1 source', label: 'for every MRR figure across finance, growth and the board' }
-]
+const proof = computed(() => [
+  { figure: t('marketing.proof.stat1Figure'), label: t('marketing.proof.stat1Label') },
+  { figure: t('marketing.proof.stat2Figure'), label: t('marketing.proof.stat2Label') },
+  { figure: t('marketing.proof.stat3Figure'), label: t('marketing.proof.stat3Label') }
+])
 
-const tiers = [
+const tiers = computed(() => [
   {
-    name: 'Starter',
+    name: t('plans.starter'),
     price: 12,
-    tagline: 'For a founder who needs the number to be right.',
-    features: ['Up to 5 seats', 'MRR movement breakdown', '12 months of history', 'Weekly email digest'],
-    cta: 'Start free trial',
+    tagline: t('marketing.pricing.starterTagline'),
+    features: [1, 2, 3, 4].map(n => t(`marketing.pricing.starter${n}`)),
+    cta: t('marketing.startTrial'),
     featured: false
   },
   {
-    name: 'Growth',
+    name: t('plans.growth'),
     price: 29,
-    tagline: 'For a revenue team that reports every week.',
-    features: ['Up to 25 seats', 'Cohort retention', 'Unlimited history', 'Failed payment alerts', 'Slack delivery'],
-    cta: 'Start free trial',
+    tagline: t('marketing.pricing.growthTagline'),
+    features: [1, 2, 3, 4, 5].map(n => t(`marketing.pricing.growth${n}`)),
+    cta: t('marketing.startTrial'),
     featured: true
   },
   {
-    name: 'Scale',
+    name: t('plans.scale'),
     price: 64,
-    tagline: 'For finance teams who have to defend the figure.',
-    features: ['Unlimited seats', 'Invoice-level audit trail', 'Custom revenue rules', 'SSO and SCIM', 'Named support engineer'],
-    cta: 'Talk to sales',
+    tagline: t('marketing.pricing.scaleTagline'),
+    features: [1, 2, 3, 4, 5].map(n => t(`marketing.pricing.scale${n}`)),
+    cta: t('marketing.pricing.talkToSales'),
     featured: false
   }
-]
+])
 
-const faqs = [
-  {
-    label: 'Does Cadence replace our accounting system?',
-    content: 'No. Cadence reads from billing and reports on recurring revenue. Your ledger stays where it is — Cadence just stops the two from disagreeing.'
-  },
-  {
-    label: 'How long does setup take?',
-    content: 'Connecting a billing provider takes a few minutes and backfill runs on historical invoices. Agreeing your revenue definitions is the part that takes a conversation, and it is the part worth spending time on.'
-  },
-  {
-    label: 'What counts as expansion versus new business?',
-    content: 'You decide, once. Seat increases, plan upgrades and add-on purchases can each be classified as expansion or as new business, and the choice applies everywhere so two reports never disagree.'
-  },
-  {
-    label: 'Can we export the data?',
-    content: 'Every view exports to CSV, and the API returns the same figures the dashboard shows. Nothing is trapped behind the interface.'
-  },
-  {
-    label: 'Is there a free trial?',
-    content: 'Fourteen days on the Growth plan, no card required. If your billing data is not connected by the end of it, the trial extends.'
-  }
-]
+const faqs = computed(() =>
+  [1, 2, 3, 4, 5].map(n => ({
+    label: t(`marketing.faq.q${n}`),
+    content: t(`marketing.faq.a${n}`)
+  }))
+)
 </script>
 
 <template>
@@ -132,26 +94,24 @@ const faqs = [
         <div class="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16">
           <div>
             <p class="eyebrow rise text-primary" style="--stagger: 0">
-              Revenue operations
+              {{ $t('marketing.hero.eyebrow') }}
             </p>
 
             <h1
               class="rise mt-4 font-display text-display-sm font-semibold text-highlighted sm:text-display-md lg:text-display-lg"
               style="--stagger: 1"
             >
-              Your MRR moved. Cadence tells you which four things moved it.
+              {{ $t('marketing.hero.title') }}
             </h1>
 
             <p class="rise mt-5 max-w-xl text-base text-muted sm:text-lg" style="--stagger: 2">
-              New business, expansion, contraction, churn. Every month, reconciled to
-              the account and the invoice — so the number in your board deck is one
-              you can defend.
+              {{ $t('marketing.hero.body') }}
             </p>
 
             <div class="rise mt-8 flex flex-col gap-3 sm:flex-row" style="--stagger: 3">
               <UButton
                 to="/register"
-                label="Start free trial"
+                :label="$t('marketing.hero.primary')"
                 size="xl"
                 trailing-icon="i-lucide-arrow-right"
                 block
@@ -159,7 +119,7 @@ const faqs = [
               />
               <UButton
                 to="/login"
-                label="Open the live dashboard"
+                :label="$t('marketing.hero.secondary')"
                 size="xl"
                 color="neutral"
                 variant="subtle"
@@ -169,7 +129,7 @@ const faqs = [
             </div>
 
             <p class="rise mt-4 text-xs text-dimmed" style="--stagger: 4">
-              14 days on Growth. No card, no sales call.
+              {{ $t('marketing.hero.note') }}
             </p>
           </div>
 
@@ -180,15 +140,14 @@ const faqs = [
           >
             <MrrWaterfall :movement="heroMovement" variant="hero" />
             <p class="mt-6 border-t border-default pt-4 text-xs text-dimmed">
-              March 2026 · 148 subscriptions · reconciled against
-              {{ formatCurrency(heroMovement.ending) }} of settled invoices
+              {{ $t('marketing.hero.caption', { amount: fmt.currency(heroMovement.ending) }) }}
             </p>
           </div>
         </div>
 
         <div class="mt-14 border-t border-default pt-8 sm:mt-20">
           <p class="eyebrow text-dimmed">
-            Reporting on recurring revenue at
+            {{ $t('marketing.hero.usedBy') }}
           </p>
           <ul class="mt-4 flex flex-wrap gap-x-8 gap-y-3">
             <li v-for="name in usedBy" :key="name" class="font-mono text-sm text-muted">
@@ -206,10 +165,10 @@ const faqs = [
       <div class="mx-auto max-w-(--ui-container) px-4 sm:px-6 lg:px-8">
         <div class="max-w-2xl">
           <p class="eyebrow text-primary">
-            What you get
+            {{ $t('marketing.capabilities.eyebrow') }}
           </p>
           <h2 class="mt-3 font-display text-display-sm font-semibold text-highlighted sm:text-display-md">
-            Built for the meeting where the number gets questioned
+            {{ $t('marketing.capabilities.title') }}
           </h2>
         </div>
 
@@ -238,10 +197,10 @@ const faqs = [
       <div class="mx-auto max-w-(--ui-container) px-4 sm:px-6 lg:px-8">
         <div class="max-w-2xl">
           <p class="eyebrow text-primary">
-            How it works
+            {{ $t('marketing.how.eyebrow') }}
           </p>
           <h2 class="mt-3 font-display text-display-sm font-semibold text-highlighted sm:text-display-md">
-            Three steps, in this order
+            {{ $t('marketing.how.title') }}
           </h2>
         </div>
 
@@ -268,13 +227,11 @@ const faqs = [
       <div class="mx-auto max-w-(--ui-container) px-4 sm:px-6 lg:px-8">
         <figure class="mx-auto max-w-3xl text-center">
           <blockquote class="font-display text-2xl font-medium leading-tight tracking-tight text-highlighted sm:text-display-sm">
-            &ldquo;Month-end used to be three people rebuilding the same spreadsheet.
-            Now it is one dashboard and a fifteen-minute conversation about what to
-            do next.&rdquo;
+            &ldquo;{{ $t('marketing.proof.quote') }}&rdquo;
           </blockquote>
           <figcaption class="mt-6 text-sm text-muted">
-            <span class="font-medium text-highlighted">Hana Nakamura</span>
-            — VP Finance, Northwind Labs
+            <span class="font-medium text-highlighted">{{ $t('marketing.proof.author') }}</span>
+            — {{ $t('marketing.proof.role') }}
           </figcaption>
         </figure>
 
@@ -298,13 +255,13 @@ const faqs = [
       <div class="mx-auto max-w-(--ui-container) px-4 sm:px-6 lg:px-8">
         <div class="max-w-2xl">
           <p class="eyebrow text-primary">
-            Pricing
+            {{ $t('marketing.pricing.eyebrow') }}
           </p>
           <h2 class="mt-3 font-display text-display-sm font-semibold text-highlighted sm:text-display-md">
-            Priced per seat, billed monthly
+            {{ $t('marketing.pricing.title') }}
           </h2>
           <p class="mt-3 text-base text-muted">
-            Every plan reports on unlimited revenue. You pay for the people reading it.
+            {{ $t('marketing.pricing.body') }}
           </p>
         </div>
 
@@ -321,7 +278,7 @@ const faqs = [
               <h3 class="text-base font-semibold text-highlighted">
                 {{ tier.name }}
               </h3>
-              <UBadge v-if="tier.featured" label="Most chosen" variant="subtle" size="sm" />
+              <UBadge v-if="tier.featured" :label="$t('marketing.pricing.mostChosen')" variant="subtle" size="sm" />
             </div>
 
             <!-- Fixed height for a one- or two-line tagline, so the price and
@@ -330,9 +287,11 @@ const faqs = [
               {{ tier.tagline }}
             </p>
 
-            <p class="mt-5 flex items-baseline gap-1.5">
-              <span class="tnum-display text-display-sm font-semibold text-highlighted">${{ tier.price }}</span>
-              <span class="text-sm text-dimmed">per seat / month</span>
+            <p class="mt-5 flex flex-wrap items-baseline gap-x-1.5">
+              <span class="tnum-display text-display-sm font-semibold text-highlighted">
+                {{ fmt.currency(tier.price) }}
+              </span>
+              <span class="text-sm text-dimmed">{{ $t('marketing.pricing.perSeat') }}</span>
             </p>
 
             <ul class="mt-6 flex-1 space-y-2.5">
@@ -343,7 +302,7 @@ const faqs = [
             </ul>
 
             <UButton
-              :to="tier.cta === 'Talk to sales' ? '#faq' : '/register'"
+              :to="tier.featured || tier.cta === $t('marketing.startTrial') ? '/register' : '#faq'"
               :label="tier.cta"
               :variant="tier.featured ? 'solid' : 'subtle'"
               :color="tier.featured ? 'primary' : 'neutral'"
@@ -366,10 +325,10 @@ const faqs = [
                scrolls away leaves a tall empty column beside it. -->
           <div class="lg:sticky lg:top-24 lg:self-start">
             <p class="eyebrow text-primary">
-              Questions
+              {{ $t('marketing.faq.eyebrow') }}
             </p>
             <h2 class="mt-3 font-display text-display-sm font-semibold text-highlighted">
-              Before you start
+              {{ $t('marketing.faq.title') }}
             </h2>
           </div>
 
@@ -385,16 +344,15 @@ const faqs = [
       <div class="mx-auto max-w-(--ui-container) px-4 sm:px-6 lg:px-8">
         <div class="panel-ink rounded-[calc(var(--ui-radius)*2)] px-6 py-12 text-center sm:px-12 sm:py-16">
           <h2 class="mx-auto max-w-2xl font-display text-display-sm font-semibold text-white sm:text-display-md">
-            Find out what actually moved last month
+            {{ $t('marketing.cta.title') }}
           </h2>
           <p class="mx-auto mt-4 max-w-xl text-base text-slate-300">
-            Connect billing, agree your definitions, and stop rebuilding the
-            spreadsheet.
+            {{ $t('marketing.cta.body') }}
           </p>
           <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <UButton
               to="/register"
-              label="Start free trial"
+              :label="$t('marketing.hero.primary')"
               size="xl"
               block
               class="sm:w-auto"
@@ -403,7 +361,7 @@ const faqs = [
                  against the panel rather than against the page. -->
             <UButton
               to="/login"
-              label="Open the live dashboard"
+              :label="$t('marketing.hero.secondary')"
               size="xl"
               color="neutral"
               variant="ghost"

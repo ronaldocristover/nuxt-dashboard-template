@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { CalendarDate, Time } from '@internationalized/date'
-import { formatCurrency, formatNumber } from '#shared/format'
+
+const fmt = useFormat()
 
 const seats = ref(18)
 const threshold = ref(1200)
@@ -42,13 +43,13 @@ const digestAt = shallowRef(new Time(9, 0))
           <div>
             <USlider v-model="seats" :min="1" :max="100" />
             <p class="tnum mt-2.5 text-xs text-muted">
-              {{ formatNumber(seats) }} seats
+              {{ fmt.number(seats) }} seats
             </p>
           </div>
           <div>
             <USlider v-model="band" :min="0" :max="6000" :step="100" />
             <p class="tnum mt-2.5 text-xs text-muted">
-              {{ formatCurrency(band[0] ?? 0) }} – {{ formatCurrency(band[1] ?? 0) }} MRR
+              {{ fmt.currency(band[0] ?? 0) }} – {{ fmt.currency(band[1] ?? 0) }} MRR
             </p>
           </div>
         </div>

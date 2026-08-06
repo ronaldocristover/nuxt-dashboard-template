@@ -1,38 +1,43 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
 import type { TeamMember } from '#shared/types'
-import { inviteSchema, type InviteInput } from '#shared/schemas'
+import { createInviteSchema, type InviteInput } from '#shared/schemas'
 import { initials } from '#shared/format'
 
+const { t } = useI18n()
+const fmt = useFormat()
 const { notify, notifySuccess } = useApiError()
 
 const { data, status, refresh } = await useApiFetch<{ members: TeamMember[] }>('/api/settings/members')
 
 const members = computed(() => data.value?.members ?? [])
 
+/** Relative times are measured from the moment the page rendered. */
+const renderedAt = new Date().toISOString()
+
+const schema = computed(() => createInviteSchema(t))
+
 const inviteOpen = ref(false)
 const inviting = ref(false)
 
 const state = reactive({ email: '', role: 'member' as 'admin' | 'member' })
 
-const ROLES = [
-  { label: 'Member — can read every report', value: 'member' },
-  { label: 'Admin — can also manage the team and billing', value: 'admin' }
-]
-
-const ROLE_LABELS = { owner: 'Owner', admin: 'Admin', member: 'Member' } as const
+const ROLES = computed(() => [
+  { label: t('settings.members.roleMember'), value: 'member' },
+  { label: t('settings.members.roleAdmin'), value: 'admin' }
+])
 
 async function onInvite(event: FormSubmitEvent<InviteInput>) {
   inviting.value = true
   try {
     await $fetch('/api/settings/members', { method: 'POST', body: event.data })
     await refresh()
-    notifySuccess('Invitation sent', `${event.data.email} can now join the workspace.`)
+    notifySuccess(t('settings.members.sent'), t('settings.members.sentBody', { email: event.data.email }))
     inviteOpen.value = false
     state.email = ''
     state.role = 'member'
   } catch (error) {
-    notify(error, 'Could not send the invitation')
+    notify(error, t('settings.members.sendFailed'))
   } finally {
     inviting.value = false
   }
@@ -45,9 +50,9 @@ async function onRemove(member: TeamMember) {
   try {
     await $fetch(`/api/settings/members/${member.id}`, { method: 'DELETE' })
     await refresh()
-    notifySuccess('Member removed', `${member.name} no longer has access.`)
+    notifySuccess(t('settings.members.removed'), t('settings.members.removedBody', { name: member.name }))
   } catch (error) {
-    notify(error, 'Could not remove that member')
+    notify(error, t('settings.members.removeFailed'))
   } finally {
     removing.value = null
   }
@@ -56,8 +61,8 @@ async function onRemove(member: TeamMember) {
 
 <template>
   <PanelSection
-    title="Team"
-    description="Everyone who can read this workspace. Owners and admins can invite others."
+    :title="$t('settings.members.title')"
+    :description="$t('settings.members.description')"
   >
     <template #default>
       <div v-if="status === 'pending'" class="space-y-3">
@@ -81,12 +86,13 @@ async function onRemove(member: TeamMember) {
               {{ member.name }}
             </p>
             <p class="truncate text-xs text-muted">
-              {{ member.email }} · {{ member.lastSeenLabel }}
+              {{ member.email }} ·
+              {{ member.lastSeenAt ? fmt.relative(member.lastSeenAt, renderedAt) : $t('status.inviteSent') }}
             </p>
           </div>
 
           <UBadge
-            :label="ROLE_LABELS[member.role]"
+            :label="$t(`roles.${member.role}`)"
             :color="member.role === 'owner' ? 'primary' : 'neutral'"
             variant="subtle"
             size="sm"
@@ -95,7 +101,7 @@ async function onRemove(member: TeamMember) {
 
           <UBadge
             v-if="member.status === 'invited'"
-            label="Pending"
+            :label="$t('status.pending')"
             color="warning"
             variant="subtle"
             size="sm"
@@ -111,7 +117,7 @@ async function onRemove(member: TeamMember) {
             variant="ghost"
             size="sm"
             :loading="removing === member.id"
-            :aria-label="`Remove ${member.name}`"
+            :aria-label="$t('settings.members.removeLabel', { name: member.name })"
             @click="onRemove(member)"
           />
           <span v-else class="w-8 shrink-0" />
@@ -121,33 +127,33 @@ async function onRemove(member: TeamMember) {
 
     <template #footer>
       <UButton
-        label="Invite a teammate"
+        :label="$t('settings.members.invite')"
         icon="i-lucide-user-plus"
         @click="inviteOpen = true"
       />
     </template>
   </PanelSection>
 
-  <UModal v-model:open="inviteOpen" title="Invite a teammate">
+  <UModal v-model:open="inviteOpen" :title="$t('settings.members.invite')">
     <template #body>
       <UForm
         id="invite-form"
-        :schema="inviteSchema"
+        :schema="schema"
         :state="state"
         class="space-y-4"
         @submit="onInvite"
       >
-        <UFormField label="Email address" name="email" required>
+        <UFormField :label="$t('settings.members.inviteEmail')" name="email" required>
           <UInput
             v-model="state.email"
             type="email"
-            placeholder="teammate@company.com"
+            :placeholder="$t('settings.members.invitePlaceholder')"
             class="w-full"
             autofocus
           />
         </UFormField>
 
-        <UFormField label="Role" name="role" required>
+        <UFormField :label="$t('settings.members.inviteRole')" name="role" required>
           <USelect v-model="state.role" :items="ROLES" class="w-full" />
         </UFormField>
       </UForm>
@@ -155,8 +161,8 @@ async function onRemove(member: TeamMember) {
 
     <template #footer>
       <div class="flex w-full justify-end gap-2">
-        <UButton label="Cancel" color="neutral" variant="ghost" @click="inviteOpen = false" />
-        <UButton type="submit" form="invite-form" label="Send invitation" :loading="inviting" />
+        <UButton :label="$t('common.cancel')" color="neutral" variant="ghost" @click="inviteOpen = false" />
+        <UButton type="submit" form="invite-form" :label="$t('settings.members.send')" :loading="inviting" />
       </div>
     </template>
   </UModal>

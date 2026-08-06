@@ -1,0 +1,593 @@
+{
+  "app": {
+    "name": "Cadence",
+    "description": "面向订阅制业务的收入报表"
+  },
+  "language": {
+    "label": "语言",
+    "change": "切换语言"
+  },
+  "common": {
+    "save": "保存更改",
+    "cancel": "取消",
+    "close": "关闭",
+    "confirm": "确认",
+    "delete": "删除",
+    "remove": "移除",
+    "edit": "编辑",
+    "refresh": "刷新",
+    "retry": "重试",
+    "search": "搜索",
+    "clear": "清除",
+    "loading": "加载中",
+    "optional": "可选",
+    "required": "必填",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "menu": "菜单",
+    "openMenu": "打开菜单",
+    "vsPrevious": "较上一周期",
+    "of": "共",
+    "copy": "复制",
+    "copied": "已复制"
+  },
+  "nav": {
+    "overview": "概览",
+    "analytics": "分析",
+    "subscribers": "订阅客户",
+    "forms": "表单",
+    "layouts": "布局",
+    "settings": "设置",
+    "backToSite": "返回官网",
+    "documentation": "文档",
+    "product": "产品",
+    "howItWorks": "运作方式",
+    "pricing": "定价",
+    "faq": "常见问题",
+    "main": "主导航",
+    "mobile": "移动导航"
+  },
+  "account": {
+    "menu": "{name} 的账户菜单",
+    "profile": "个人资料",
+    "notifications": "通知",
+    "billing": "账单",
+    "lightTheme": "浅色主题",
+    "darkTheme": "深色主题",
+    "signOut": "退出登录",
+    "signOutFailed": "退出失败"
+  },
+  "auth": {
+    "signIn": {
+      "title": "登录 Cadence",
+      "newHere": "第一次使用？",
+      "createAccount": "创建账户",
+      "email": "电子邮箱",
+      "emailPlaceholder": "you{'@'}company.com",
+      "password": "密码",
+      "passwordPlaceholder": "请输入密码",
+      "forgot": "忘记密码？",
+      "remember": "30 天内保持登录",
+      "submit": "登录",
+      "failed": "无法登录",
+      "or": "或",
+      "socialNote": "第三方登录已接入，但在演示中已禁用。请参阅 {file} 以连接服务商。",
+      "demoTitle": "演示工作区",
+      "demoFill": "填入演示账号"
+    },
+    "signUp": {
+      "title": "创建你的账户",
+      "haveAccount": "已经有账户？",
+      "signIn": "登录",
+      "name": "姓名",
+      "namePlaceholder": "张伟",
+      "email": "工作邮箱",
+      "password": "密码",
+      "passwordPlaceholder": "至少 8 个字符",
+      "terms": "我同意{terms}和{privacy}。",
+      "termsLink": "服务条款",
+      "privacyLink": "隐私政策",
+      "submit": "创建账户",
+      "trialNote": "Growth 方案 14 天试用，无需信用卡。",
+      "created": "账户已创建",
+      "createdBody": "你的 14 天 Growth 试用已开始。",
+      "failed": "无法创建账户"
+    },
+    "forgot": {
+      "back": "返回登录",
+      "title": "重置密码",
+      "body": "输入账户绑定的邮箱，我们会发送设置新密码的链接。",
+      "submit": "发送重置链接",
+      "failed": "重置链接发送失败",
+      "sentTitle": "请查收邮件",
+      "sentBody": "如果 {email} 已注册，重置链接正在发送中。链接仅可使用一次，30 分钟后失效。",
+      "devTitle": "仅限开发环境",
+      "devBody": "尚未配置邮件服务商，因此链接直接显示在这里。",
+      "devOpen": "打开重置链接",
+      "useAnother": "换一个邮箱"
+    },
+    "reset": {
+      "title": "设置新密码",
+      "body": "请选择一个你在 Cadence 未使用过的密码。其他会话将被登出。",
+      "newPassword": "新密码",
+      "confirmPassword": "确认新密码",
+      "confirmPlaceholder": "再输入一次",
+      "submit": "更新密码",
+      "updated": "密码已更新",
+      "updatedBody": "请使用新密码登录。",
+      "failed": "无法更新密码",
+      "brokenTitle": "该链接不完整",
+      "brokenBody": "重置链接 30 分钟后失效且仅可使用一次。请重新申请，并直接从邮箱打开。",
+      "requestNew": "重新申请链接"
+    },
+    "strength": {
+      "0": "过短",
+      "1": "较弱",
+      "2": "一般",
+      "3": "良好",
+      "4": "很强",
+      "hint": "请混合大小写字母、数字和符号。"
+    },
+    "panel": {
+      "eyebrow": "收入运营",
+      "quote": "我们不再争论 MRR 这个数字，而是开始讨论下一步该做什么。",
+      "author": "Hana Nakamura",
+      "role": "财务副总裁，Northwind Labs",
+      "point1": "每一笔 MRR 变动都能追溯到引发它的客户",
+      "point2": "随发票结清而更新的同期群留存",
+      "point3": "付款失败当小时告警，而不是隔周才知道",
+      "privacy": "隐私",
+      "terms": "条款"
+    }
+  },
+  "validation": {
+    "email": {
+      "required": "请输入电子邮箱",
+      "invalid": "这看起来不是有效的邮箱地址"
+    },
+    "password": {
+      "required": "请输入密码",
+      "currentRequired": "请输入当前密码",
+      "confirmRequired": "请确认新密码",
+      "tooShort": "至少需要 8 个字符",
+      "tooLong": "请少于 128 个字符",
+      "lowercase": "需包含小写字母",
+      "uppercase": "需包含大写字母",
+      "number": "需包含数字",
+      "mismatch": "两次输入的密码必须一致"
+    },
+    "name": {
+      "required": "请输入你的姓名",
+      "tooLong": "请少于 80 个字符"
+    },
+    "terms": "请先同意条款",
+    "token": {
+      "missing": "该重置链接缺少令牌"
+    },
+    "timezone": "请选择时区"
+  },
+  "errors": {
+    "expired": "登录状态已过期，请重新登录。",
+    "forbidden": "你没有访问权限。",
+    "notFound": "找不到你要的内容。",
+    "rateLimited": "尝试次数过多，请稍候再试。",
+    "server": "我们这边出了点问题，请稍后再试。",
+    "generic": "请求未成功。请检查网络后重试。",
+    "toastTitle": "操作未成功",
+    "page404Title": "该页面不存在",
+    "page404Body": "链接可能已过期，或页面已迁移。仪表盘和首页都还在原处。",
+    "page403Title": "你无权访问此页面",
+    "page403Body": "你的账户已登录，但没有查看此页面的权限。工作区管理员可以为你开通。",
+    "page500Title": "页面加载失败",
+    "page500Body": "请求已到达但未完成。重试通常有效；如果仍然失败，状态页会说明原因。",
+    "backToDashboard": "返回仪表盘",
+    "backHome": "返回首页",
+    "technical": "技术详情"
+  },
+  "plans": {
+    "starter": "Starter",
+    "growth": "Growth",
+    "scale": "Scale"
+  },
+  "status": {
+    "active": "有效",
+    "trialing": "试用中",
+    "past_due": "逾期",
+    "churned": "已流失",
+    "paid": "已付款",
+    "open": "待付款",
+    "failed": "失败",
+    "current": "当前",
+    "pending": "待处理",
+    "inviteSent": "邀请已发送"
+  },
+  "roles": {
+    "owner": "所有者",
+    "admin": "管理员",
+    "member": "成员"
+  },
+  "metrics": {
+    "mrr": {
+      "label": "月度经常性收入",
+      "hint": "本月结束时的确认收入。"
+    },
+    "subscribers": {
+      "label": "活跃订阅客户",
+      "hint": "付费方案或试用中的客户。"
+    },
+    "nrr": {
+      "label": "净收入留存率",
+      "hint": "扩张收入减去缩减与流失，与上月相比。"
+    },
+    "churn": {
+      "label": "收入流失率",
+      "hint": "期初 MRR 中因取消而损失的比例。"
+    },
+    "revenue": {
+      "label": "收入",
+      "hint": "所选时间范围内已收取的收入。"
+    },
+    "signups": {
+      "label": "新注册",
+      "hint": "所选时间范围内创建的账户。"
+    },
+    "conversion": {
+      "label": "试用转化率",
+      "hint": "转为付费订阅的试用客户。"
+    },
+    "churnedAccounts": {
+      "label": "流失账户",
+      "hint": "所选时间范围内取消的订阅。"
+    }
+  },
+  "waterfall": {
+    "eyebrow": "本月净新增 MRR",
+    "opening": "期初",
+    "closing": "期末",
+    "new": "新增业务",
+    "expansion": "扩张",
+    "contraction": "缩减",
+    "churn": "流失",
+    "aria": "变动明细：新增业务 {new}，扩张 {expansion}，缩减 {contraction}，流失 {churn}。"
+  },
+  "overview": {
+    "greeting": "欢迎回来，{name}",
+    "subtitle": "这是本月经常性收入的情况。",
+    "refresh": "刷新数据",
+    "refreshFailed": "刷新失败",
+    "loadFailed": "无法加载这些数据",
+    "loadFailedBody": "请求未完成，请重试。",
+    "mrrChart": "月度经常性收入",
+    "mrrChartSub": "期末余额，近 12 个月",
+    "invoices": "最近发票",
+    "paymentFailed": "付款失败"
+  },
+  "activity": {
+    "title": "动态",
+    "allSubscribers": "全部订阅客户",
+    "emptyTitle": "暂无动态",
+    "emptyBody": "注册、升级和取消发生时会显示在这里。",
+    "signup": "{company} 开始了 Growth 试用",
+    "upgrade": "{company} 升级到 {plan}",
+    "downgrade": "{company} 降级到 {plan}",
+    "churn": "{company} 取消了订阅",
+    "payment": "收到来自 {company} 的付款",
+    "invite": "{company} 邀请了 3 位同事"
+  },
+  "analytics": {
+    "title": "分析",
+    "range": "时间范围",
+    "ranges": {
+      "7d": {
+        "short": "7天",
+        "full": "最近 7 天"
+      },
+      "30d": {
+        "short": "30天",
+        "full": "最近 30 天"
+      },
+      "90d": {
+        "short": "90天",
+        "full": "最近 90 天"
+      },
+      "12m": {
+        "short": "12月",
+        "full": "最近 12 个月"
+      }
+    },
+    "loadFailed": "无法加载分析数据",
+    "loadFailedBody": "请求未完成。",
+    "revenue": "收入",
+    "chartHint": "将鼠标悬停在图表上，或聚焦后使用方向键，即可查看各数据点。",
+    "signupsTitle": "注册与取消对比",
+    "signupsSub": "各周期新增与流失的账户",
+    "signupsLegend": "注册",
+    "cancelledLegend": "取消",
+    "planMix": "方案构成",
+    "planMixSub": "各方案的 MRR 占比",
+    "totalMrr": "MRR 总额",
+    "shareOfMix": "占方案构成的 {percent}",
+    "channelsTitle": "注册来源",
+    "retentionTitle": "同期群留存",
+    "retentionSub": "注册同期群中仍在订阅的比例",
+    "totalAcrossPlans": "全部方案的 MRR 总额："
+  },
+  "channels": {
+    "organic": "自然搜索",
+    "direct": "直接访问",
+    "referral": "产品推荐",
+    "partner": "合作伙伴目录",
+    "paidSocial": "社交广告"
+  },
+  "charts": {
+    "week": "第{n}周",
+    "cohortMonth": "第{n}月",
+    "noData": "暂无数据",
+    "lineSummary": "折线图，共 {count} 个数据点，从 {first} 的 {firstValue} 到 {last} 的 {lastValue}。",
+    "barSummary": "分组柱状图，比较 {count} 个周期内的{primary}与{secondary}。",
+    "donutSummary": "环形图，{count} 个方案共计 {total}。"
+  },
+  "subscribers": {
+    "title": "订阅客户",
+    "accounts": "客户数",
+    "combinedMrr": "MRR 合计",
+    "seats": "席位",
+    "searchPlaceholder": "搜索客户、联系人或邮箱",
+    "clearSearch": "清除搜索",
+    "allPlans": "全部方案",
+    "allStatuses": "全部状态",
+    "filterPlan": "按方案筛选",
+    "filterStatus": "按状态筛选",
+    "clearFilters": "清除",
+    "refresh": "刷新列表",
+    "selectedOnPage": "本页已选 {count} 项",
+    "exportCsv": "导出 CSV",
+    "clearSelection": "取消选择",
+    "exportReady": "导出完成",
+    "exportBody": "已下载 {count} 行 CSV。",
+    "exportBodyOne": "已下载 1 行 CSV。",
+    "loadFailed": "无法加载订阅客户",
+    "loadFailedBody": "请求未完成。",
+    "columnAccount": "客户",
+    "columnContact": "联系人",
+    "columnMrr": "MRR",
+    "columnSeats": "席位",
+    "columnStatus": "状态",
+    "selectAll": "选择本页所有行",
+    "selectRow": "选择 {name}",
+    "openDetails": "打开 {name} 的详情",
+    "openDetailsLabel": "打开详情",
+    "seenAt": "活跃于{when}",
+    "emptyFiltered": "没有符合筛选条件的订阅客户",
+    "emptyFilteredBody": "试试更宽泛的搜索，或清除筛选查看全部。",
+    "empty": "还没有订阅客户",
+    "emptyBody": "连接你的计费服务商后，客户会显示在这里。",
+    "showing": "显示第 {from}–{to} 项，共 {total} 项",
+    "rowsPerPage": "每页行数",
+    "detail": {
+      "title": "订阅客户",
+      "plan": "方案",
+      "mrr": "月度经常性收入",
+      "seats": "席位",
+      "country": "国家/地区",
+      "since": "订阅起始",
+      "lastSeen": "最近活跃",
+      "email": "给该客户发邮件",
+      "billing": "查看账单历史",
+      "billingNote": "账单历史在演示中只是占位。请在 {path} 中接入你的计费服务商。"
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "tabs": {
+      "profile": "个人资料",
+      "account": "账户",
+      "notifications": "通知",
+      "billing": "账单",
+      "members": "团队"
+    },
+    "profile": {
+      "title": "个人资料",
+      "description": "你的名字如何呈现给同事，以及 Cadence 将发给你的内容送到哪里。",
+      "change": "更换",
+      "name": "姓名",
+      "email": "电子邮箱",
+      "jobTitle": "职位",
+      "jobPlaceholder": "收入运营负责人",
+      "company": "公司",
+      "companyPlaceholder": "Northwind Labs",
+      "timezone": "时区",
+      "timezoneHelp": "报表周期与摘要投递时间均按此时区。",
+      "saved": "资料已保存",
+      "failed": "无法保存你的资料"
+    },
+    "account": {
+      "passwordTitle": "密码",
+      "passwordDescription": "至少 8 个字符，需包含大小写字母和数字。",
+      "current": "当前密码",
+      "new": "新密码",
+      "confirm": "确认新密码",
+      "submit": "更新密码",
+      "updated": "密码已更新",
+      "updatedBody": "下次登录时请使用新密码。",
+      "failed": "无法更新密码",
+      "sessionsTitle": "会话",
+      "sessionsDescription": "你的账户当前的登录位置。",
+      "thisBrowser": "当前浏览器",
+      "signedInNow": "现已登录 · 账户创建于 {date}",
+      "dangerTitle": "删除此账户",
+      "dangerDescription": "将删除你的账户、工作区及其中所有报表。导出内容不会保留，且无法撤销。",
+      "deleteButton": "删除账户",
+      "deleteBody": "此操作会删除你的账户及工作区内所有报表。请输入 {word} 以确认。",
+      "deleteConfirmLabel": "输入 delete 以确认",
+      "keepAccount": "保留我的账户",
+      "deleteDisabled": "演示环境已禁用账户删除。上线前请接入你自己的接口。",
+      "deleteDisabledTitle": "演示中不可用"
+    },
+    "notifications": {
+      "title": "通知",
+      "description": "选择 Cadence 通知你的内容，以及通知送达的方式。",
+      "paymentFailures": "付款失败",
+      "paymentFailuresBody": "扣款失败的第一时间通知，含相关客户与风险金额。",
+      "churnAlerts": "取消订阅",
+      "churnAlertsBody": "订阅被取消时通知，包含其价值。",
+      "newSignups": "新注册",
+      "newSignupsBody": "每个新账户。希望清静的团队可以关闭，改看摘要。",
+      "weeklyDigest": "每周摘要",
+      "weeklyDigestBody": "周一上午汇总上周变动，按你的时区发送。",
+      "productUpdates": "产品更新",
+      "productUpdatesBody": "偶尔告知 Cadence 有哪些变化。",
+      "whereTitle": "发送到哪里",
+      "channelLabel": "投递渠道",
+      "email": "仅邮件",
+      "slack": "仅 Slack",
+      "both": "邮件和 Slack",
+      "saved": "通知设置已保存",
+      "failed": "无法保存通知设置"
+    },
+    "billing": {
+      "planTitle": "方案",
+      "planDescription": "你正在使用 Growth 方案，按实际使用席位每月计费。",
+      "perMonth": "每月 {amount} · 于 {date} 续费",
+      "changePlan": "更换方案",
+      "cancel": "取消订阅",
+      "seatsInUse": "已用席位",
+      "seatsCount": "{used} / {total}",
+      "seatNote": "每增加一个席位，下期发票增加 {amount}，按比例计算。",
+      "paymentTitle": "支付方式",
+      "paymentDescription": "每月 1 日扣款。",
+      "expires": "有效期至 {date}",
+      "updateCard": "更新银行卡",
+      "historyTitle": "发票历史",
+      "historyDescription": "本工作区的全部发票，最新在前。",
+      "download": "下载发票 {number}"
+    },
+    "members": {
+      "title": "团队",
+      "description": "可以查看此工作区的所有人。所有者和管理员可以邀请他人。",
+      "invite": "邀请同事",
+      "inviteEmail": "电子邮箱",
+      "invitePlaceholder": "teammate{'@'}company.com",
+      "inviteRole": "角色",
+      "roleMember": "成员 — 可查看所有报表",
+      "roleAdmin": "管理员 — 还可管理团队与账单",
+      "send": "发送邀请",
+      "sent": "邀请已发送",
+      "sentBody": "{email} 现在可以加入此工作区。",
+      "sendFailed": "无法发送邀请",
+      "removeLabel": "移除 {name}",
+      "removed": "成员已移除",
+      "removedBody": "{name} 已无访问权限。",
+      "removeFailed": "无法移除该成员"
+    }
+  },
+  "marketing": {
+    "signIn": "登录",
+    "startTrial": "免费试用",
+    "openDashboard": "打开仪表盘",
+    "hero": {
+      "eyebrow": "收入运营",
+      "title": "你的 MRR 变了。Cadence 告诉你是哪四件事让它变的。",
+      "body": "新增业务、扩张、缩减、流失。每个月都与客户和发票逐笔对账——让董事会材料上的数字，是你守得住的数字。",
+      "primary": "免费试用",
+      "secondary": "打开在线仪表盘",
+      "note": "Growth 方案 14 天。无需信用卡，无需销售电话。",
+      "caption": "2026 年 3 月 · 148 个订阅 · 已与 {amount} 的已结清发票对账",
+      "usedBy": "以下团队正在用它管理经常性收入"
+    },
+    "capabilities": {
+      "eyebrow": "你会得到什么",
+      "title": "为数字被质疑的那场会议而生",
+      "movementTitle": "看变动，而不只是总额",
+      "movementBody": "总额只告诉你落在哪里。Cadence 展示把你带到那里的四股力量，每一股都能追溯到具体变动的那笔订阅。",
+      "invoicesTitle": "与发票逐笔对账",
+      "invoicesBody": "每个数字都能回溯到一张已结清的发票。当财务和增长团队对 MRR 有分歧时，总有一行可以指着看。",
+      "cohortTitle": "按同期群看留存",
+      "cohortBody": "逐月观察每个注册同期群是稳住还是衰减，让获客亮眼的一个季度无法掩盖留存糟糕的事实。",
+      "alertsTitle": "值得处理的告警",
+      "alertsBody": "6,000 美元账户的扣款失败，和 12 美元试用的扣款失败不是一回事。Cadence 会先分清，再通知你。"
+    },
+    "how": {
+      "eyebrow": "运作方式",
+      "title": "三个步骤，按此顺序",
+      "step1Title": "连接你的计费系统",
+      "step1Body": "把 Cadence 指向 Stripe、Chargebee，或你自己的订阅表。历史发票几分钟内完成回填。",
+      "step2Title": "确认你的口径",
+      "step2Body": "决定什么算扩张、试用何时计入收入、年度预付如何处理。Cadence 为所有人守住这些规则。",
+      "step3Title": "报同一个数字",
+      "step3Body": "财务、增长和董事会读同一个仪表盘。月末从对账变成复盘。"
+    },
+    "proof": {
+      "quote": "过去月末结账要三个人重建同一张表格。现在只需一个仪表盘，加上十五分钟讨论下一步做什么。",
+      "author": "Hana Nakamura",
+      "role": "财务副总裁，Northwind Labs",
+      "stat1Figure": "4 天",
+      "stat1Label": "Northwind Labs 月末结账缩短的时间",
+      "stat2Figure": "106.4%",
+      "stat2Label": "净收入留存率，每天可见而非每季度",
+      "stat3Figure": "1 个来源",
+      "stat3Label": "财务、增长与董事会的每个 MRR 数字都出自同一处"
+    },
+    "pricing": {
+      "eyebrow": "定价",
+      "title": "按席位计价，按月结算",
+      "body": "所有方案都不限收入规模。你只为阅读它的人付费。",
+      "perSeat": "每席位 / 每月",
+      "mostChosen": "最多人选",
+      "talkToSales": "联系销售",
+      "starterTagline": "适合需要数字准确的创始人。",
+      "growthTagline": "适合每周汇报的收入团队。",
+      "scaleTagline": "适合必须守住数字的财务团队。",
+      "starter1": "最多 5 个席位",
+      "starter2": "MRR 变动明细",
+      "starter3": "12 个月历史数据",
+      "starter4": "每周邮件摘要",
+      "growth1": "最多 25 个席位",
+      "growth2": "同期群留存",
+      "growth3": "不限历史数据",
+      "growth4": "付款失败告警",
+      "growth5": "Slack 投递",
+      "scale1": "不限席位",
+      "scale2": "发票级审计轨迹",
+      "scale3": "自定义收入规则",
+      "scale4": "SSO 与 SCIM",
+      "scale5": "专属支持工程师"
+    },
+    "faq": {
+      "eyebrow": "常见问题",
+      "title": "开始之前",
+      "q1": "Cadence 会取代我们的会计系统吗？",
+      "a1": "不会。Cadence 从计费系统读取数据并报告经常性收入。你的总账依然在原处——Cadence 只是让两者不再互相矛盾。",
+      "q2": "配置需要多久？",
+      "a2": "连接计费服务商只需几分钟，历史发票会自动回填。真正需要花时间的是就收入口径达成一致，而那也正是值得花时间的部分。",
+      "q3": "扩张和新增业务怎么区分？",
+      "a3": "由你决定一次即可。席位增加、方案升级和附加购买都可以分别归类为扩张或新增业务，且该选择全局生效，两份报表不会再出现分歧。",
+      "q4": "数据可以导出吗？",
+      "a4": "每个视图都能导出为 CSV，API 返回的数字与仪表盘完全一致。没有任何数据被锁在界面背后。",
+      "q5": "有免费试用吗？",
+      "a5": "Growth 方案十四天，无需信用卡。如果到期时你的计费数据仍未接入，试用会自动延长。"
+    },
+    "cta": {
+      "title": "看清上个月究竟是什么在变",
+      "body": "连接计费系统，确认你的口径，从此不必再重建表格。"
+    },
+    "footer": {
+      "blurb": "面向订阅制业务的收入报表。知道什么在变，以及为什么。",
+      "product": "产品",
+      "company": "公司",
+      "resources": "资源",
+      "overview": "概览",
+      "changelog": "更新日志",
+      "about": "关于我们",
+      "customers": "客户案例",
+      "careers": "招聘",
+      "contact": "联系我们",
+      "docs": "文档",
+      "api": "API 参考",
+      "statusPage": "服务状态",
+      "security": "安全",
+      "rights": "© {year} Cadence，一个 Nuxt 仪表盘模板。",
+      "builtWith": "由 Nuxt 4、Nuxt UI 与 Tailwind CSS 构建"
+    }
+  }
+}

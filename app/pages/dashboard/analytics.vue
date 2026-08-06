@@ -1,23 +1,19 @@
 <script setup lang="ts">
 import type { AnalyticsResponse, RangeKey } from '#shared/types'
-import { formatCurrency, formatNumber, formatPercent } from '#shared/format'
 
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-useSeoMeta({ title: 'Analytics', robots: 'noindex' })
-
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const fmt = useFormat()
 
-const RANGES: Array<{ value: RangeKey, label: string, full: string }> = [
-  { value: '7d', label: '7D', full: 'Last 7 days' },
-  { value: '30d', label: '30D', full: 'Last 30 days' },
-  { value: '90d', label: '90D', full: 'Last 90 days' },
-  { value: '12m', label: '12M', full: 'Last 12 months' }
-]
+useSeoMeta({ title: () => t('analytics.title'), robots: 'noindex' })
+
+const RANGE_KEYS: RangeKey[] = ['7d', '30d', '90d', '12m']
 
 function parseRange(value: unknown): RangeKey {
-  return RANGES.some(range => range.value === value) ? (value as RangeKey) : '30d'
+  return RANGE_KEYS.includes(value as RangeKey) ? (value as RangeKey) : '30d'
 }
 
 const range = ref<RangeKey>(parseRange(route.query.range))
@@ -34,7 +30,15 @@ const { data, status, error, refresh } = await useApiFetch<AnalyticsResponse>(
 
 const pending = computed(() => status.value === 'pending')
 
-const activeRange = computed(() => RANGES.find(item => item.value === range.value)!)
+const rangeItems = computed(() =>
+  RANGE_KEYS.map(key => ({
+    value: key,
+    short: t(`analytics.ranges.${key}.short`),
+    full: t(`analytics.ranges.${key}.full`)
+  }))
+)
+
+const activeRangeLabel = computed(() => t(`analytics.ranges.${range.value}.full`))
 
 /**
  * Plans are ordinal — Starter, Growth, Scale climb in size — so they get a
@@ -50,7 +54,7 @@ const PLAN_COLORS: Record<string, string> = {
 
 const planSlices = computed(() =>
   (data.value?.planMix ?? []).map(slice => ({
-    label: slice.label,
+    label: t(`plans.${slice.plan}`),
     value: slice.value,
     color: PLAN_COLORS[slice.plan] ?? 'var(--ui-primary)'
   }))
@@ -64,7 +68,7 @@ const channelMax = computed(() =>
 <template>
   <UDashboardPanel id="analytics">
     <template #header>
-      <UDashboardNavbar title="Analytics">
+      <UDashboardNavbar :title="$t('analytics.title')">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -74,9 +78,9 @@ const channelMax = computed(() =>
           <div class="hidden sm:block">
             <UButtonGroup size="sm">
               <UButton
-                v-for="item in RANGES"
+                v-for="item in rangeItems"
                 :key="item.value"
-                :label="item.label"
+                :label="item.short"
                 :color="range === item.value ? 'primary' : 'neutral'"
                 :variant="range === item.value ? 'solid' : 'outline'"
                 :aria-pressed="range === item.value"
@@ -87,10 +91,10 @@ const channelMax = computed(() =>
           </div>
           <USelect
             v-model="range"
-            :items="RANGES.map(item => ({ label: item.full, value: item.value }))"
+            :items="rangeItems.map(item => ({ label: item.full, value: item.value }))"
             size="sm"
             class="w-36 sm:hidden"
-            aria-label="Date range"
+            :aria-label="$t('analytics.range')"
           />
         </template>
       </UDashboardNavbar>
@@ -103,9 +107,9 @@ const channelMax = computed(() =>
           color="error"
           variant="subtle"
           icon="i-lucide-circle-alert"
-          title="Analytics could not be loaded"
-          :description="error.statusMessage ?? 'The request did not complete.'"
-          :actions="[{ label: 'Try again', variant: 'subtle', color: 'error', onClick: () => refresh() }]"
+          :title="$t('analytics.loadFailed')"
+          :description="$t('analytics.loadFailedBody')"
+          :actions="[{ label: $t('common.retry'), variant: 'subtle', color: 'error', onClick: () => refresh() }]"
         />
 
         <template v-else>
@@ -122,57 +126,63 @@ const channelMax = computed(() =>
           </div>
 
           <ChartsChartFrame
-            title="Revenue"
-            :subtitle="activeRange.full"
+            :title="$t('analytics.revenue')"
+            :subtitle="activeRangeLabel"
             :height="300"
           >
             <ChartsAreaChart
               v-if="data"
               :points="data.revenue"
+              :granularity="data.granularity"
               format="currency"
               :height="300"
             />
             <template #footer>
               <p class="text-xs text-dimmed">
-                Hover the chart, or focus it and use the arrow keys, to read individual points.
+                {{ $t('analytics.chartHint') }}
               </p>
             </template>
           </ChartsChartFrame>
 
           <div class="grid gap-4 xl:grid-cols-2 xl:gap-5">
             <ChartsChartFrame
-              title="Signups against cancellations"
-              subtitle="Accounts gained and lost per period"
+              :title="$t('analytics.signupsTitle')"
+              :subtitle="$t('analytics.signupsSub')"
               :height="264"
             >
               <ChartsBarChart
                 v-if="data"
                 :points="data.signupsVsChurn"
-                primary-label="Signups"
-                secondary-label="Cancelled"
+                :granularity="data.signupsGranularity"
+                :primary-label="$t('analytics.signupsLegend')"
+                :secondary-label="$t('analytics.cancelledLegend')"
                 :height="264"
               />
               <template #footer>
                 <div class="flex flex-wrap gap-4 text-xs text-muted">
                   <span class="flex items-center gap-1.5">
                     <span class="size-2.5 rounded-sm" style="background: var(--cadence-new)" />
-                    Signups
+                    {{ $t('analytics.signupsLegend') }}
                   </span>
                   <span class="flex items-center gap-1.5">
                     <span class="size-2.5 rounded-sm" style="background: var(--cadence-churn)" />
-                    Cancelled
+                    {{ $t('analytics.cancelledLegend') }}
                   </span>
                 </div>
               </template>
             </ChartsChartFrame>
 
             <ChartsChartFrame
-              title="Plan mix"
-              subtitle="Share of MRR by plan"
+              :title="$t('analytics.planMix')"
+              :subtitle="$t('analytics.planMixSub')"
               :height="264"
             >
               <div class="px-3 py-2">
-                <ChartsDonutChart v-if="planSlices.length" :slices="planSlices" />
+                <ChartsDonutChart
+                  v-if="planSlices.length"
+                  :slices="planSlices"
+                  :total-label="$t('analytics.totalMrr')"
+                />
               </div>
             </ChartsChartFrame>
           </div>
@@ -183,19 +193,19 @@ const channelMax = computed(() =>
             <div class="rounded-[calc(var(--ui-radius)*1.5)] bg-default ring ring-default">
               <div class="border-b border-default px-4 py-3.5 sm:px-5">
                 <h3 class="text-sm font-semibold text-highlighted">
-                  Where signups come from
+                  {{ $t('analytics.channelsTitle') }}
                 </h3>
                 <p class="mt-0.5 text-xs text-muted">
-                  {{ activeRange.full }}
+                  {{ activeRangeLabel }}
                 </p>
               </div>
 
               <ul class="divide-y divide-default">
-                <li v-for="channel in data?.channels ?? []" :key="channel.label" class="px-4 py-3 sm:px-5">
+                <li v-for="channel in data?.channels ?? []" :key="channel.key" class="px-4 py-3 sm:px-5">
                   <div class="flex items-baseline justify-between gap-3">
-                    <span class="text-sm text-default">{{ channel.label }}</span>
+                    <span class="text-sm text-default">{{ $t(`channels.${channel.key}`) }}</span>
                     <span class="tnum text-sm font-medium text-highlighted">
-                      {{ formatNumber(channel.value) }}
+                      {{ fmt.number(channel.value) }}
                     </span>
                   </div>
                   <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-elevated">
@@ -214,21 +224,21 @@ const channelMax = computed(() =>
             <div class="rounded-[calc(var(--ui-radius)*1.5)] bg-default ring ring-default">
               <div class="border-b border-default px-4 py-3.5 sm:px-5">
                 <h3 class="text-sm font-semibold text-highlighted">
-                  Cohort retention
+                  {{ $t('analytics.retentionTitle') }}
                 </h3>
                 <p class="mt-0.5 text-xs text-muted">
-                  Share of a signup cohort still subscribed
+                  {{ $t('analytics.retentionSub') }}
                 </p>
               </div>
 
               <div class="flex items-end gap-1.5 px-4 py-5 sm:px-5">
                 <div
                   v-for="point in data?.retention ?? []"
-                  :key="point.label"
+                  :key="point.month"
                   class="flex flex-1 flex-col items-center gap-2"
                 >
                   <span class="tnum text-[10px] font-medium text-muted">
-                    {{ formatPercent(point.value, 0) }}
+                    {{ fmt.percent(point.value, 0) }}
                   </span>
                   <div
                     class="w-full rounded-t transition-[height] duration-500"
@@ -237,15 +247,17 @@ const channelMax = computed(() =>
                       background: `color-mix(in oklab, var(--ui-primary) ${point.value}%, var(--ui-bg-elevated))`
                     }"
                   />
-                  <span class="tnum text-[10px] text-dimmed">{{ point.label }}</span>
+                  <span class="tnum text-[10px] text-dimmed">
+                    {{ $t('charts.cohortMonth', { n: point.month }) }}
+                  </span>
                 </div>
               </div>
 
               <div class="border-t border-default px-4 py-3 sm:px-5">
                 <p class="text-xs text-dimmed">
-                  Total MRR across all plans:
+                  {{ $t('analytics.totalAcrossPlans') }}
                   <span class="tnum font-medium text-muted">
-                    {{ formatCurrency(planSlices.reduce((sum, slice) => sum + slice.value, 0)) }}
+                    {{ fmt.currency(planSlices.reduce((sum, slice) => sum + slice.value, 0)) }}
                   </span>
                 </p>
               </div>

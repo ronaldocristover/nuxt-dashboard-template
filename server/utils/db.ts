@@ -8,7 +8,6 @@ import type {
   TeamMember,
   User
 } from '#shared/types'
-import { formatRelative } from '#shared/format'
 import { hashPassword } from './password'
 
 /**
@@ -139,25 +138,20 @@ function seedSubscribers(count: number): Subscriber[] {
       country: pick(COUNTRIES),
       avatarColor: pick(AVATAR_COLORS),
       joinedAt: new Date(BOOT.getTime() - intBetween(1, 900) * DAY).toISOString(),
-      lastSeenAt: new Date(BOOT.getTime() - intBetween(0, 5000) * 60_000).toISOString(),
-      lastSeenLabel: ''
+      lastSeenAt: new Date(BOOT.getTime() - intBetween(0, 5000) * 60_000).toISOString()
     })
-  }
-
-  for (const row of rows) {
-    row.lastSeenLabel = formatRelative(row.lastSeenAt, BOOT)
   }
 
   return rows.sort((a, b) => b.mrr - a.mrr)
 }
 
-const ACTIVITY_TEMPLATES: Array<{ kind: ActivityEvent['kind'], describe: (name: string, plan: string) => string, hasAmount: boolean }> = [
-  { kind: 'signup', describe: name => `${name} started a Growth trial`, hasAmount: false },
-  { kind: 'upgrade', describe: (name, plan) => `${name} upgraded to ${plan}`, hasAmount: true },
-  { kind: 'downgrade', describe: (name, plan) => `${name} moved down to ${plan}`, hasAmount: true },
-  { kind: 'churn', describe: name => `${name} cancelled their subscription`, hasAmount: true },
-  { kind: 'payment', describe: name => `Payment received from ${name}`, hasAmount: true },
-  { kind: 'invite', describe: name => `${name} invited 3 teammates`, hasAmount: false }
+const ACTIVITY_KINDS: Array<{ kind: ActivityEvent['kind'], hasAmount: boolean }> = [
+  { kind: 'signup', hasAmount: false },
+  { kind: 'upgrade', hasAmount: true },
+  { kind: 'downgrade', hasAmount: true },
+  { kind: 'churn', hasAmount: true },
+  { kind: 'payment', hasAmount: true },
+  { kind: 'invite', hasAmount: false }
 ]
 
 function seedActivity(subscribers: Subscriber[], count: number): ActivityEvent[] {
@@ -165,17 +159,17 @@ function seedActivity(subscribers: Subscriber[], count: number): ActivityEvent[]
 
   for (let i = 0; i < count; i++) {
     const subscriber = subscribers[intBetween(0, subscribers.length - 1)]!
-    const template = pick(ACTIVITY_TEMPLATES)
+    const template = pick(ACTIVITY_KINDS)
     const at = new Date(BOOT.getTime() - i * intBetween(20, 260) * 60_000)
 
     events.push({
       id: `evt_${(i + 1).toString().padStart(4, '0')}`,
       kind: template.kind,
       actor: subscriber.name,
-      description: template.describe(subscriber.company, PLAN_PRICING[subscriber.plan].label),
+      company: subscriber.company,
+      plan: subscriber.plan,
       amount: template.hasAmount ? Math.max(12, Math.round(subscriber.mrr || 240)) : undefined,
-      at: at.toISOString(),
-      atLabel: formatRelative(at, BOOT)
+      at: at.toISOString()
     })
   }
 
@@ -269,11 +263,13 @@ const invoices = seedInvoices(subscribers, 24)
 const mrrHistory = seedMrrHistory(subscribers.reduce((sum, row) => sum + row.mrr, 0))
 const dailyRevenue = seedDailyRevenue()
 
+const HOUR = 3_600_000
+
 const teamMembers: TeamMember[] = [
-  { id: 'tm_1', name: owner.name, email: owner.email, role: 'owner', status: 'active', avatarColor: '#2d5bff', lastSeenLabel: 'just now' },
-  { id: 'tm_2', name: 'Hana Nakamura', email: 'hana@cadence.app', role: 'admin', status: 'active', avatarColor: '#0d9488', lastSeenLabel: '2 hours ago' },
-  { id: 'tm_3', name: 'Mateo Rossi', email: 'mateo@cadence.app', role: 'member', status: 'active', avatarColor: '#d97706', lastSeenLabel: 'yesterday' },
-  { id: 'tm_4', name: 'Priya Ibrahim', email: 'priya@cadence.app', role: 'member', status: 'invited', avatarColor: '#7c3aed', lastSeenLabel: 'Invite sent' }
+  { id: 'tm_1', name: owner.name, email: owner.email, role: 'owner', status: 'active', avatarColor: '#2d5bff', lastSeenAt: BOOT.toISOString() },
+  { id: 'tm_2', name: 'Hana Nakamura', email: 'hana@cadence.app', role: 'admin', status: 'active', avatarColor: '#0d9488', lastSeenAt: new Date(BOOT.getTime() - 2 * HOUR).toISOString() },
+  { id: 'tm_3', name: 'Mateo Rossi', email: 'mateo@cadence.app', role: 'member', status: 'active', avatarColor: '#d97706', lastSeenAt: new Date(BOOT.getTime() - 28 * HOUR).toISOString() },
+  { id: 'tm_4', name: 'Priya Ibrahim', email: 'priya@cadence.app', role: 'member', status: 'invited', avatarColor: '#7c3aed', lastSeenAt: null }
 ]
 
 let memberSequence = teamMembers.length
@@ -380,7 +376,7 @@ export const db = {
       role,
       status: 'invited',
       avatarColor: AVATAR_COLORS[teamMembers.length % AVATAR_COLORS.length]!,
-      lastSeenLabel: 'Invite sent'
+      lastSeenAt: null
     }
     teamMembers.push(member)
     return member

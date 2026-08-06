@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<{
 
 const { user, signOut } = useAuth()
 const { notify } = useApiError()
+const { t, locale, locales, setLocale } = useI18n()
 const colorMode = useColorMode()
 
 const signingOut = ref(false)
@@ -19,7 +20,7 @@ async function onSignOut() {
   try {
     await signOut()
   } catch (error) {
-    notify(error, 'Could not sign out')
+    notify(error, t('account.signOutFailed'))
   } finally {
     signingOut.value = false
   }
@@ -28,25 +29,36 @@ async function onSignOut() {
 const items = computed<DropdownMenuItem[][]>(() => [
   [{
     type: 'label',
-    label: user.value?.name ?? 'Account',
+    label: user.value?.name ?? t('account.profile'),
     avatar: { text: initials(user.value?.name ?? '?'), alt: user.value?.name }
   }],
   [
-    { label: 'Profile', icon: 'i-lucide-user', to: '/dashboard/settings' },
-    { label: 'Notifications', icon: 'i-lucide-bell', to: '/dashboard/settings?tab=notifications' },
-    { label: 'Billing', icon: 'i-lucide-credit-card', to: '/dashboard/settings?tab=billing' }
+    { label: t('account.profile'), icon: 'i-lucide-user', to: '/dashboard/settings' },
+    { label: t('account.notifications'), icon: 'i-lucide-bell', to: '/dashboard/settings?tab=notifications' },
+    { label: t('account.billing'), icon: 'i-lucide-credit-card', to: '/dashboard/settings?tab=billing' }
+  ],
+  [
+    {
+      label: colorMode.value === 'dark' ? t('account.lightTheme') : t('account.darkTheme'),
+      icon: colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon',
+      // Keep the menu open so the change is visible where it was made.
+      onSelect: (event: Event) => {
+        event.preventDefault()
+        colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+      }
+    },
+    {
+      label: t('language.label'),
+      icon: 'i-lucide-languages',
+      children: locales.value.map(item => ({
+        label: item.name ?? item.code,
+        icon: item.code === locale.value ? 'i-lucide-check' : undefined,
+        onSelect: () => setLocale(item.code)
+      }))
+    }
   ],
   [{
-    label: colorMode.value === 'dark' ? 'Light theme' : 'Dark theme',
-    icon: colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon',
-    // Keep the menu open so the change is visible where it was made.
-    onSelect: (event: Event) => {
-      event.preventDefault()
-      colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
-    }
-  }],
-  [{
-    label: 'Sign out',
+    label: t('account.signOut'),
     icon: 'i-lucide-log-out',
     color: 'error',
     loading: signingOut.value,
@@ -67,7 +79,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
       :block="!props.collapsed"
       class="data-[state=open]:bg-elevated"
       :class="props.collapsed ? '' : 'justify-start px-2'"
-      :aria-label="`Account menu for ${user?.name ?? 'your account'}`"
+      :aria-label="$t('account.menu', { name: user?.name ?? '' })"
     >
       <UAvatar
         :text="initials(user?.name ?? '?')"

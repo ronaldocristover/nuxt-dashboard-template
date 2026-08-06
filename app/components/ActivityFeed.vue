@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import type { ActivityEvent } from '#shared/types'
-import { formatCurrency } from '#shared/format'
 
 defineProps<{
   events: ActivityEvent[]
+  /** The moment the payload was built; relative times are measured from it. */
+  generatedAt?: string
   loading?: boolean
 }>()
+
+const fmt = useFormat()
 
 /**
  * Each event kind gets its own icon and colour, drawn from the same four
@@ -26,11 +29,11 @@ const KINDS: Record<ActivityEvent['kind'], { icon: string, color: string }> = {
   <div class="rounded-[calc(var(--ui-radius)*1.5)] bg-default ring ring-default">
     <div class="flex items-center justify-between gap-3 border-b border-default px-4 py-3.5 sm:px-5">
       <h3 class="text-sm font-semibold text-highlighted">
-        Activity
+        {{ $t('activity.title') }}
       </h3>
       <UButton
         to="/dashboard/subscribers"
-        label="All subscribers"
+        :label="$t('activity.allSubscribers')"
         variant="link"
         color="neutral"
         size="xs"
@@ -51,8 +54,8 @@ const KINDS: Record<ActivityEvent['kind'], { icon: string, color: string }> = {
     <EmptyState
       v-else-if="events.length === 0"
       icon="i-lucide-activity"
-      title="No activity yet"
-      description="Signups, upgrades and cancellations will appear here as they happen."
+      :title="$t('activity.emptyTitle')"
+      :description="$t('activity.emptyBody')"
     />
 
     <ul v-else class="divide-y divide-default">
@@ -69,11 +72,13 @@ const KINDS: Record<ActivityEvent['kind'], { icon: string, color: string }> = {
         </span>
 
         <div class="min-w-0 flex-1">
+          <!-- The sentence is assembled here, from the event's parts, so it
+               can be written naturally in each language. -->
           <p class="text-sm text-default">
-            {{ event.description }}
+            {{ $t(`activity.${event.kind}`, { company: event.company, plan: $t(`plans.${event.plan}`) }) }}
           </p>
           <p class="mt-0.5 text-xs text-dimmed">
-            {{ event.actor }} · {{ event.atLabel }}
+            {{ event.actor }} · {{ generatedAt ? fmt.relative(event.at, generatedAt) : '' }}
           </p>
         </div>
 
@@ -82,7 +87,7 @@ const KINDS: Record<ActivityEvent['kind'], { icon: string, color: string }> = {
           class="tnum shrink-0 self-center text-sm font-medium"
           :class="event.kind === 'churn' || event.kind === 'downgrade' ? 'text-muted' : 'text-highlighted'"
         >
-          {{ formatCurrency(event.amount) }}
+          {{ fmt.currency(event.amount) }}
         </span>
       </li>
     </ul>
