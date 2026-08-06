@@ -2,105 +2,153 @@ import { z } from 'zod'
 
 /**
  * One schema per form, used by the `UForm` on the client and by the matching
- * Nitro route on the server. Validation rules can't drift apart because
- * there is only one copy of them.
+ * Nitro route on the server. Validation rules can't drift apart because there
+ * is only one copy of them.
+ *
+ * Each schema is a factory taking a translate function. Messages are stored as
+ * translation keys, so:
+ *
+ * - the client passes `useI18n().t` and the reader sees their own language;
+ * - the server calls the factory with no argument, and messages stay as keys.
+ *
+ * That second case is deliberate. Server-side issues are never rendered — the
+ * routes answer with a single `statusMessage` and the client validates before
+ * anything is submitted — so there is no reason to keep a second copy of the
+ * English strings on the server just to throw them away.
  */
 
-const email = z
-  .string()
-  .min(1, 'Enter your email address')
-  .email('That does not look like an email address')
-  .transform(value => value.trim().toLowerCase())
+export type Translate = (key: string, params?: Record<string, unknown>) => string
 
-const password = z
-  .string()
-  .min(8, 'Use at least 8 characters')
-  .max(128, 'Use fewer than 128 characters')
+/** Returns the key untouched. Used server-side, where messages aren't shown. */
+const identity: Translate = key => key
+
+function emailField(t: Translate) {
+  return z
+    .string()
+    .min(1, t('validation.email.required'))
+    .email(t('validation.email.invalid'))
+    .transform(value => value.trim().toLowerCase())
+}
+
+function passwordField(t: Translate) {
+  return z
+    .string()
+    .min(8, t('validation.password.tooShort'))
+    .max(128, t('validation.password.tooLong'))
+}
 
 /** Applied on sign-up only, so existing accounts are never locked out. */
-const strongPassword = password
-  .refine(value => /[a-z]/.test(value), 'Include a lowercase letter')
-  .refine(value => /[A-Z]/.test(value), 'Include an uppercase letter')
-  .refine(value => /\d/.test(value), 'Include a number')
+function strongPasswordField(t: Translate) {
+  return passwordField(t)
+    .refine(value => /[a-z]/.test(value), t('validation.password.lowercase'))
+    .refine(value => /[A-Z]/.test(value), t('validation.password.uppercase'))
+    .refine(value => /\d/.test(value), t('validation.password.number'))
+}
 
-export const signInSchema = z.object({
-  email,
-  password: z.string().min(1, 'Enter your password'),
-  remember: z.boolean().optional().default(false)
-})
-
-export const signUpSchema = z.object({
-  name: z
-    .string()
-    .min(2, 'Enter your full name')
-    .max(80, 'Use fewer than 80 characters')
-    .transform(value => value.trim()),
-  email,
-  password: strongPassword,
-  // `refine` rather than `literal(true)` so the inferred type stays `boolean`
-  // and the checkbox can legitimately start out unchecked.
-  terms: z.boolean().refine(value => value, 'Accept the terms to continue')
-})
-
-export const forgotPasswordSchema = z.object({ email })
-
-export const resetPasswordSchema = z
-  .object({
-    token: z.string().min(1, 'This reset link is missing its token'),
-    password: strongPassword,
-    confirmPassword: z.string().min(1, 'Confirm your new password')
+export function createSignInSchema(t: Translate = identity) {
+  return z.object({
+    email: emailField(t),
+    password: z.string().min(1, t('validation.password.required')),
+    remember: z.boolean().optional().default(false)
   })
-  .refine(data => data.password === data.confirmPassword, {
-    message: 'Both passwords must match',
-    path: ['confirmPassword']
+}
+
+export function createSignUpSchema(t: Translate = identity) {
+  return z.object({
+    name: z
+      .string()
+      .min(2, t('validation.name.required'))
+      .max(80, t('validation.name.tooLong'))
+      .transform(value => value.trim()),
+    email: emailField(t),
+    password: strongPasswordField(t),
+    // `refine` rather than `literal(true)` so the inferred type stays `boolean`
+    // and the checkbox can legitimately start out unchecked.
+    terms: z.boolean().refine(value => value, t('validation.terms'))
   })
+}
 
-export const profileSchema = z.object({
-  name: z.string().min(2, 'Enter your full name').max(80),
-  email,
-  jobTitle: z.string().max(80).optional().default(''),
-  company: z.string().max(80).optional().default(''),
-  timezone: z.string().min(1, 'Pick a timezone')
-})
+export function createForgotPasswordSchema(t: Translate = identity) {
+  return z.object({ email: emailField(t) })
+}
 
-export const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(1, 'Enter your current password'),
-    password: strongPassword,
-    confirmPassword: z.string().min(1, 'Confirm your new password')
+export function createResetPasswordSchema(t: Translate = identity) {
+  return z
+    .object({
+      token: z.string().min(1, t('validation.token.missing')),
+      password: strongPasswordField(t),
+      confirmPassword: z.string().min(1, t('validation.password.confirmRequired'))
+    })
+    .refine(data => data.password === data.confirmPassword, {
+      message: t('validation.password.mismatch'),
+      path: ['confirmPassword']
+    })
+}
+
+export function createProfileSchema(t: Translate = identity) {
+  return z.object({
+    name: z.string().min(2, t('validation.name.required')).max(80, t('validation.name.tooLong')),
+    email: emailField(t),
+    jobTitle: z.string().max(80).optional().default(''),
+    company: z.string().max(80).optional().default(''),
+    timezone: z.string().min(1, t('validation.timezone'))
   })
-  .refine(data => data.password === data.confirmPassword, {
-    message: 'Both passwords must match',
-    path: ['confirmPassword']
+}
+
+export function createChangePasswordSchema(t: Translate = identity) {
+  return z
+    .object({
+      currentPassword: z.string().min(1, t('validation.password.currentRequired')),
+      password: strongPasswordField(t),
+      confirmPassword: z.string().min(1, t('validation.password.confirmRequired'))
+    })
+    .refine(data => data.password === data.confirmPassword, {
+      message: t('validation.password.mismatch'),
+      path: ['confirmPassword']
+    })
+}
+
+export function createNotificationSchema() {
+  return z.object({
+    productUpdates: z.boolean(),
+    weeklyDigest: z.boolean(),
+    paymentFailures: z.boolean(),
+    churnAlerts: z.boolean(),
+    newSignups: z.boolean(),
+    channel: z.enum(['email', 'slack', 'both'])
   })
+}
 
-export const notificationSchema = z.object({
-  productUpdates: z.boolean(),
-  weeklyDigest: z.boolean(),
-  paymentFailures: z.boolean(),
-  churnAlerts: z.boolean(),
-  newSignups: z.boolean(),
-  channel: z.enum(['email', 'slack', 'both'])
-})
+export function createInviteSchema(t: Translate = identity) {
+  return z.object({
+    email: emailField(t),
+    role: z.enum(['admin', 'member'])
+  })
+}
 
-export const inviteSchema = z.object({
-  email,
-  role: z.enum(['admin', 'member'])
-})
+// Server-side instances. Messages stay as keys; the routes never render them.
+export const signInSchema = createSignInSchema()
+export const signUpSchema = createSignUpSchema()
+export const forgotPasswordSchema = createForgotPasswordSchema()
+export const resetPasswordSchema = createResetPasswordSchema()
+export const profileSchema = createProfileSchema()
+export const changePasswordSchema = createChangePasswordSchema()
+export const notificationSchema = createNotificationSchema()
+export const inviteSchema = createInviteSchema()
 
-export type SignInInput = z.output<typeof signInSchema>
-export type SignUpInput = z.output<typeof signUpSchema>
-export type ForgotPasswordInput = z.output<typeof forgotPasswordSchema>
-export type ResetPasswordInput = z.output<typeof resetPasswordSchema>
-export type ProfileInput = z.output<typeof profileSchema>
-export type ChangePasswordInput = z.output<typeof changePasswordSchema>
-export type NotificationInput = z.output<typeof notificationSchema>
-export type InviteInput = z.output<typeof inviteSchema>
+export type SignInInput = z.output<ReturnType<typeof createSignInSchema>>
+export type SignUpInput = z.output<ReturnType<typeof createSignUpSchema>>
+export type ForgotPasswordInput = z.output<ReturnType<typeof createForgotPasswordSchema>>
+export type ResetPasswordInput = z.output<ReturnType<typeof createResetPasswordSchema>>
+export type ProfileInput = z.output<ReturnType<typeof createProfileSchema>>
+export type ChangePasswordInput = z.output<ReturnType<typeof createChangePasswordSchema>>
+export type NotificationInput = z.output<ReturnType<typeof createNotificationSchema>>
+export type InviteInput = z.output<ReturnType<typeof createInviteSchema>>
 
 /**
  * Scores a password 0–4 for the strength meter on the sign-up form.
  * Deliberately simple and readable — it guides, it does not gatekeep.
- * `strongPassword` above is what actually enforces the rules.
+ * `strongPasswordField` above is what actually enforces the rules.
  */
 export function scorePassword(value: string): number {
   if (!value) return 0

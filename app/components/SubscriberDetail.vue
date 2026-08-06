@@ -1,39 +1,44 @@
 <script setup lang="ts">
 import type { Subscriber } from '#shared/types'
-import { formatCurrency, formatDate, formatNumber, initials } from '#shared/format'
+import { initials } from '#shared/format'
 
 const props = defineProps<{
   subscriber: Subscriber | null
+  generatedAt?: string
 }>()
 
 const open = defineModel<boolean>('open', { required: true })
 
-const PLAN_LABELS = { starter: 'Starter', growth: 'Growth', scale: 'Scale' } as const
+const { t } = useI18n()
+const fmt = useFormat()
 
-const STATUS = {
-  active: { label: 'Active', color: 'success' as const },
-  trialing: { label: 'Trialing', color: 'info' as const },
-  past_due: { label: 'Past due', color: 'warning' as const },
-  churned: { label: 'Churned', color: 'neutral' as const }
-}
+const STATUS_COLOR = {
+  active: 'success',
+  trialing: 'info',
+  past_due: 'warning',
+  churned: 'neutral'
+} as const
 
 const facts = computed(() => {
   if (!props.subscriber) return []
   const row = props.subscriber
 
   return [
-    { label: 'Plan', value: PLAN_LABELS[row.plan] },
-    { label: 'Monthly recurring revenue', value: formatCurrency(row.mrr), mono: true },
-    { label: 'Seats', value: formatNumber(row.seats), mono: true },
-    { label: 'Country', value: row.country },
-    { label: 'Subscribed since', value: formatDate(row.joinedAt) },
-    { label: 'Last seen', value: row.lastSeenLabel }
+    { label: t('subscribers.detail.plan'), value: t(`plans.${row.plan}`) },
+    { label: t('subscribers.detail.mrr'), value: fmt.value.currency(row.mrr), mono: true },
+    { label: t('subscribers.detail.seats'), value: fmt.value.number(row.seats), mono: true },
+    { label: t('subscribers.detail.country'), value: row.country },
+    { label: t('subscribers.detail.since'), value: fmt.value.date(row.joinedAt) },
+    {
+      label: t('subscribers.detail.lastSeen'),
+      value: props.generatedAt ? fmt.value.relative(row.lastSeenAt, props.generatedAt) : '—'
+    }
   ]
 })
 </script>
 
 <template>
-  <USlideover v-model:open="open" :title="subscriber?.company ?? 'Subscriber'">
+  <USlideover v-model:open="open" :title="subscriber?.company ?? $t('subscribers.detail.title')">
     <template #body>
       <div v-if="subscriber">
         <div class="flex items-center gap-3">
@@ -53,8 +58,8 @@ const facts = computed(() => {
         </div>
 
         <UBadge
-          :label="STATUS[subscriber.status].label"
-          :color="STATUS[subscriber.status].color"
+          :label="$t(`status.${subscriber.status}`)"
+          :color="STATUS_COLOR[subscriber.status]"
           variant="subtle"
           class="mt-4"
         />
@@ -73,13 +78,13 @@ const facts = computed(() => {
         <div class="mt-6 space-y-2">
           <UButton
             :to="`mailto:${subscriber.email}`"
-            label="Email this subscriber"
+            :label="$t('subscribers.detail.email')"
             icon="i-lucide-mail"
             variant="subtle"
             block
           />
           <UButton
-            label="Open billing history"
+            :label="$t('subscribers.detail.billing')"
             icon="i-lucide-receipt-text"
             color="neutral"
             variant="ghost"
@@ -88,10 +93,11 @@ const facts = computed(() => {
           />
         </div>
 
-        <p class="mt-4 text-xs text-dimmed">
-          Billing history is a stub in the demo. Wire it to your billing provider
-          in <span class="font-mono">server/api/subscribers/</span>.
-        </p>
+        <i18n-t keypath="subscribers.detail.billingNote" tag="p" class="mt-4 text-xs text-dimmed" scope="global">
+          <template #path>
+            <span class="font-mono">server/api/subscribers/</span>
+          </template>
+        </i18n-t>
       </div>
     </template>
   </USlideover>

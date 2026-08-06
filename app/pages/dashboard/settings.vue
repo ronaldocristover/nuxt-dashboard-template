@@ -1,21 +1,24 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-useSeoMeta({ title: 'Settings', robots: 'noindex' })
-
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const TABS = [
-  { value: 'profile', label: 'Profile', icon: 'i-lucide-user' },
-  { value: 'account', label: 'Account', icon: 'i-lucide-shield' },
-  { value: 'notifications', label: 'Notifications', icon: 'i-lucide-bell' },
-  { value: 'billing', label: 'Billing', icon: 'i-lucide-credit-card' },
-  { value: 'members', label: 'Team', icon: 'i-lucide-users' }
-]
+useSeoMeta({ title: () => t('settings.title'), robots: 'noindex' })
+
+const TAB_KEYS = ['profile', 'account', 'notifications', 'billing', 'members'] as const
+
+const TABS = computed(() => [
+  { value: 'profile', label: t('settings.tabs.profile'), icon: 'i-lucide-user' },
+  { value: 'account', label: t('settings.tabs.account'), icon: 'i-lucide-shield' },
+  { value: 'notifications', label: t('settings.tabs.notifications'), icon: 'i-lucide-bell' },
+  { value: 'billing', label: t('settings.tabs.billing'), icon: 'i-lucide-credit-card' },
+  { value: 'members', label: t('settings.tabs.members'), icon: 'i-lucide-users' }
+])
 
 function parseTab(value: unknown): string {
-  return TABS.some(tab => tab.value === value) ? (value as string) : 'profile'
+  return TAB_KEYS.includes(value as typeof TAB_KEYS[number]) ? (value as string) : 'profile'
 }
 
 const tab = ref(parseTab(route.query.tab))
@@ -36,7 +39,7 @@ watch(() => route.query.tab, (value) => {
 <template>
   <UDashboardPanel id="settings">
     <template #header>
-      <UDashboardNavbar title="Settings">
+      <UDashboardNavbar :title="$t('settings.title')">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>

@@ -1,0 +1,593 @@
+{
+  "app": {
+    "name": "Cadence",
+    "description": "Pelaporan pendapatan untuk bisnis berlangganan"
+  },
+  "language": {
+    "label": "Bahasa",
+    "change": "Ganti bahasa"
+  },
+  "common": {
+    "save": "Simpan perubahan",
+    "cancel": "Batal",
+    "close": "Tutup",
+    "confirm": "Konfirmasi",
+    "delete": "Hapus",
+    "remove": "Keluarkan",
+    "edit": "Ubah",
+    "refresh": "Muat ulang",
+    "retry": "Coba lagi",
+    "search": "Cari",
+    "clear": "Bersihkan",
+    "loading": "Memuat",
+    "optional": "Opsional",
+    "required": "Wajib",
+    "showPassword": "Tampilkan kata sandi",
+    "hidePassword": "Sembunyikan kata sandi",
+    "menu": "Menu",
+    "openMenu": "Buka menu",
+    "vsPrevious": "dibanding periode sebelumnya",
+    "of": "dari",
+    "copy": "Salin",
+    "copied": "Tersalin"
+  },
+  "nav": {
+    "overview": "Ringkasan",
+    "analytics": "Analitik",
+    "subscribers": "Pelanggan",
+    "forms": "Formulir",
+    "layouts": "Tata letak",
+    "settings": "Pengaturan",
+    "backToSite": "Kembali ke situs",
+    "documentation": "Dokumentasi",
+    "product": "Produk",
+    "howItWorks": "Cara kerja",
+    "pricing": "Harga",
+    "faq": "Tanya jawab",
+    "main": "Utama",
+    "mobile": "Seluler"
+  },
+  "account": {
+    "menu": "Menu akun untuk {name}",
+    "profile": "Profil",
+    "notifications": "Notifikasi",
+    "billing": "Penagihan",
+    "lightTheme": "Tema terang",
+    "darkTheme": "Tema gelap",
+    "signOut": "Keluar",
+    "signOutFailed": "Gagal keluar"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Masuk ke Cadence",
+      "newHere": "Baru di sini?",
+      "createAccount": "Buat akun",
+      "email": "Alamat email",
+      "emailPlaceholder": "anda{'@'}perusahaan.com",
+      "password": "Kata sandi",
+      "passwordPlaceholder": "Masukkan kata sandi Anda",
+      "forgot": "Lupa kata sandi?",
+      "remember": "Tetap masuk selama 30 hari",
+      "submit": "Masuk",
+      "failed": "Gagal memasukkan Anda",
+      "or": "atau",
+      "socialNote": "Login sosial sudah tersambung tetapi dinonaktifkan di demo. Lihat {file} untuk menghubungkan penyedia.",
+      "demoTitle": "Ruang kerja demo",
+      "demoFill": "Isi kredensial demo"
+    },
+    "signUp": {
+      "title": "Buat akun Anda",
+      "haveAccount": "Sudah punya akun?",
+      "signIn": "Masuk",
+      "name": "Nama lengkap",
+      "namePlaceholder": "Amara Adeyemi",
+      "email": "Email kantor",
+      "password": "Kata sandi",
+      "passwordPlaceholder": "Minimal 8 karakter",
+      "terms": "Saya menyetujui {terms} dan {privacy}.",
+      "termsLink": "ketentuan layanan",
+      "privacyLink": "kebijakan privasi",
+      "submit": "Buat akun",
+      "trialNote": "14 hari di paket Growth. Tanpa kartu kredit.",
+      "created": "Akun dibuat",
+      "createdBody": "Uji coba Growth 14 hari Anda sudah dimulai.",
+      "failed": "Gagal membuat akun Anda"
+    },
+    "forgot": {
+      "back": "Kembali ke halaman masuk",
+      "title": "Atur ulang kata sandi",
+      "body": "Masukkan alamat email akun Anda dan kami akan mengirim tautan untuk membuat kata sandi baru.",
+      "submit": "Kirim tautan",
+      "failed": "Gagal mengirim tautan",
+      "sentTitle": "Periksa kotak masuk Anda",
+      "sentBody": "Jika {email} terdaftar, tautan atur ulang sedang dikirim. Tautan hanya berlaku sekali dan kedaluwarsa dalam 30 menit.",
+      "devTitle": "Hanya untuk pengembangan",
+      "devBody": "Belum ada penyedia email yang dikonfigurasi, jadi tautannya ditampilkan di sini.",
+      "devOpen": "Buka tautan atur ulang",
+      "useAnother": "Gunakan email lain"
+    },
+    "reset": {
+      "title": "Buat kata sandi baru",
+      "body": "Pilih kata sandi yang belum pernah Anda pakai di Cadence. Sesi Anda yang lain akan dikeluarkan.",
+      "newPassword": "Kata sandi baru",
+      "confirmPassword": "Konfirmasi kata sandi baru",
+      "confirmPlaceholder": "Ketik ulang",
+      "submit": "Perbarui kata sandi",
+      "updated": "Kata sandi diperbarui",
+      "updatedBody": "Masuk dengan kata sandi baru Anda.",
+      "failed": "Gagal memperbarui kata sandi",
+      "brokenTitle": "Tautan ini tidak lengkap",
+      "brokenBody": "Tautan atur ulang kedaluwarsa setelah 30 menit dan hanya berlaku sekali. Minta tautan baru dan buka langsung dari kotak masuk Anda.",
+      "requestNew": "Minta tautan baru"
+    },
+    "strength": {
+      "0": "Terlalu pendek",
+      "1": "Lemah",
+      "2": "Cukup",
+      "3": "Bagus",
+      "4": "Kuat",
+      "hint": "campur huruf besar dan kecil, angka, serta simbol."
+    },
+    "panel": {
+      "eyebrow": "Operasi pendapatan",
+      "quote": "Kami berhenti memperdebatkan angka MRR dan mulai memperdebatkan apa langkah berikutnya.",
+      "author": "Hana Nakamura",
+      "role": "VP Keuangan, Northwind Labs",
+      "point1": "Setiap pergerakan MRR terlacak sampai akun penyebabnya",
+      "point2": "Retensi kohort yang diperbarui saat faktur lunas",
+      "point3": "Peringatan di jam pembayaran gagal, bukan minggu berikutnya",
+      "privacy": "Privasi",
+      "terms": "Ketentuan"
+    }
+  },
+  "validation": {
+    "email": {
+      "required": "Masukkan alamat email Anda",
+      "invalid": "Itu sepertinya bukan alamat email"
+    },
+    "password": {
+      "required": "Masukkan kata sandi Anda",
+      "currentRequired": "Masukkan kata sandi Anda saat ini",
+      "confirmRequired": "Konfirmasi kata sandi baru Anda",
+      "tooShort": "Gunakan minimal 8 karakter",
+      "tooLong": "Gunakan kurang dari 128 karakter",
+      "lowercase": "Sertakan huruf kecil",
+      "uppercase": "Sertakan huruf besar",
+      "number": "Sertakan angka",
+      "mismatch": "Kedua kata sandi harus sama"
+    },
+    "name": {
+      "required": "Masukkan nama lengkap Anda",
+      "tooLong": "Gunakan kurang dari 80 karakter"
+    },
+    "terms": "Setujui ketentuan untuk melanjutkan",
+    "token": {
+      "missing": "Tautan atur ulang ini tidak memiliki token"
+    },
+    "timezone": "Pilih zona waktu"
+  },
+  "errors": {
+    "expired": "Sesi Anda telah berakhir. Masuk lagi untuk melanjutkan.",
+    "forbidden": "Anda tidak memiliki akses ke sana.",
+    "notFound": "Kami tidak menemukan yang Anda cari.",
+    "rateLimited": "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.",
+    "server": "Ada yang rusak di sisi kami. Coba lagi sebentar lagi.",
+    "generic": "Permintaan tidak berhasil. Periksa koneksi Anda lalu coba lagi.",
+    "toastTitle": "Tidak berhasil",
+    "page404Title": "Halaman itu tidak ada",
+    "page404Body": "Tautannya mungkin sudah usang, atau halamannya sudah dipindahkan. Dasbor dan halaman utama masih di tempatnya.",
+    "page403Title": "Anda tidak punya akses ke halaman ini",
+    "page403Body": "Akun Anda sudah masuk tetapi tidak diizinkan melihat halaman ini. Admin di ruang kerja Anda dapat mengubahnya.",
+    "page500Title": "Halaman ini gagal dimuat",
+    "page500Body": "Permintaan sampai ke kami tetapi tidak selesai. Mencoba lagi biasanya berhasil; kalau tidak, halaman status akan menjelaskan sebabnya.",
+    "backToDashboard": "Kembali ke dasbor",
+    "backHome": "Kembali ke halaman utama",
+    "technical": "Detail teknis"
+  },
+  "plans": {
+    "starter": "Starter",
+    "growth": "Growth",
+    "scale": "Scale"
+  },
+  "status": {
+    "active": "Aktif",
+    "trialing": "Uji coba",
+    "past_due": "Menunggak",
+    "churned": "Berhenti",
+    "paid": "Lunas",
+    "open": "Terbuka",
+    "failed": "Gagal",
+    "current": "Saat ini",
+    "pending": "Menunggu",
+    "inviteSent": "Undangan terkirim"
+  },
+  "roles": {
+    "owner": "Pemilik",
+    "admin": "Admin",
+    "member": "Anggota"
+  },
+  "metrics": {
+    "mrr": {
+      "label": "Pendapatan berulang bulanan",
+      "hint": "Pendapatan terikat pada akhir bulan ini."
+    },
+    "subscribers": {
+      "label": "Pelanggan aktif",
+      "hint": "Akun berbayar atau sedang uji coba."
+    },
+    "nrr": {
+      "label": "Retensi pendapatan bersih",
+      "hint": "Ekspansi dikurangi kontraksi dan churn, dibanding bulan lalu."
+    },
+    "churn": {
+      "label": "Churn pendapatan",
+      "hint": "Porsi MRR awal yang hilang karena pembatalan."
+    },
+    "revenue": {
+      "label": "Pendapatan",
+      "hint": "Pendapatan terkumpul dalam rentang yang dipilih."
+    },
+    "signups": {
+      "label": "Pendaftar baru",
+      "hint": "Akun yang dibuat dalam rentang yang dipilih."
+    },
+    "conversion": {
+      "label": "Konversi uji coba",
+      "hint": "Uji coba yang menjadi langganan berbayar."
+    },
+    "churnedAccounts": {
+      "label": "Akun berhenti",
+      "hint": "Langganan yang dibatalkan dalam rentang yang dipilih."
+    }
+  },
+  "waterfall": {
+    "eyebrow": "MRR baru bersih bulan ini",
+    "opening": "Awal",
+    "closing": "Akhir",
+    "new": "Bisnis baru",
+    "expansion": "Ekspansi",
+    "contraction": "Kontraksi",
+    "churn": "Churn",
+    "aria": "Rincian pergerakan: bisnis baru {new}, ekspansi {expansion}, kontraksi {contraction}, churn {churn}."
+  },
+  "overview": {
+    "greeting": "Senang bertemu, {name}",
+    "subtitle": "Beginilah posisi pendapatan berulang bulan ini.",
+    "refresh": "Muat ulang angka",
+    "refreshFailed": "Gagal memuat ulang",
+    "loadFailed": "Angka-angka ini gagal dimuat",
+    "loadFailedBody": "Permintaan tidak selesai. Coba lagi.",
+    "mrrChart": "Pendapatan berulang bulanan",
+    "mrrChartSub": "Saldo akhir, 12 bulan terakhir",
+    "invoices": "Faktur terbaru",
+    "paymentFailed": "Pembayaran gagal"
+  },
+  "activity": {
+    "title": "Aktivitas",
+    "allSubscribers": "Semua pelanggan",
+    "emptyTitle": "Belum ada aktivitas",
+    "emptyBody": "Pendaftaran, peningkatan, dan pembatalan akan muncul di sini saat terjadi.",
+    "signup": "{company} memulai uji coba Growth",
+    "upgrade": "{company} naik ke {plan}",
+    "downgrade": "{company} turun ke {plan}",
+    "churn": "{company} membatalkan langganannya",
+    "payment": "Pembayaran diterima dari {company}",
+    "invite": "{company} mengundang 3 rekan tim"
+  },
+  "analytics": {
+    "title": "Analitik",
+    "range": "Rentang tanggal",
+    "ranges": {
+      "7d": {
+        "short": "7H",
+        "full": "7 hari terakhir"
+      },
+      "30d": {
+        "short": "30H",
+        "full": "30 hari terakhir"
+      },
+      "90d": {
+        "short": "90H",
+        "full": "90 hari terakhir"
+      },
+      "12m": {
+        "short": "12B",
+        "full": "12 bulan terakhir"
+      }
+    },
+    "loadFailed": "Analitik gagal dimuat",
+    "loadFailedBody": "Permintaan tidak selesai.",
+    "revenue": "Pendapatan",
+    "chartHint": "Arahkan kursor ke grafik, atau fokuskan lalu gunakan tombol panah, untuk membaca tiap titik.",
+    "signupsTitle": "Pendaftaran versus pembatalan",
+    "signupsSub": "Akun yang didapat dan hilang per periode",
+    "signupsLegend": "Pendaftaran",
+    "cancelledLegend": "Dibatalkan",
+    "planMix": "Komposisi paket",
+    "planMixSub": "Porsi MRR per paket",
+    "totalMrr": "Total MRR",
+    "shareOfMix": "{percent} dari komposisi paket",
+    "channelsTitle": "Asal pendaftaran",
+    "retentionTitle": "Retensi kohort",
+    "retentionSub": "Porsi kohort pendaftar yang masih berlangganan",
+    "totalAcrossPlans": "Total MRR seluruh paket:"
+  },
+  "channels": {
+    "organic": "Pencarian organik",
+    "direct": "Langsung",
+    "referral": "Rujukan produk",
+    "partner": "Daftar mitra",
+    "paidSocial": "Iklan media sosial"
+  },
+  "charts": {
+    "week": "M{n}",
+    "cohortMonth": "B{n}",
+    "noData": "Tidak ada data",
+    "lineSummary": "Grafik garis, {count} titik, dari {first} pada {firstValue} sampai {last} pada {lastValue}.",
+    "barSummary": "Grafik batang berkelompok membandingkan {primary} dan {secondary} sepanjang {count} periode.",
+    "donutSummary": "Grafik donat, total {total} untuk {count} paket."
+  },
+  "subscribers": {
+    "title": "Pelanggan",
+    "accounts": "Akun",
+    "combinedMrr": "Total MRR",
+    "seats": "Kursi",
+    "searchPlaceholder": "Cari akun, kontak, atau email",
+    "clearSearch": "Bersihkan pencarian",
+    "allPlans": "Semua paket",
+    "allStatuses": "Semua status",
+    "filterPlan": "Saring per paket",
+    "filterStatus": "Saring per status",
+    "clearFilters": "Bersihkan",
+    "refresh": "Muat ulang daftar",
+    "selectedOnPage": "{count} dipilih di halaman ini",
+    "exportCsv": "Ekspor CSV",
+    "clearSelection": "Batalkan pilihan",
+    "exportReady": "Ekspor siap",
+    "exportBody": "{count} baris diunduh sebagai CSV.",
+    "exportBodyOne": "1 baris diunduh sebagai CSV.",
+    "loadFailed": "Daftar pelanggan gagal dimuat",
+    "loadFailedBody": "Permintaan tidak selesai.",
+    "columnAccount": "Akun",
+    "columnContact": "Kontak",
+    "columnMrr": "MRR",
+    "columnSeats": "Kursi",
+    "columnStatus": "Status",
+    "selectAll": "Pilih semua baris di halaman ini",
+    "selectRow": "Pilih {name}",
+    "openDetails": "Buka detail untuk {name}",
+    "openDetailsLabel": "Buka detail",
+    "seenAt": "Terlihat {when}",
+    "emptyFiltered": "Tidak ada pelanggan yang cocok dengan saringan itu",
+    "emptyFilteredBody": "Coba pencarian yang lebih luas, atau bersihkan saringan untuk melihat semuanya.",
+    "empty": "Belum ada pelanggan",
+    "emptyBody": "Hubungkan penyedia penagihan Anda dan akun akan muncul di sini.",
+    "showing": "Menampilkan {from}–{to} dari {total}",
+    "rowsPerPage": "Baris per halaman",
+    "detail": {
+      "title": "Pelanggan",
+      "plan": "Paket",
+      "mrr": "Pendapatan berulang bulanan",
+      "seats": "Kursi",
+      "country": "Negara",
+      "since": "Berlangganan sejak",
+      "lastSeen": "Terakhir terlihat",
+      "email": "Kirim email ke pelanggan ini",
+      "billing": "Buka riwayat penagihan",
+      "billingNote": "Riwayat penagihan masih rintisan di demo. Sambungkan ke penyedia penagihan Anda di {path}."
+    }
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "tabs": {
+      "profile": "Profil",
+      "account": "Akun",
+      "notifications": "Notifikasi",
+      "billing": "Penagihan",
+      "members": "Tim"
+    },
+    "profile": {
+      "title": "Profil",
+      "description": "Bagaimana nama Anda tampil bagi rekan tim, dan ke mana Cadence mengirim hal yang ditujukan kepada Anda.",
+      "change": "Ubah",
+      "name": "Nama lengkap",
+      "email": "Alamat email",
+      "jobTitle": "Jabatan",
+      "jobPlaceholder": "Kepala Operasi Pendapatan",
+      "company": "Perusahaan",
+      "companyPlaceholder": "Northwind Labs",
+      "timezone": "Zona waktu",
+      "timezoneHelp": "Periode pelaporan dan pengiriman ringkasan mengikuti zona waktu ini.",
+      "saved": "Profil tersimpan",
+      "failed": "Gagal menyimpan profil Anda"
+    },
+    "account": {
+      "passwordTitle": "Kata sandi",
+      "passwordDescription": "Minimal 8 karakter, dengan huruf besar, huruf kecil, dan angka.",
+      "current": "Kata sandi saat ini",
+      "new": "Kata sandi baru",
+      "confirm": "Konfirmasi kata sandi baru",
+      "submit": "Perbarui kata sandi",
+      "updated": "Kata sandi diperbarui",
+      "updatedBody": "Gunakan kata sandi baru Anda saat masuk berikutnya.",
+      "failed": "Gagal memperbarui kata sandi",
+      "sessionsTitle": "Sesi",
+      "sessionsDescription": "Tempat akun Anda sedang masuk.",
+      "thisBrowser": "Peramban ini",
+      "signedInNow": "Masuk sekarang · akun dibuat {date}",
+      "dangerTitle": "Hapus akun ini",
+      "dangerDescription": "Menghapus akun Anda, ruang kerjanya, dan semua laporan di dalamnya. Ekspor tidak disimpan dan tindakan ini tidak bisa dibatalkan.",
+      "deleteButton": "Hapus akun",
+      "deleteBody": "Ini menghapus akun Anda dan semua laporan di ruang kerja. Ketik {word} untuk mengonfirmasi.",
+      "deleteConfirmLabel": "Ketik delete untuk mengonfirmasi",
+      "keepAccount": "Pertahankan akun saya",
+      "deleteDisabled": "Penghapusan akun dinonaktifkan di demo. Sambungkan ke endpoint Anda sendiri sebelum rilis.",
+      "deleteDisabledTitle": "Tidak tersedia di demo"
+    },
+    "notifications": {
+      "title": "Notifikasi",
+      "description": "Pilih apa yang Cadence beritahukan, dan ke mana notifikasinya dikirim.",
+      "paymentFailures": "Pembayaran gagal",
+      "paymentFailuresBody": "Saat sebuah tagihan ditolak, lengkap dengan akun dan nilai yang berisiko.",
+      "churnAlerts": "Pembatalan",
+      "churnAlertsBody": "Saat langganan dibatalkan, termasuk berapa nilainya.",
+      "newSignups": "Pendaftar baru",
+      "newSignupsBody": "Setiap akun baru. Tim yang ingin tenang mematikannya dan membaca ringkasan saja.",
+      "weeklyDigest": "Ringkasan mingguan",
+      "weeklyDigestBody": "Ringkasan Senin pagi tentang pergerakan minggu lalu, sesuai zona waktu Anda.",
+      "productUpdates": "Pembaruan produk",
+      "productUpdatesBody": "Catatan sesekali tentang apa yang berubah di Cadence.",
+      "whereTitle": "Ke mana dikirim",
+      "channelLabel": "Saluran pengiriman",
+      "email": "Email saja",
+      "slack": "Slack saja",
+      "both": "Email dan Slack",
+      "saved": "Pengaturan notifikasi tersimpan",
+      "failed": "Gagal menyimpan pengaturan notifikasi"
+    },
+    "billing": {
+      "planTitle": "Paket",
+      "planDescription": "Anda di paket Growth, ditagih bulanan per kursi yang terpakai.",
+      "perMonth": "{amount} per bulan · diperpanjang {date}",
+      "changePlan": "Ganti paket",
+      "cancel": "Batalkan",
+      "seatsInUse": "Kursi terpakai",
+      "seatsCount": "{used} dari {total}",
+      "seatNote": "Menambah satu kursi menambah {amount} pada faktur berikutnya, dihitung prorata.",
+      "paymentTitle": "Metode pembayaran",
+      "paymentDescription": "Ditagih setiap tanggal 1.",
+      "expires": "Berlaku sampai {date}",
+      "updateCard": "Perbarui kartu",
+      "historyTitle": "Riwayat faktur",
+      "historyDescription": "Semua faktur di ruang kerja ini, terbaru dahulu.",
+      "download": "Unduh faktur {number}"
+    },
+    "members": {
+      "title": "Tim",
+      "description": "Semua orang yang dapat membaca ruang kerja ini. Pemilik dan admin dapat mengundang yang lain.",
+      "invite": "Undang rekan tim",
+      "inviteEmail": "Alamat email",
+      "invitePlaceholder": "rekan{'@'}perusahaan.com",
+      "inviteRole": "Peran",
+      "roleMember": "Anggota — dapat membaca semua laporan",
+      "roleAdmin": "Admin — juga dapat mengelola tim dan penagihan",
+      "send": "Kirim undangan",
+      "sent": "Undangan terkirim",
+      "sentBody": "{email} kini dapat bergabung ke ruang kerja.",
+      "sendFailed": "Gagal mengirim undangan",
+      "removeLabel": "Keluarkan {name}",
+      "removed": "Anggota dikeluarkan",
+      "removedBody": "{name} tidak lagi memiliki akses.",
+      "removeFailed": "Gagal mengeluarkan anggota itu"
+    }
+  },
+  "marketing": {
+    "signIn": "Masuk",
+    "startTrial": "Mulai uji coba",
+    "openDashboard": "Buka dasbor",
+    "hero": {
+      "eyebrow": "Operasi pendapatan",
+      "title": "MRR Anda bergerak. Cadence memberitahu empat hal yang menggerakkannya.",
+      "body": "Bisnis baru, ekspansi, kontraksi, churn. Setiap bulan, direkonsiliasi ke akun dan fakturnya — sehingga angka di dek dewan direksi Anda adalah angka yang bisa Anda pertahankan.",
+      "primary": "Mulai uji coba",
+      "secondary": "Buka dasbor langsung",
+      "note": "14 hari di paket Growth. Tanpa kartu, tanpa panggilan sales.",
+      "caption": "Maret 2026 · 148 langganan · direkonsiliasi terhadap {amount} faktur lunas",
+      "usedBy": "Melaporkan pendapatan berulang di"
+    },
+    "capabilities": {
+      "eyebrow": "Yang Anda dapatkan",
+      "title": "Dibuat untuk rapat ketika angkanya dipertanyakan",
+      "movementTitle": "Pergerakan, bukan sekadar total",
+      "movementBody": "Total hanya memberitahu di mana Anda mendarat. Cadence menunjukkan empat gaya yang membawa Anda ke sana, masing-masing bisa ditelusuri sampai ke langganan yang bergerak.",
+      "invoicesTitle": "Direkonsiliasi ke faktur",
+      "invoicesBody": "Setiap angka terhubung kembali ke faktur yang sudah lunas. Ketika keuangan dan growth berbeda pendapat soal MRR, ada baris yang bisa ditunjuk.",
+      "cohortTitle": "Retensi per kohort",
+      "cohortBody": "Pantau tiap kohort pendaftar bertahan atau meluruh dari bulan ke bulan, sehingga kuartal akuisisi yang bagus tidak pernah menutupi retensi yang buruk.",
+      "alertsTitle": "Peringatan yang layak ditindak",
+      "alertsBody": "Pembayaran gagal pada akun $6.000 dan pada uji coba $12 bukan peristiwa yang sama. Cadence membedakannya sebelum memberitahu Anda."
+    },
+    "how": {
+      "eyebrow": "Cara kerja",
+      "title": "Tiga langkah, dengan urutan ini",
+      "step1Title": "Hubungkan penagihan Anda",
+      "step1Body": "Arahkan Cadence ke Stripe, Chargebee, atau tabel langganan Anda sendiri. Faktur historis terisi dalam hitungan menit.",
+      "step2Title": "Tetapkan definisi Anda",
+      "step2Body": "Putuskan apa yang dihitung sebagai ekspansi, kapan uji coba menjadi pendapatan, dan bagaimana memperlakukan pembayaran tahunan di muka. Cadence memegang aturan itu untuk semua orang.",
+      "step3Title": "Laporkan angka yang sama",
+      "step3Body": "Keuangan, growth, dan dewan direksi membaca dari satu dasbor. Tutup bulan menjadi tinjauan, bukan rekonsiliasi."
+    },
+    "proof": {
+      "quote": "Dulu tutup bulan berarti tiga orang membangun ulang spreadsheet yang sama. Sekarang cukup satu dasbor dan percakapan lima belas menit tentang langkah berikutnya.",
+      "author": "Hana Nakamura",
+      "role": "VP Keuangan, Northwind Labs",
+      "stat1Figure": "4 hari",
+      "stat1Label": "dipangkas dari proses tutup bulan di Northwind Labs",
+      "stat2Figure": "106,4%",
+      "stat2Label": "retensi pendapatan bersih, terlihat harian alih-alih kuartalan",
+      "stat3Figure": "1 sumber",
+      "stat3Label": "untuk setiap angka MRR di keuangan, growth, dan dewan direksi"
+    },
+    "pricing": {
+      "eyebrow": "Harga",
+      "title": "Dihitung per kursi, ditagih bulanan",
+      "body": "Semua paket melaporkan pendapatan tanpa batas. Anda membayar untuk orang yang membacanya.",
+      "perSeat": "per kursi / bulan",
+      "mostChosen": "Paling dipilih",
+      "talkToSales": "Hubungi sales",
+      "starterTagline": "Untuk pendiri yang butuh angkanya benar.",
+      "growthTagline": "Untuk tim pendapatan yang melapor tiap minggu.",
+      "scaleTagline": "Untuk tim keuangan yang harus mempertahankan angkanya.",
+      "starter1": "Hingga 5 kursi",
+      "starter2": "Rincian pergerakan MRR",
+      "starter3": "Riwayat 12 bulan",
+      "starter4": "Ringkasan email mingguan",
+      "growth1": "Hingga 25 kursi",
+      "growth2": "Retensi kohort",
+      "growth3": "Riwayat tanpa batas",
+      "growth4": "Peringatan pembayaran gagal",
+      "growth5": "Pengiriman via Slack",
+      "scale1": "Kursi tanpa batas",
+      "scale2": "Jejak audit tingkat faktur",
+      "scale3": "Aturan pendapatan khusus",
+      "scale4": "SSO dan SCIM",
+      "scale5": "Support engineer khusus"
+    },
+    "faq": {
+      "eyebrow": "Pertanyaan",
+      "title": "Sebelum Anda mulai",
+      "q1": "Apakah Cadence menggantikan sistem akuntansi kami?",
+      "a1": "Tidak. Cadence membaca dari penagihan dan melaporkan pendapatan berulang. Buku besar Anda tetap di tempatnya — Cadence hanya membuat keduanya berhenti berbeda pendapat.",
+      "q2": "Berapa lama waktu penyiapannya?",
+      "a2": "Menghubungkan penyedia penagihan butuh beberapa menit dan pengisian ulang berjalan pada faktur historis. Menyepakati definisi pendapatan Anda adalah bagian yang butuh percakapan, dan itulah bagian yang layak diberi waktu.",
+      "q3": "Apa bedanya ekspansi dan bisnis baru?",
+      "a3": "Anda yang menentukan, sekali saja. Penambahan kursi, peningkatan paket, dan pembelian add-on masing-masing bisa diklasifikasikan sebagai ekspansi atau bisnis baru, dan pilihan itu berlaku di mana-mana sehingga dua laporan tidak pernah berbeda.",
+      "q4": "Bisakah kami mengekspor datanya?",
+      "a4": "Setiap tampilan bisa diekspor ke CSV, dan API mengembalikan angka yang sama dengan yang ditampilkan dasbor. Tidak ada yang terkunci di balik antarmuka.",
+      "q5": "Apakah ada uji coba gratis?",
+      "a5": "Empat belas hari di paket Growth, tanpa kartu kredit. Jika data penagihan Anda belum tersambung sampai akhir masa itu, uji coba diperpanjang."
+    },
+    "cta": {
+      "title": "Cari tahu apa yang benar-benar bergerak bulan lalu",
+      "body": "Hubungkan penagihan, sepakati definisi Anda, dan berhenti membangun ulang spreadsheet."
+    },
+    "footer": {
+      "blurb": "Pelaporan pendapatan untuk bisnis berlangganan. Tahu apa yang bergerak, dan mengapa.",
+      "product": "Produk",
+      "company": "Perusahaan",
+      "resources": "Sumber daya",
+      "overview": "Ringkasan",
+      "changelog": "Catatan perubahan",
+      "about": "Tentang",
+      "customers": "Pelanggan",
+      "careers": "Karier",
+      "contact": "Kontak",
+      "docs": "Dokumentasi",
+      "api": "Referensi API",
+      "statusPage": "Status",
+      "security": "Keamanan",
+      "rights": "© {year} Cadence. Template dasbor Nuxt.",
+      "builtWith": "Dibangun dengan Nuxt 4, Nuxt UI, dan Tailwind CSS"
+    }
+  }
+}

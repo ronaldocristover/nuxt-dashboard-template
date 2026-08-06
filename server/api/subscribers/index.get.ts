@@ -54,6 +54,7 @@ export default defineEventHandler(async (event): Promise<SubscribersResponse> =>
   const start = (safePage - 1) * pageSize
 
   return {
+    generatedAt: new Date().toISOString(),
     rows: sorted.slice(start, start + pageSize),
     total: sorted.length,
     page: safePage,

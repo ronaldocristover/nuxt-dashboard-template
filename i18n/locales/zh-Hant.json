@@ -1,0 +1,593 @@
+{
+  "app": {
+    "name": "Cadence",
+    "description": "為訂閱制業務打造的營收報表"
+  },
+  "language": {
+    "label": "語言",
+    "change": "切換語言"
+  },
+  "common": {
+    "save": "儲存變更",
+    "cancel": "取消",
+    "close": "關閉",
+    "confirm": "確認",
+    "delete": "刪除",
+    "remove": "移除",
+    "edit": "編輯",
+    "refresh": "重新整理",
+    "retry": "重試",
+    "search": "搜尋",
+    "clear": "清除",
+    "loading": "載入中",
+    "optional": "選填",
+    "required": "必填",
+    "showPassword": "顯示密碼",
+    "hidePassword": "隱藏密碼",
+    "menu": "選單",
+    "openMenu": "開啟選單",
+    "vsPrevious": "與前一期相比",
+    "of": "共",
+    "copy": "複製",
+    "copied": "已複製"
+  },
+  "nav": {
+    "overview": "總覽",
+    "analytics": "分析",
+    "subscribers": "訂閱客戶",
+    "forms": "表單",
+    "layouts": "版面",
+    "settings": "設定",
+    "backToSite": "回到官網",
+    "documentation": "文件",
+    "product": "產品",
+    "howItWorks": "運作方式",
+    "pricing": "定價",
+    "faq": "常見問題",
+    "main": "主選單",
+    "mobile": "行動選單"
+  },
+  "account": {
+    "menu": "{name} 的帳戶選單",
+    "profile": "個人資料",
+    "notifications": "通知",
+    "billing": "帳務",
+    "lightTheme": "淺色主題",
+    "darkTheme": "深色主題",
+    "signOut": "登出",
+    "signOutFailed": "登出失敗"
+  },
+  "auth": {
+    "signIn": {
+      "title": "登入 Cadence",
+      "newHere": "第一次使用？",
+      "createAccount": "建立帳戶",
+      "email": "電子郵件",
+      "emailPlaceholder": "you{'@'}company.com",
+      "password": "密碼",
+      "passwordPlaceholder": "請輸入密碼",
+      "forgot": "忘記密碼？",
+      "remember": "30 天內保持登入",
+      "submit": "登入",
+      "failed": "無法登入",
+      "or": "或",
+      "socialNote": "第三方登入已接好，但在示範中停用。請參閱 {file} 以連接服務商。",
+      "demoTitle": "示範工作區",
+      "demoFill": "填入示範帳號"
+    },
+    "signUp": {
+      "title": "建立你的帳戶",
+      "haveAccount": "已經有帳戶了？",
+      "signIn": "登入",
+      "name": "姓名",
+      "namePlaceholder": "陳怡君",
+      "email": "工作電子郵件",
+      "password": "密碼",
+      "passwordPlaceholder": "至少 8 個字元",
+      "terms": "我同意{terms}與{privacy}。",
+      "termsLink": "服務條款",
+      "privacyLink": "隱私權政策",
+      "submit": "建立帳戶",
+      "trialNote": "Growth 方案 14 天試用，免信用卡。",
+      "created": "帳戶已建立",
+      "createdBody": "你的 14 天 Growth 試用已開始。",
+      "failed": "無法建立帳戶"
+    },
+    "forgot": {
+      "back": "回到登入頁",
+      "title": "重設密碼",
+      "body": "輸入帳戶綁定的電子郵件，我們會寄送設定新密碼的連結。",
+      "submit": "寄送重設連結",
+      "failed": "重設連結寄送失敗",
+      "sentTitle": "請查收信件",
+      "sentBody": "若 {email} 已註冊，重設連結正在寄送中。連結僅能使用一次，30 分鐘後失效。",
+      "devTitle": "僅限開發環境",
+      "devBody": "尚未設定郵件服務商，因此連結直接顯示在這裡。",
+      "devOpen": "開啟重設連結",
+      "useAnother": "換一個電子郵件"
+    },
+    "reset": {
+      "title": "設定新密碼",
+      "body": "請選一組你在 Cadence 沒用過的密碼。其他工作階段將被登出。",
+      "newPassword": "新密碼",
+      "confirmPassword": "確認新密碼",
+      "confirmPlaceholder": "再輸入一次",
+      "submit": "更新密碼",
+      "updated": "密碼已更新",
+      "updatedBody": "請使用新密碼登入。",
+      "failed": "無法更新密碼",
+      "brokenTitle": "這個連結不完整",
+      "brokenBody": "重設連結 30 分鐘後失效，且僅能使用一次。請重新申請，並直接從信箱開啟。",
+      "requestNew": "重新申請連結"
+    },
+    "strength": {
+      "0": "太短",
+      "1": "偏弱",
+      "2": "普通",
+      "3": "良好",
+      "4": "很強",
+      "hint": "請混用大小寫字母、數字與符號。"
+    },
+    "panel": {
+      "eyebrow": "營收營運",
+      "quote": "我們不再爭論 MRR 這個數字，而是開始討論下一步該做什麼。",
+      "author": "Hana Nakamura",
+      "role": "財務副總，Northwind Labs",
+      "point1": "每一筆 MRR 變動都能追溯到造成它的客戶",
+      "point2": "隨發票結清而更新的世代留存",
+      "point3": "付款失敗當下就通知，而不是隔週才知道",
+      "privacy": "隱私權",
+      "terms": "條款"
+    }
+  },
+  "validation": {
+    "email": {
+      "required": "請輸入電子郵件",
+      "invalid": "這看起來不像有效的電子郵件"
+    },
+    "password": {
+      "required": "請輸入密碼",
+      "currentRequired": "請輸入目前的密碼",
+      "confirmRequired": "請確認新密碼",
+      "tooShort": "至少需要 8 個字元",
+      "tooLong": "請少於 128 個字元",
+      "lowercase": "需包含小寫字母",
+      "uppercase": "需包含大寫字母",
+      "number": "需包含數字",
+      "mismatch": "兩次輸入的密碼必須相同"
+    },
+    "name": {
+      "required": "請輸入你的姓名",
+      "tooLong": "請少於 80 個字元"
+    },
+    "terms": "請先同意條款",
+    "token": {
+      "missing": "這個重設連結缺少權杖"
+    },
+    "timezone": "請選擇時區"
+  },
+  "errors": {
+    "expired": "登入狀態已過期，請重新登入。",
+    "forbidden": "你沒有存取權限。",
+    "notFound": "找不到你要的內容。",
+    "rateLimited": "嘗試次數過多，請稍候再試。",
+    "server": "我們這邊出了點問題，請稍後再試。",
+    "generic": "請求未成功。請檢查網路後重試。",
+    "toastTitle": "操作未成功",
+    "page404Title": "這個頁面不存在",
+    "page404Body": "連結可能已過期，或頁面已搬移。儀表板和首頁都還在原本的位置。",
+    "page403Title": "你無權存取這個頁面",
+    "page403Body": "你的帳戶已登入，但沒有檢視這個頁面的權限。工作區管理員可以為你開通。",
+    "page500Title": "這個頁面載入失敗",
+    "page500Body": "請求已送達但未完成。重試通常有效；若仍失敗，狀態頁會說明原因。",
+    "backToDashboard": "回到儀表板",
+    "backHome": "回到首頁",
+    "technical": "技術細節"
+  },
+  "plans": {
+    "starter": "Starter",
+    "growth": "Growth",
+    "scale": "Scale"
+  },
+  "status": {
+    "active": "使用中",
+    "trialing": "試用中",
+    "past_due": "逾期",
+    "churned": "已流失",
+    "paid": "已付款",
+    "open": "待付款",
+    "failed": "失敗",
+    "current": "目前",
+    "pending": "待處理",
+    "inviteSent": "邀請已寄出"
+  },
+  "roles": {
+    "owner": "擁有者",
+    "admin": "管理員",
+    "member": "成員"
+  },
+  "metrics": {
+    "mrr": {
+      "label": "每月經常性收入",
+      "hint": "本月結算時的確認營收。"
+    },
+    "subscribers": {
+      "label": "使用中的訂閱客戶",
+      "hint": "付費方案或試用中的客戶。"
+    },
+    "nrr": {
+      "label": "淨營收留存率",
+      "hint": "擴張營收扣除縮減與流失，與上月相比。"
+    },
+    "churn": {
+      "label": "營收流失率",
+      "hint": "期初 MRR 中因取消而損失的比例。"
+    },
+    "revenue": {
+      "label": "營收",
+      "hint": "所選期間內已收取的營收。"
+    },
+    "signups": {
+      "label": "新註冊",
+      "hint": "所選期間內建立的帳戶。"
+    },
+    "conversion": {
+      "label": "試用轉換率",
+      "hint": "轉為付費訂閱的試用客戶。"
+    },
+    "churnedAccounts": {
+      "label": "流失帳戶",
+      "hint": "所選期間內取消的訂閱。"
+    }
+  },
+  "waterfall": {
+    "eyebrow": "本月淨新增 MRR",
+    "opening": "期初",
+    "closing": "期末",
+    "new": "新增業務",
+    "expansion": "擴張",
+    "contraction": "縮減",
+    "churn": "流失",
+    "aria": "變動明細：新增業務 {new}，擴張 {expansion}，縮減 {contraction}，流失 {churn}。"
+  },
+  "overview": {
+    "greeting": "歡迎回來，{name}",
+    "subtitle": "這是本月經常性收入的狀況。",
+    "refresh": "重新整理數字",
+    "refreshFailed": "重新整理失敗",
+    "loadFailed": "無法載入這些數字",
+    "loadFailedBody": "請求未完成，請重試。",
+    "mrrChart": "每月經常性收入",
+    "mrrChartSub": "期末餘額，近 12 個月",
+    "invoices": "最近的發票",
+    "paymentFailed": "付款失敗"
+  },
+  "activity": {
+    "title": "動態",
+    "allSubscribers": "全部訂閱客戶",
+    "emptyTitle": "尚無動態",
+    "emptyBody": "註冊、升級與取消發生時會顯示在這裡。",
+    "signup": "{company} 開始了 Growth 試用",
+    "upgrade": "{company} 升級到 {plan}",
+    "downgrade": "{company} 降級到 {plan}",
+    "churn": "{company} 取消了訂閱",
+    "payment": "收到來自 {company} 的付款",
+    "invite": "{company} 邀請了 3 位同事"
+  },
+  "analytics": {
+    "title": "分析",
+    "range": "時間範圍",
+    "ranges": {
+      "7d": {
+        "short": "7天",
+        "full": "最近 7 天"
+      },
+      "30d": {
+        "short": "30天",
+        "full": "最近 30 天"
+      },
+      "90d": {
+        "short": "90天",
+        "full": "最近 90 天"
+      },
+      "12m": {
+        "short": "12月",
+        "full": "最近 12 個月"
+      }
+    },
+    "loadFailed": "無法載入分析資料",
+    "loadFailedBody": "請求未完成。",
+    "revenue": "營收",
+    "chartHint": "將游標移到圖表上，或聚焦後使用方向鍵，即可查看個別資料點。",
+    "signupsTitle": "註冊與取消對照",
+    "signupsSub": "各期間新增與流失的帳戶",
+    "signupsLegend": "註冊",
+    "cancelledLegend": "取消",
+    "planMix": "方案組成",
+    "planMixSub": "各方案的 MRR 占比",
+    "totalMrr": "MRR 總額",
+    "shareOfMix": "占方案組成的 {percent}",
+    "channelsTitle": "註冊來源",
+    "retentionTitle": "世代留存",
+    "retentionSub": "註冊世代中仍在訂閱的比例",
+    "totalAcrossPlans": "所有方案的 MRR 總額："
+  },
+  "channels": {
+    "organic": "自然搜尋",
+    "direct": "直接造訪",
+    "referral": "產品推薦",
+    "partner": "合作夥伴名錄",
+    "paidSocial": "社群廣告"
+  },
+  "charts": {
+    "week": "第{n}週",
+    "cohortMonth": "第{n}月",
+    "noData": "沒有資料",
+    "lineSummary": "折線圖，共 {count} 個資料點，從 {first} 的 {firstValue} 到 {last} 的 {lastValue}。",
+    "barSummary": "分組長條圖，比較 {count} 個期間的{primary}與{secondary}。",
+    "donutSummary": "環圈圖，{count} 個方案合計 {total}。"
+  },
+  "subscribers": {
+    "title": "訂閱客戶",
+    "accounts": "客戶數",
+    "combinedMrr": "MRR 合計",
+    "seats": "席次",
+    "searchPlaceholder": "搜尋客戶、聯絡人或電子郵件",
+    "clearSearch": "清除搜尋",
+    "allPlans": "所有方案",
+    "allStatuses": "所有狀態",
+    "filterPlan": "依方案篩選",
+    "filterStatus": "依狀態篩選",
+    "clearFilters": "清除",
+    "refresh": "重新整理清單",
+    "selectedOnPage": "本頁已選 {count} 筆",
+    "exportCsv": "匯出 CSV",
+    "clearSelection": "取消選取",
+    "exportReady": "匯出完成",
+    "exportBody": "已下載 {count} 列 CSV。",
+    "exportBodyOne": "已下載 1 列 CSV。",
+    "loadFailed": "無法載入訂閱客戶",
+    "loadFailedBody": "請求未完成。",
+    "columnAccount": "客戶",
+    "columnContact": "聯絡人",
+    "columnMrr": "MRR",
+    "columnSeats": "席次",
+    "columnStatus": "狀態",
+    "selectAll": "選取本頁所有列",
+    "selectRow": "選取 {name}",
+    "openDetails": "開啟 {name} 的詳細資料",
+    "openDetailsLabel": "開啟詳細資料",
+    "seenAt": "活躍於{when}",
+    "emptyFiltered": "沒有符合篩選條件的訂閱客戶",
+    "emptyFilteredBody": "試試更寬鬆的搜尋，或清除篩選以檢視全部。",
+    "empty": "還沒有訂閱客戶",
+    "emptyBody": "連接你的金流服務商後，客戶會顯示在這裡。",
+    "showing": "顯示第 {from}–{to} 筆，共 {total} 筆",
+    "rowsPerPage": "每頁列數",
+    "detail": {
+      "title": "訂閱客戶",
+      "plan": "方案",
+      "mrr": "每月經常性收入",
+      "seats": "席次",
+      "country": "國家/地區",
+      "since": "訂閱起始",
+      "lastSeen": "最近活躍",
+      "email": "寄信給這位客戶",
+      "billing": "查看帳務紀錄",
+      "billingNote": "帳務紀錄在示範中只是佔位。請在 {path} 接上你的金流服務商。"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "tabs": {
+      "profile": "個人資料",
+      "account": "帳戶",
+      "notifications": "通知",
+      "billing": "帳務",
+      "members": "團隊"
+    },
+    "profile": {
+      "title": "個人資料",
+      "description": "你的名字如何呈現給同事，以及 Cadence 把給你的內容寄到哪裡。",
+      "change": "更換",
+      "name": "姓名",
+      "email": "電子郵件",
+      "jobTitle": "職稱",
+      "jobPlaceholder": "營收營運主管",
+      "company": "公司",
+      "companyPlaceholder": "Northwind Labs",
+      "timezone": "時區",
+      "timezoneHelp": "報表期間與摘要寄送時間都依這個時區。",
+      "saved": "個人資料已儲存",
+      "failed": "無法儲存你的個人資料"
+    },
+    "account": {
+      "passwordTitle": "密碼",
+      "passwordDescription": "至少 8 個字元，需包含大小寫字母與數字。",
+      "current": "目前的密碼",
+      "new": "新密碼",
+      "confirm": "確認新密碼",
+      "submit": "更新密碼",
+      "updated": "密碼已更新",
+      "updatedBody": "下次登入請使用新密碼。",
+      "failed": "無法更新密碼",
+      "sessionsTitle": "工作階段",
+      "sessionsDescription": "你的帳戶目前登入的位置。",
+      "thisBrowser": "這個瀏覽器",
+      "signedInNow": "目前已登入 · 帳戶建立於 {date}",
+      "dangerTitle": "刪除這個帳戶",
+      "dangerDescription": "將刪除你的帳戶、工作區以及其中所有報表。匯出內容不會保留，且無法復原。",
+      "deleteButton": "刪除帳戶",
+      "deleteBody": "這會刪除你的帳戶與工作區內所有報表。請輸入 {word} 以確認。",
+      "deleteConfirmLabel": "輸入 delete 以確認",
+      "keepAccount": "保留我的帳戶",
+      "deleteDisabled": "示範環境停用了帳戶刪除。上線前請接上你自己的端點。",
+      "deleteDisabledTitle": "示範中無法使用"
+    },
+    "notifications": {
+      "title": "通知",
+      "description": "選擇 Cadence 要通知你的內容，以及送達的方式。",
+      "paymentFailures": "付款失敗",
+      "paymentFailuresBody": "扣款失敗的當下就通知，含相關客戶與風險金額。",
+      "churnAlerts": "取消訂閱",
+      "churnAlertsBody": "訂閱被取消時通知，包含其價值。",
+      "newSignups": "新註冊",
+      "newSignupsBody": "每個新帳戶。想要清靜的團隊可以關掉，改看摘要。",
+      "weeklyDigest": "每週摘要",
+      "weeklyDigestBody": "週一早上彙整上週變動，依你的時區寄送。",
+      "productUpdates": "產品更新",
+      "productUpdatesBody": "偶爾說明 Cadence 有哪些變化。",
+      "whereTitle": "要寄到哪裡",
+      "channelLabel": "遞送管道",
+      "email": "只用電子郵件",
+      "slack": "只用 Slack",
+      "both": "電子郵件與 Slack",
+      "saved": "通知設定已儲存",
+      "failed": "無法儲存通知設定"
+    },
+    "billing": {
+      "planTitle": "方案",
+      "planDescription": "你目前使用 Growth 方案，依實際使用席次每月計費。",
+      "perMonth": "每月 {amount} · 於 {date} 續約",
+      "changePlan": "變更方案",
+      "cancel": "取消訂閱",
+      "seatsInUse": "已用席次",
+      "seatsCount": "{used} / {total}",
+      "seatNote": "每增加一個席次，下期發票增加 {amount}，按比例計算。",
+      "paymentTitle": "付款方式",
+      "paymentDescription": "每月 1 日扣款。",
+      "expires": "有效期至 {date}",
+      "updateCard": "更新信用卡",
+      "historyTitle": "發票紀錄",
+      "historyDescription": "這個工作區的所有發票，最新的在最前面。",
+      "download": "下載發票 {number}"
+    },
+    "members": {
+      "title": "團隊",
+      "description": "可以檢視這個工作區的所有人。擁有者與管理員可以邀請其他人。",
+      "invite": "邀請同事",
+      "inviteEmail": "電子郵件",
+      "invitePlaceholder": "teammate{'@'}company.com",
+      "inviteRole": "角色",
+      "roleMember": "成員 — 可檢視所有報表",
+      "roleAdmin": "管理員 — 還可管理團隊與帳務",
+      "send": "寄送邀請",
+      "sent": "邀請已寄出",
+      "sentBody": "{email} 現在可以加入這個工作區。",
+      "sendFailed": "無法寄送邀請",
+      "removeLabel": "移除 {name}",
+      "removed": "成員已移除",
+      "removedBody": "{name} 已無存取權限。",
+      "removeFailed": "無法移除這位成員"
+    }
+  },
+  "marketing": {
+    "signIn": "登入",
+    "startTrial": "免費試用",
+    "openDashboard": "開啟儀表板",
+    "hero": {
+      "eyebrow": "營收營運",
+      "title": "你的 MRR 變了。Cadence 告訴你是哪四件事讓它變的。",
+      "body": "新增業務、擴張、縮減、流失。每個月都與客戶和發票逐筆核對——讓董事會簡報上的數字，是你守得住的數字。",
+      "primary": "免費試用",
+      "secondary": "開啟線上儀表板",
+      "note": "Growth 方案 14 天。免信用卡，免業務電話。",
+      "caption": "2026 年 3 月 · 148 筆訂閱 · 已與 {amount} 的已結清發票核對",
+      "usedBy": "以下團隊正用它掌握經常性收入"
+    },
+    "capabilities": {
+      "eyebrow": "你會得到什麼",
+      "title": "為了數字被質疑的那場會議而生",
+      "movementTitle": "看變動，而不只是總額",
+      "movementBody": "總額只告訴你落在哪裡。Cadence 呈現把你帶到那裡的四股力量，每一股都能追溯到實際變動的那筆訂閱。",
+      "invoicesTitle": "與發票逐筆核對",
+      "invoicesBody": "每個數字都能回溯到一張已結清的發票。當財務與成長團隊對 MRR 有分歧時，總有一列可以指著看。",
+      "cohortTitle": "依世代看留存",
+      "cohortBody": "逐月觀察每個註冊世代是守住還是衰退，讓獲客亮眼的一季無法掩蓋留存不佳的事實。",
+      "alertsTitle": "值得處理的通知",
+      "alertsBody": "6,000 美元帳戶的扣款失敗，和 12 美元試用的扣款失敗不是同一件事。Cadence 會先分清楚，再通知你。"
+    },
+    "how": {
+      "eyebrow": "運作方式",
+      "title": "三個步驟，照這個順序",
+      "step1Title": "接上你的金流",
+      "step1Body": "把 Cadence 指向 Stripe、Chargebee，或你自己的訂閱資料表。歷史發票幾分鐘內完成回填。",
+      "step2Title": "確認你的認列標準",
+      "step2Body": "決定什麼算擴張、試用何時計入營收、年繳預收如何處理。Cadence 為所有人守住這些規則。",
+      "step3Title": "報同一個數字",
+      "step3Body": "財務、成長與董事會看同一個儀表板。月結從對帳變成檢討。"
+    },
+    "proof": {
+      "quote": "以前月結要三個人重建同一份試算表。現在只要一個儀表板，加上十五分鐘討論下一步。",
+      "author": "Hana Nakamura",
+      "role": "財務副總，Northwind Labs",
+      "stat1Figure": "4 天",
+      "stat1Label": "Northwind Labs 月結所縮短的時間",
+      "stat2Figure": "106.4%",
+      "stat2Label": "淨營收留存率，每天可見而非每季",
+      "stat3Figure": "1 個來源",
+      "stat3Label": "財務、成長與董事會的每個 MRR 數字都出自同一處"
+    },
+    "pricing": {
+      "eyebrow": "定價",
+      "title": "依席次計價，按月結算",
+      "body": "所有方案都不限營收規模。你只為閱讀它的人付費。",
+      "perSeat": "每席次 / 每月",
+      "mostChosen": "最多人選",
+      "talkToSales": "聯絡業務",
+      "starterTagline": "適合需要數字正確的創辦人。",
+      "growthTagline": "適合每週回報的營收團隊。",
+      "scaleTagline": "適合必須守住數字的財務團隊。",
+      "starter1": "最多 5 個席次",
+      "starter2": "MRR 變動明細",
+      "starter3": "12 個月歷史資料",
+      "starter4": "每週電子郵件摘要",
+      "growth1": "最多 25 個席次",
+      "growth2": "世代留存",
+      "growth3": "不限歷史資料",
+      "growth4": "付款失敗通知",
+      "growth5": "Slack 遞送",
+      "scale1": "不限席次",
+      "scale2": "發票層級稽核軌跡",
+      "scale3": "自訂營收規則",
+      "scale4": "SSO 與 SCIM",
+      "scale5": "專屬支援工程師"
+    },
+    "faq": {
+      "eyebrow": "常見問題",
+      "title": "開始之前",
+      "q1": "Cadence 會取代我們的會計系統嗎？",
+      "a1": "不會。Cadence 從金流系統讀取資料並回報經常性收入。你的總帳仍在原處——Cadence 只是讓兩者不再互相矛盾。",
+      "q2": "設定要花多久？",
+      "a2": "接上金流服務商只要幾分鐘，歷史發票會自動回填。真正花時間的是就營收認列標準取得共識，而那也正是值得花時間的部分。",
+      "q3": "擴張與新增業務怎麼區分？",
+      "a3": "由你決定一次就好。席次增加、方案升級與加購都可以各自歸類為擴張或新增業務，而且這個選擇全域生效，兩份報表不會再出現分歧。",
+      "q4": "資料可以匯出嗎？",
+      "a4": "每個檢視都能匯出成 CSV，API 回傳的數字與儀表板完全一致。沒有任何資料被鎖在介面背後。",
+      "q5": "有免費試用嗎？",
+      "a5": "Growth 方案十四天，免信用卡。若到期時你的金流資料仍未接上，試用會自動延長。"
+    },
+    "cta": {
+      "title": "看清上個月究竟是什麼在變",
+      "body": "接上金流、確認認列標準，從此不必再重建試算表。"
+    },
+    "footer": {
+      "blurb": "為訂閱制業務打造的營收報表。知道什麼在變，以及為什麼。",
+      "product": "產品",
+      "company": "公司",
+      "resources": "資源",
+      "overview": "總覽",
+      "changelog": "更新紀錄",
+      "about": "關於我們",
+      "customers": "客戶案例",
+      "careers": "徵才",
+      "contact": "聯絡我們",
+      "docs": "文件",
+      "api": "API 參考",
+      "statusPage": "服務狀態",
+      "security": "安全性",
+      "rights": "© {year} Cadence，一個 Nuxt 儀表板模板。",
+      "builtWith": "以 Nuxt 4、Nuxt UI 與 Tailwind CSS 打造"
+    }
+  }
+}

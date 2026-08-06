@@ -1,19 +1,29 @@
 <script setup lang="ts">
-import type { SeriesPoint } from '#shared/types'
-import { formatCurrencyCompact, formatMetric, formatNumber, formatPercent } from '#shared/format'
+import type { Granularity, SeriesPoint } from '#shared/types'
 import { monotonePath, niceTicks, thinLabels } from '~/utils/chart'
 
 const props = withDefaults(defineProps<{
   points: SeriesPoint[]
+  /** How to word the x-axis ticks. */
+  granularity?: Granularity
   format?: 'currency' | 'number' | 'percent'
   height?: number
   /** Any CSS colour. Defaults to the brand accent. */
   color?: string
 }>(), {
+  granularity: 'month',
   format: 'currency',
   height: 260,
   color: 'var(--ui-primary)'
 })
+
+const { t } = useI18n()
+const fmt = useFormat()
+
+/** The printed x-axis label for a point. */
+function pointLabel(point: SeriesPoint): string {
+  return fmt.value.axis(point.at, props.granularity)
+}
 
 const { el, width } = useElementWidth()
 
@@ -88,9 +98,9 @@ function labelAnchor(index: number): 'start' | 'middle' | 'end' {
 }
 
 function tickLabel(value: number): string {
-  if (props.format === 'currency') return formatCurrencyCompact(value)
-  if (props.format === 'percent') return formatPercent(value, 0)
-  return formatNumber(value)
+  if (props.format === 'currency') return fmt.value.currencyCompact(value)
+  if (props.format === 'percent') return fmt.value.percent(value, 0)
+  return fmt.value.number(value)
 }
 
 // --- Interaction --------------------------------------------------------------
@@ -144,10 +154,16 @@ const tooltipStyle = computed(() => {
 })
 
 const summary = computed(() => {
-  if (props.points.length === 0) return 'No data available'
+  if (props.points.length === 0) return t('charts.noData')
   const first = props.points[0]!
   const last = props.points[props.points.length - 1]!
-  return `Line chart, ${props.points.length} points, from ${first.label} at ${formatMetric(first.value, props.format)} to ${last.label} at ${formatMetric(last.value, props.format)}.`
+  return t('charts.lineSummary', {
+    count: props.points.length,
+    first: pointLabel(first),
+    firstValue: fmt.value.metric(first.value, props.format),
+    last: pointLabel(last),
+    lastValue: fmt.value.metric(last.value, props.format)
+  })
 })
 
 const gradientId = useId()
@@ -221,13 +237,13 @@ const gradientId = useId()
         <text
           v-for="(point, index) in points"
           v-show="visibleLabels.has(index)"
-          :key="point.label"
+          :key="point.at"
           :x="xAt(index)"
           :y="height - 6"
           :text-anchor="labelAnchor(index)"
           class="fill-dimmed text-[10px]"
         >
-          {{ point.label }}
+          {{ pointLabel(point) }}
         </text>
       </g>
 
@@ -259,10 +275,10 @@ const gradientId = useId()
       :style="tooltipStyle"
     >
       <p class="text-[10px] uppercase tracking-wide text-inverted/70">
-        {{ activePoint.label }}
+        {{ pointLabel(activePoint) }}
       </p>
       <p class="tnum text-sm font-semibold text-inverted">
-        {{ formatMetric(activePoint.value, format) }}
+        {{ fmt.metric(activePoint.value, format) }}
       </p>
     </div>
   </div>

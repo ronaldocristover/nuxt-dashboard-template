@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { scorePassword, signUpSchema, type SignUpInput } from '#shared/schemas'
+import { createSignUpSchema, scorePassword, type SignUpInput } from '#shared/schemas'
 
 definePageMeta({ layout: 'auth', middleware: 'guest' })
 
+const { t } = useI18n()
+const { signUp } = useAuth()
+const { notify, notifySuccess } = useApiError()
+
 useSeoMeta({
-  title: 'Create your account',
-  description: 'Start a 14-day Cadence trial. No card required.',
+  title: () => t('auth.signUp.title'),
   robots: 'noindex'
 })
 
-const { signUp } = useAuth()
-const { notify, notifySuccess } = useApiError()
+const schema = computed(() => createSignUpSchema(t))
 
 const state = reactive({
   name: '',
@@ -25,17 +27,16 @@ const showPassword = ref(false)
 
 const strength = computed(() => scorePassword(state.password))
 
-const STRENGTH_LABELS = ['Too short', 'Weak', 'Fair', 'Good', 'Strong'] as const
 const STRENGTH_COLORS = ['bg-error', 'bg-error', 'bg-warning', 'bg-info', 'bg-success'] as const
 
 async function onSubmit(event: FormSubmitEvent<SignUpInput>) {
   loading.value = true
   try {
     await signUp(event.data)
-    notifySuccess('Account created', 'Your 14-day Growth trial has started.')
+    notifySuccess(t('auth.signUp.created'), t('auth.signUp.createdBody'))
     await navigateTo('/dashboard')
   } catch (error) {
-    notify(error, 'Could not create your account')
+    notify(error, t('auth.signUp.failed'))
   } finally {
     loading.value = false
   }
@@ -45,48 +46,48 @@ async function onSubmit(event: FormSubmitEvent<SignUpInput>) {
 <template>
   <div>
     <h1 class="font-display text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl">
-      Create your account
+      {{ $t('auth.signUp.title') }}
     </h1>
     <p class="mt-2 text-sm text-muted">
-      Already have one?
+      {{ $t('auth.signUp.haveAccount') }}
       <NuxtLink to="/login" class="font-medium text-primary underline-offset-2 hover:underline">
-        Sign in
+        {{ $t('auth.signUp.signIn') }}
       </NuxtLink>
     </p>
 
     <UForm
-      :schema="signUpSchema"
+      :schema="schema"
       :state="state"
       class="mt-7 space-y-4"
       @submit="onSubmit"
     >
-      <UFormField label="Full name" name="name" required>
+      <UFormField :label="$t('auth.signUp.name')" name="name" required>
         <UInput
           v-model="state.name"
           autocomplete="name"
-          placeholder="Amara Adeyemi"
+          :placeholder="$t('auth.signUp.namePlaceholder')"
           size="lg"
           class="w-full"
         />
       </UFormField>
 
-      <UFormField label="Work email" name="email" required>
+      <UFormField :label="$t('auth.signUp.email')" name="email" required>
         <UInput
           v-model="state.email"
           type="email"
           autocomplete="email"
-          placeholder="you@company.com"
+          :placeholder="$t('auth.signIn.emailPlaceholder')"
           size="lg"
           class="w-full"
         />
       </UFormField>
 
-      <UFormField label="Password" name="password" required>
+      <UFormField :label="$t('auth.signUp.password')" name="password" required>
         <UInput
           v-model="state.password"
           :type="showPassword ? 'text' : 'password'"
           autocomplete="new-password"
-          placeholder="At least 8 characters"
+          :placeholder="$t('auth.signUp.passwordPlaceholder')"
           size="lg"
           class="w-full"
         >
@@ -96,7 +97,7 @@ async function onSubmit(event: FormSubmitEvent<SignUpInput>) {
               variant="link"
               size="sm"
               :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-              :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              :aria-label="showPassword ? $t('common.hidePassword') : $t('common.showPassword')"
               :aria-pressed="showPassword"
               @click="showPassword = !showPassword"
             />
@@ -114,7 +115,7 @@ async function onSubmit(event: FormSubmitEvent<SignUpInput>) {
             />
           </div>
           <p class="mt-1.5 text-xs text-muted" aria-live="polite">
-            {{ STRENGTH_LABELS[strength] }} — mix upper and lower case, a number, and a symbol.
+            {{ $t(`auth.strength.${strength}`) }} — {{ $t('auth.strength.hint') }}
           </p>
         </div>
       </UFormField>
@@ -122,26 +123,32 @@ async function onSubmit(event: FormSubmitEvent<SignUpInput>) {
       <UFormField name="terms">
         <UCheckbox v-model="state.terms" name="terms">
           <template #label>
-            <span class="text-sm text-muted">
-              I agree to the
-              <NuxtLink to="/" class="text-primary underline-offset-2 hover:underline">terms of service</NuxtLink>
-              and
-              <NuxtLink to="/" class="text-primary underline-offset-2 hover:underline">privacy policy</NuxtLink>.
-            </span>
+            <i18n-t keypath="auth.signUp.terms" tag="span" class="text-sm text-muted" scope="global">
+              <template #terms>
+                <NuxtLink to="/" class="text-primary underline-offset-2 hover:underline">
+                  {{ $t('auth.signUp.termsLink') }}
+                </NuxtLink>
+              </template>
+              <template #privacy>
+                <NuxtLink to="/" class="text-primary underline-offset-2 hover:underline">
+                  {{ $t('auth.signUp.privacyLink') }}
+                </NuxtLink>
+              </template>
+            </i18n-t>
           </template>
         </UCheckbox>
       </UFormField>
 
       <UButton
         type="submit"
-        label="Create account"
+        :label="$t('auth.signUp.submit')"
         size="lg"
         block
         :loading="loading"
       />
 
       <p class="text-center text-xs text-dimmed">
-        14 days on Growth. No card required.
+        {{ $t('auth.signUp.trialNote') }}
       </p>
     </UForm>
   </div>

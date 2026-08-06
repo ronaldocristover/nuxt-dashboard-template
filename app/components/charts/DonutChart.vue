@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { formatCurrency, formatPercent } from '#shared/format'
-
 /**
  * Donut for a three-to-five slice composition, with the total in the middle.
  *
@@ -9,7 +7,12 @@ import { formatCurrency, formatPercent } from '#shared/format'
  */
 const props = defineProps<{
   slices: Array<{ label: string, value: number, color: string }>
+  /** Shown in the middle when no slice is hovered. */
+  totalLabel: string
 }>()
+
+const { t } = useI18n()
+const fmt = useFormat()
 
 const SIZE = 200
 const CENTER = SIZE / 2
@@ -58,7 +61,7 @@ const focused = computed(() => (active.value === null ? null : arcs.value[active
         :viewBox="`0 0 ${SIZE} ${SIZE}`"
         class="size-44 -rotate-90"
         role="img"
-        :aria-label="`Donut chart, total ${formatCurrency(total)} across ${slices.length} plans.`"
+        :aria-label="t('charts.donutSummary', { total: fmt.currency(total), count: slices.length })"
       >
         <circle
           :cx="CENTER"
@@ -89,13 +92,13 @@ const focused = computed(() => (active.value === null ? null : arcs.value[active
 
       <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
         <p class="eyebrow text-dimmed">
-          {{ focused ? focused.label : 'Total MRR' }}
+          {{ focused ? focused.label : totalLabel }}
         </p>
         <p class="tnum text-xl font-semibold text-highlighted">
-          {{ formatCurrency(focused ? focused.value : total) }}
+          {{ fmt.currency(focused ? focused.value : total) }}
         </p>
         <p v-if="focused" class="tnum text-xs text-muted">
-          {{ formatPercent(focused.share * 100, 0) }} of plan mix
+          {{ $t('analytics.shareOfMix', { percent: fmt.percent(focused.share * 100, 0) }) }}
         </p>
       </div>
     </div>
@@ -114,7 +117,7 @@ const focused = computed(() => (active.value === null ? null : arcs.value[active
           <span class="truncate text-sm text-default">{{ arc.label }}</span>
         </span>
         <span class="tnum shrink-0 text-sm font-medium text-highlighted">
-          {{ formatPercent(arc.share * 100, 0) }}
+          {{ fmt.percent(arc.share * 100, 0) }}
         </span>
       </li>
     </ul>

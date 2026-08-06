@@ -1,0 +1,593 @@
+{
+  "app": {
+    "name": "Cadence",
+    "description": "Revenue reporting for subscription businesses"
+  },
+  "language": {
+    "label": "Language",
+    "change": "Change language"
+  },
+  "common": {
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "remove": "Remove",
+    "edit": "Edit",
+    "refresh": "Refresh",
+    "retry": "Try again",
+    "search": "Search",
+    "clear": "Clear",
+    "loading": "Loading",
+    "optional": "Optional",
+    "required": "Required",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "vsPrevious": "vs previous period",
+    "of": "of",
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "nav": {
+    "overview": "Overview",
+    "analytics": "Analytics",
+    "subscribers": "Subscribers",
+    "forms": "Forms",
+    "layouts": "Layouts",
+    "settings": "Settings",
+    "backToSite": "Back to site",
+    "documentation": "Documentation",
+    "product": "Product",
+    "howItWorks": "How it works",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "main": "Main",
+    "mobile": "Mobile"
+  },
+  "account": {
+    "menu": "Account menu for {name}",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "billing": "Billing",
+    "lightTheme": "Light theme",
+    "darkTheme": "Dark theme",
+    "signOut": "Sign out",
+    "signOutFailed": "Could not sign out"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign in to Cadence",
+      "newHere": "New here?",
+      "createAccount": "Create an account",
+      "email": "Email address",
+      "emailPlaceholder": "you{'@'}company.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgot": "Forgot your password?",
+      "remember": "Keep me signed in for 30 days",
+      "submit": "Sign in",
+      "failed": "Could not sign you in",
+      "or": "or",
+      "socialNote": "Social sign-in is wired up but disabled in the demo. See {file} to connect a provider.",
+      "demoTitle": "Demo workspace",
+      "demoFill": "Fill in demo credentials"
+    },
+    "signUp": {
+      "title": "Create your account",
+      "haveAccount": "Already have one?",
+      "signIn": "Sign in",
+      "name": "Full name",
+      "namePlaceholder": "Amara Adeyemi",
+      "email": "Work email",
+      "password": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "terms": "I agree to the {terms} and {privacy}.",
+      "termsLink": "terms of service",
+      "privacyLink": "privacy policy",
+      "submit": "Create account",
+      "trialNote": "14 days on Growth. No card required.",
+      "created": "Account created",
+      "createdBody": "Your 14-day Growth trial has started.",
+      "failed": "Could not create your account"
+    },
+    "forgot": {
+      "back": "Back to sign in",
+      "title": "Reset your password",
+      "body": "Enter the email address on your account and we will send a link to set a new password.",
+      "submit": "Send reset link",
+      "failed": "Could not send the reset link",
+      "sentTitle": "Check your inbox",
+      "sentBody": "If {email} has an account, a reset link is on its way. The link works once and expires in 30 minutes.",
+      "devTitle": "Development only",
+      "devBody": "No email provider is configured, so the link is shown here.",
+      "devOpen": "Open reset link",
+      "useAnother": "Use a different email"
+    },
+    "reset": {
+      "title": "Set a new password",
+      "body": "Choose a password you have not used on Cadence before. You will be signed out of other sessions.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "confirmPlaceholder": "Type it again",
+      "submit": "Update password",
+      "updated": "Password updated",
+      "updatedBody": "Sign in with your new password.",
+      "failed": "Could not update your password",
+      "brokenTitle": "This link is incomplete",
+      "brokenBody": "Reset links expire after 30 minutes and work only once. Request a fresh one and open it directly from your inbox.",
+      "requestNew": "Request a new link"
+    },
+    "strength": {
+      "0": "Too short",
+      "1": "Weak",
+      "2": "Fair",
+      "3": "Good",
+      "4": "Strong",
+      "hint": "mix upper and lower case, a number, and a symbol."
+    },
+    "panel": {
+      "eyebrow": "Revenue operations",
+      "quote": "We stopped arguing about the MRR number and started arguing about what to do next.",
+      "author": "Hana Nakamura",
+      "role": "VP Finance, Northwind Labs",
+      "point1": "Every MRR movement traced to the account that caused it",
+      "point2": "Cohort retention that updates as invoices settle",
+      "point3": "Alerts the hour a payment fails, not the week after",
+      "privacy": "Privacy",
+      "terms": "Terms"
+    }
+  },
+  "validation": {
+    "email": {
+      "required": "Enter your email address",
+      "invalid": "That does not look like an email address"
+    },
+    "password": {
+      "required": "Enter your password",
+      "currentRequired": "Enter your current password",
+      "confirmRequired": "Confirm your new password",
+      "tooShort": "Use at least 8 characters",
+      "tooLong": "Use fewer than 128 characters",
+      "lowercase": "Include a lowercase letter",
+      "uppercase": "Include an uppercase letter",
+      "number": "Include a number",
+      "mismatch": "Both passwords must match"
+    },
+    "name": {
+      "required": "Enter your full name",
+      "tooLong": "Use fewer than 80 characters"
+    },
+    "terms": "Accept the terms to continue",
+    "token": {
+      "missing": "This reset link is missing its token"
+    },
+    "timezone": "Pick a timezone"
+  },
+  "errors": {
+    "expired": "Your session has expired. Sign in again to continue.",
+    "forbidden": "You do not have access to that.",
+    "notFound": "We could not find what you were looking for.",
+    "rateLimited": "Too many attempts. Wait a moment and try again.",
+    "server": "Something broke on our side. Try again in a moment.",
+    "generic": "That did not go through. Check your connection and try again.",
+    "toastTitle": "That did not work",
+    "page404Title": "That page does not exist",
+    "page404Body": "The link may be out of date, or the page may have moved. The dashboard and the home page are both still where you left them.",
+    "page403Title": "You do not have access to this",
+    "page403Body": "Your account is signed in but is not permitted to view this page. An admin on your workspace can change that.",
+    "page500Title": "This page could not be loaded",
+    "page500Body": "The request reached us but did not complete. Trying again often works; if it does not, the status page will say why.",
+    "backToDashboard": "Back to the dashboard",
+    "backHome": "Back to the home page",
+    "technical": "Technical detail"
+  },
+  "plans": {
+    "starter": "Starter",
+    "growth": "Growth",
+    "scale": "Scale"
+  },
+  "status": {
+    "active": "Active",
+    "trialing": "Trialing",
+    "past_due": "Past due",
+    "churned": "Churned",
+    "paid": "Paid",
+    "open": "Open",
+    "failed": "Failed",
+    "current": "Current",
+    "pending": "Pending",
+    "inviteSent": "Invite sent"
+  },
+  "roles": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "member": "Member"
+  },
+  "metrics": {
+    "mrr": {
+      "label": "Monthly recurring revenue",
+      "hint": "Committed revenue at the close of this month."
+    },
+    "subscribers": {
+      "label": "Active subscribers",
+      "hint": "Accounts on a paid plan or in trial."
+    },
+    "nrr": {
+      "label": "Net revenue retention",
+      "hint": "Expansion minus contraction and churn, against last month."
+    },
+    "churn": {
+      "label": "Revenue churn",
+      "hint": "Share of opening MRR lost to cancellations."
+    },
+    "revenue": {
+      "label": "Revenue",
+      "hint": "Collected revenue across the selected range."
+    },
+    "signups": {
+      "label": "New signups",
+      "hint": "Accounts created in the selected range."
+    },
+    "conversion": {
+      "label": "Trial conversion",
+      "hint": "Trials that became paid subscriptions."
+    },
+    "churnedAccounts": {
+      "label": "Churned accounts",
+      "hint": "Subscriptions cancelled in the selected range."
+    }
+  },
+  "waterfall": {
+    "eyebrow": "Net new MRR this month",
+    "opening": "Opening",
+    "closing": "Closing",
+    "new": "New business",
+    "expansion": "Expansion",
+    "contraction": "Contraction",
+    "churn": "Churn",
+    "aria": "Movement breakdown: new business {new}, expansion {expansion}, contraction {contraction}, churn {churn}."
+  },
+  "overview": {
+    "greeting": "Good to see you, {name}",
+    "subtitle": "Here is where recurring revenue stands this month.",
+    "refresh": "Refresh figures",
+    "refreshFailed": "Could not refresh",
+    "loadFailed": "These figures could not be loaded",
+    "loadFailedBody": "The request did not complete. Try again.",
+    "mrrChart": "Monthly recurring revenue",
+    "mrrChartSub": "Closing balance, trailing 12 months",
+    "invoices": "Recent invoices",
+    "paymentFailed": "Payment failed"
+  },
+  "activity": {
+    "title": "Activity",
+    "allSubscribers": "All subscribers",
+    "emptyTitle": "No activity yet",
+    "emptyBody": "Signups, upgrades and cancellations will appear here as they happen.",
+    "signup": "{company} started a Growth trial",
+    "upgrade": "{company} upgraded to {plan}",
+    "downgrade": "{company} moved down to {plan}",
+    "churn": "{company} cancelled their subscription",
+    "payment": "Payment received from {company}",
+    "invite": "{company} invited 3 teammates"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "range": "Date range",
+    "ranges": {
+      "7d": {
+        "short": "7D",
+        "full": "Last 7 days"
+      },
+      "30d": {
+        "short": "30D",
+        "full": "Last 30 days"
+      },
+      "90d": {
+        "short": "90D",
+        "full": "Last 90 days"
+      },
+      "12m": {
+        "short": "12M",
+        "full": "Last 12 months"
+      }
+    },
+    "loadFailed": "Analytics could not be loaded",
+    "loadFailedBody": "The request did not complete.",
+    "revenue": "Revenue",
+    "chartHint": "Hover the chart, or focus it and use the arrow keys, to read individual points.",
+    "signupsTitle": "Signups against cancellations",
+    "signupsSub": "Accounts gained and lost per period",
+    "signupsLegend": "Signups",
+    "cancelledLegend": "Cancelled",
+    "planMix": "Plan mix",
+    "planMixSub": "Share of MRR by plan",
+    "totalMrr": "Total MRR",
+    "shareOfMix": "{percent} of plan mix",
+    "channelsTitle": "Where signups come from",
+    "retentionTitle": "Cohort retention",
+    "retentionSub": "Share of a signup cohort still subscribed",
+    "totalAcrossPlans": "Total MRR across all plans:"
+  },
+  "channels": {
+    "organic": "Organic search",
+    "direct": "Direct",
+    "referral": "Product referral",
+    "partner": "Partner listings",
+    "paidSocial": "Paid social"
+  },
+  "charts": {
+    "week": "W{n}",
+    "cohortMonth": "M{n}",
+    "noData": "No data available",
+    "lineSummary": "Line chart, {count} points, from {first} at {firstValue} to {last} at {lastValue}.",
+    "barSummary": "Grouped bar chart comparing {primary} and {secondary} across {count} periods.",
+    "donutSummary": "Donut chart, total {total} across {count} plans."
+  },
+  "subscribers": {
+    "title": "Subscribers",
+    "accounts": "Accounts",
+    "combinedMrr": "Combined MRR",
+    "seats": "Seats",
+    "searchPlaceholder": "Search account, contact or email",
+    "clearSearch": "Clear search",
+    "allPlans": "All plans",
+    "allStatuses": "All statuses",
+    "filterPlan": "Filter by plan",
+    "filterStatus": "Filter by status",
+    "clearFilters": "Clear",
+    "refresh": "Refresh list",
+    "selectedOnPage": "{count} selected on this page",
+    "exportCsv": "Export CSV",
+    "clearSelection": "Clear selection",
+    "exportReady": "Export ready",
+    "exportBody": "{count} rows downloaded as CSV.",
+    "exportBodyOne": "1 row downloaded as CSV.",
+    "loadFailed": "Subscribers could not be loaded",
+    "loadFailedBody": "The request did not complete.",
+    "columnAccount": "Account",
+    "columnContact": "Contact",
+    "columnMrr": "MRR",
+    "columnSeats": "Seats",
+    "columnStatus": "Status",
+    "selectAll": "Select all rows on this page",
+    "selectRow": "Select {name}",
+    "openDetails": "Open details for {name}",
+    "openDetailsLabel": "Open details",
+    "seenAt": "Seen {when}",
+    "emptyFiltered": "No subscribers match those filters",
+    "emptyFilteredBody": "Try a broader search, or clear the filters to see everyone.",
+    "empty": "No subscribers yet",
+    "emptyBody": "Connect your billing provider and accounts will appear here.",
+    "showing": "Showing {from}–{to} of {total}",
+    "rowsPerPage": "Rows per page",
+    "detail": {
+      "title": "Subscriber",
+      "plan": "Plan",
+      "mrr": "Monthly recurring revenue",
+      "seats": "Seats",
+      "country": "Country",
+      "since": "Subscribed since",
+      "lastSeen": "Last seen",
+      "email": "Email this subscriber",
+      "billing": "Open billing history",
+      "billingNote": "Billing history is a stub in the demo. Wire it to your billing provider in {path}."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "profile": "Profile",
+      "account": "Account",
+      "notifications": "Notifications",
+      "billing": "Billing",
+      "members": "Team"
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "How your name appears to teammates, and where Cadence sends anything addressed to you.",
+      "change": "Change",
+      "name": "Full name",
+      "email": "Email address",
+      "jobTitle": "Job title",
+      "jobPlaceholder": "Head of Revenue Operations",
+      "company": "Company",
+      "companyPlaceholder": "Northwind Labs",
+      "timezone": "Timezone",
+      "timezoneHelp": "Reporting periods and digest delivery follow this timezone.",
+      "saved": "Profile saved",
+      "failed": "Could not save your profile"
+    },
+    "account": {
+      "passwordTitle": "Password",
+      "passwordDescription": "At least 8 characters, with upper and lower case and a number.",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "submit": "Update password",
+      "updated": "Password updated",
+      "updatedBody": "Use your new password next time you sign in.",
+      "failed": "Could not update your password",
+      "sessionsTitle": "Sessions",
+      "sessionsDescription": "Where your account is currently signed in.",
+      "thisBrowser": "This browser",
+      "signedInNow": "Signed in now · account created {date}",
+      "dangerTitle": "Delete this account",
+      "dangerDescription": "Removes your account, its workspace and every report in it. Exports are not kept and this cannot be undone.",
+      "deleteButton": "Delete account",
+      "deleteBody": "This removes your account and every report in the workspace. Type {word} to confirm.",
+      "deleteConfirmLabel": "Type delete to confirm",
+      "keepAccount": "Keep my account",
+      "deleteDisabled": "Account deletion is disabled in the demo. Wire it to your own endpoint before shipping.",
+      "deleteDisabledTitle": "Not available in the demo"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Choose what Cadence tells you about, and where it arrives.",
+      "paymentFailures": "Failed payments",
+      "paymentFailuresBody": "The moment a charge fails, with the account and the amount at risk.",
+      "churnAlerts": "Cancellations",
+      "churnAlertsBody": "When a subscription is cancelled, including what it was worth.",
+      "newSignups": "New signups",
+      "newSignupsBody": "Every new account. Quiet teams leave this off and read the digest instead.",
+      "weeklyDigest": "Weekly digest",
+      "weeklyDigestBody": "Monday morning summary of last week's movement, in your timezone.",
+      "productUpdates": "Product updates",
+      "productUpdatesBody": "Occasional notes about what changed in Cadence.",
+      "whereTitle": "Where to send them",
+      "channelLabel": "Delivery channel",
+      "email": "Email only",
+      "slack": "Slack only",
+      "both": "Email and Slack",
+      "saved": "Notification settings saved",
+      "failed": "Could not save your notification settings"
+    },
+    "billing": {
+      "planTitle": "Plan",
+      "planDescription": "You are on Growth, billed monthly per seat in use.",
+      "perMonth": "{amount} per month · renews {date}",
+      "changePlan": "Change plan",
+      "cancel": "Cancel",
+      "seatsInUse": "Seats in use",
+      "seatsCount": "{used} of {total}",
+      "seatNote": "Adding a seat adds {amount} to your next invoice, prorated.",
+      "paymentTitle": "Payment method",
+      "paymentDescription": "Charged on the first of each month.",
+      "expires": "Expires {date}",
+      "updateCard": "Update card",
+      "historyTitle": "Invoice history",
+      "historyDescription": "Every invoice on this workspace, newest first.",
+      "download": "Download invoice {number}"
+    },
+    "members": {
+      "title": "Team",
+      "description": "Everyone who can read this workspace. Owners and admins can invite others.",
+      "invite": "Invite a teammate",
+      "inviteEmail": "Email address",
+      "invitePlaceholder": "teammate{'@'}company.com",
+      "inviteRole": "Role",
+      "roleMember": "Member — can read every report",
+      "roleAdmin": "Admin — can also manage the team and billing",
+      "send": "Send invitation",
+      "sent": "Invitation sent",
+      "sentBody": "{email} can now join the workspace.",
+      "sendFailed": "Could not send the invitation",
+      "removeLabel": "Remove {name}",
+      "removed": "Member removed",
+      "removedBody": "{name} no longer has access.",
+      "removeFailed": "Could not remove that member"
+    }
+  },
+  "marketing": {
+    "signIn": "Sign in",
+    "startTrial": "Start free trial",
+    "openDashboard": "Open dashboard",
+    "hero": {
+      "eyebrow": "Revenue operations",
+      "title": "Your MRR moved. Cadence tells you which four things moved it.",
+      "body": "New business, expansion, contraction, churn. Every month, reconciled to the account and the invoice — so the number in your board deck is one you can defend.",
+      "primary": "Start free trial",
+      "secondary": "Open the live dashboard",
+      "note": "14 days on Growth. No card, no sales call.",
+      "caption": "March 2026 · 148 subscriptions · reconciled against {amount} of settled invoices",
+      "usedBy": "Reporting on recurring revenue at"
+    },
+    "capabilities": {
+      "eyebrow": "What you get",
+      "title": "Built for the meeting where the number gets questioned",
+      "movementTitle": "Movement, not just totals",
+      "movementBody": "A total tells you where you landed. Cadence shows the four forces that got you there, each one traceable down to the subscription that moved.",
+      "invoicesTitle": "Reconciled to invoices",
+      "invoicesBody": "Every figure ties back to a settled invoice. When finance and growth disagree about MRR, there is a row to point at.",
+      "cohortTitle": "Retention by cohort",
+      "cohortBody": "Watch each signup cohort hold or decay month over month, so a good quarter for acquisition never hides a bad one for retention.",
+      "alertsTitle": "Alerts worth acting on",
+      "alertsBody": "A failed payment on a $6,000 account and one on a $12 trial are not the same event. Cadence tells them apart before it tells you."
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "title": "Three steps, in this order",
+      "step1Title": "Connect your billing",
+      "step1Body": "Point Cadence at Stripe, Chargebee, or your own subscriptions table. Historical invoices backfill in minutes.",
+      "step2Title": "Confirm your definitions",
+      "step2Body": "Decide what counts as expansion, when a trial becomes revenue, and how to treat annual prepayment. Cadence holds those rules for everyone.",
+      "step3Title": "Report the same number",
+      "step3Body": "Finance, growth and the board read from one dashboard. Month-end becomes a review, not a reconciliation."
+    },
+    "proof": {
+      "quote": "Month-end used to be three people rebuilding the same spreadsheet. Now it is one dashboard and a fifteen-minute conversation about what to do next.",
+      "author": "Hana Nakamura",
+      "role": "VP Finance, Northwind Labs",
+      "stat1Figure": "4 days",
+      "stat1Label": "cut from month-end close at Northwind Labs",
+      "stat2Figure": "106.4%",
+      "stat2Label": "net revenue retention, visible daily instead of quarterly",
+      "stat3Figure": "1 source",
+      "stat3Label": "for every MRR figure across finance, growth and the board"
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "title": "Priced per seat, billed monthly",
+      "body": "Every plan reports on unlimited revenue. You pay for the people reading it.",
+      "perSeat": "per seat / month",
+      "mostChosen": "Most chosen",
+      "talkToSales": "Talk to sales",
+      "starterTagline": "For a founder who needs the number to be right.",
+      "growthTagline": "For a revenue team that reports every week.",
+      "scaleTagline": "For finance teams who have to defend the figure.",
+      "starter1": "Up to 5 seats",
+      "starter2": "MRR movement breakdown",
+      "starter3": "12 months of history",
+      "starter4": "Weekly email digest",
+      "growth1": "Up to 25 seats",
+      "growth2": "Cohort retention",
+      "growth3": "Unlimited history",
+      "growth4": "Failed payment alerts",
+      "growth5": "Slack delivery",
+      "scale1": "Unlimited seats",
+      "scale2": "Invoice-level audit trail",
+      "scale3": "Custom revenue rules",
+      "scale4": "SSO and SCIM",
+      "scale5": "Named support engineer"
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "Before you start",
+      "q1": "Does Cadence replace our accounting system?",
+      "a1": "No. Cadence reads from billing and reports on recurring revenue. Your ledger stays where it is — Cadence just stops the two from disagreeing.",
+      "q2": "How long does setup take?",
+      "a2": "Connecting a billing provider takes a few minutes and backfill runs on historical invoices. Agreeing your revenue definitions is the part that takes a conversation, and it is the part worth spending time on.",
+      "q3": "What counts as expansion versus new business?",
+      "a3": "You decide, once. Seat increases, plan upgrades and add-on purchases can each be classified as expansion or as new business, and the choice applies everywhere so two reports never disagree.",
+      "q4": "Can we export the data?",
+      "a4": "Every view exports to CSV, and the API returns the same figures the dashboard shows. Nothing is trapped behind the interface.",
+      "q5": "Is there a free trial?",
+      "a5": "Fourteen days on the Growth plan, no card required. If your billing data is not connected by the end of it, the trial extends."
+    },
+    "cta": {
+      "title": "Find out what actually moved last month",
+      "body": "Connect billing, agree your definitions, and stop rebuilding the spreadsheet."
+    },
+    "footer": {
+      "blurb": "Revenue reporting for subscription businesses. Know what moved, and why.",
+      "product": "Product",
+      "company": "Company",
+      "resources": "Resources",
+      "overview": "Overview",
+      "changelog": "Changelog",
+      "about": "About",
+      "customers": "Customers",
+      "careers": "Careers",
+      "contact": "Contact",
+      "docs": "Documentation",
+      "api": "API reference",
+      "statusPage": "Status",
+      "security": "Security",
+      "rights": "© {year} Cadence. A Nuxt dashboard template.",
+      "builtWith": "Built with Nuxt 4, Nuxt UI and Tailwind CSS"
+    }
+  }
+}

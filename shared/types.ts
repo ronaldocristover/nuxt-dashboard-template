@@ -36,8 +36,6 @@ export interface Subscriber {
   avatarColor: string
   joinedAt: string
   lastSeenAt: string
-  /** Preformatted on the server so relative labels can't drift at hydration. */
-  lastSeenLabel: string
 }
 
 /**
@@ -53,38 +51,63 @@ export interface MrrMovement {
   ending: number
 }
 
+/**
+ * A point carries a timestamp, not a printed label. Month and day names differ
+ * per language, so the axis label is built on the client from `at` and the
+ * response's `granularity`.
+ */
 export interface SeriesPoint {
-  label: string
+  at: string
   value: number
 }
 
 export interface DualSeriesPoint {
-  label: string
+  at: string
   primary: number
   secondary: number
 }
 
+export type Granularity = 'day' | 'week' | 'month'
+
+/** Acquisition channels are a fixed set, so they travel as keys. */
+export type ChannelKey = 'organic' | 'direct' | 'referral' | 'partner' | 'paidSocial'
+
+export interface ChannelPoint {
+  key: ChannelKey
+  value: number
+}
+
+/** Months since a cohort signed up: 0 is the signup month. */
+export interface RetentionPoint {
+  month: number
+  value: number
+}
+
 export interface Metric {
+  /** Looked up in the `metrics.*` translations for its label and hint. */
   key: string
-  label: string
   value: number
   /** Percentage change against the previous period. */
   delta: number
   format: 'currency' | 'number' | 'percent'
   /** Whether a rise is good news. Churn rate rising is not. */
   riseIsGood: boolean
-  hint: string
   sparkline: number[]
 }
 
+/**
+ * The event carries its parts, not a sentence. The client composes the wording
+ * so it can be written in the reader's language — a server-built string would
+ * be stuck in whatever language the server chose.
+ */
 export interface ActivityEvent {
   id: string
   kind: 'signup' | 'upgrade' | 'downgrade' | 'churn' | 'payment' | 'invite'
   actor: string
-  description: string
+  company: string
+  plan: Plan
   amount?: number
   at: string
-  atLabel: string
 }
 
 export interface Invoice {
@@ -97,6 +120,9 @@ export interface Invoice {
 }
 
 export interface OverviewResponse {
+  /** The moment this payload was built. Relative times are measured from it,
+      so the server and the client always agree on "3 hours ago". */
+  generatedAt: string
   metrics: Metric[]
   movement: MrrMovement
   mrrSeries: SeriesPoint[]
@@ -110,13 +136,17 @@ export interface AnalyticsResponse {
   range: RangeKey
   metrics: Metric[]
   revenue: SeriesPoint[]
+  /** How to label the revenue axis: daily ticks or monthly ones. */
+  granularity: Granularity
   signupsVsChurn: DualSeriesPoint[]
-  planMix: Array<{ label: string, value: number, plan: Plan }>
-  channels: SeriesPoint[]
-  retention: SeriesPoint[]
+  signupsGranularity: Granularity
+  planMix: Array<{ plan: Plan, value: number }>
+  channels: ChannelPoint[]
+  retention: RetentionPoint[]
 }
 
 export interface SubscribersResponse {
+  generatedAt: string
   rows: Subscriber[]
   total: number
   page: number
@@ -132,7 +162,8 @@ export interface TeamMember {
   role: 'owner' | 'admin' | 'member'
   status: 'active' | 'invited'
   avatarColor: string
-  lastSeenLabel: string
+  /** `null` while an invitation is still outstanding. */
+  lastSeenAt: string | null
 }
 
 export interface NotificationPreferences {

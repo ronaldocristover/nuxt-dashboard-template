@@ -1,33 +1,35 @@
 <script setup lang="ts">
-const columns = [
+const { t } = useI18n()
+
+const columns = computed(() => [
   {
-    title: 'Product',
+    title: t('marketing.footer.product'),
     links: [
-      { label: 'Overview', to: '#product' },
-      { label: 'How it works', to: '#how' },
-      { label: 'Pricing', to: '#pricing' },
-      { label: 'Changelog', to: '#' }
+      { label: t('marketing.footer.overview'), to: '#product' },
+      { label: t('nav.howItWorks'), to: '#how' },
+      { label: t('nav.pricing'), to: '#pricing' },
+      { label: t('marketing.footer.changelog'), to: '#' }
     ]
   },
   {
-    title: 'Company',
+    title: t('marketing.footer.company'),
     links: [
-      { label: 'About', to: '#' },
-      { label: 'Customers', to: '#proof' },
-      { label: 'Careers', to: '#' },
-      { label: 'Contact', to: '#' }
+      { label: t('marketing.footer.about'), to: '#' },
+      { label: t('marketing.footer.customers'), to: '#proof' },
+      { label: t('marketing.footer.careers'), to: '#' },
+      { label: t('marketing.footer.contact'), to: '#' }
     ]
   },
   {
-    title: 'Resources',
+    title: t('marketing.footer.resources'),
     links: [
-      { label: 'Documentation', to: '#' },
-      { label: 'API reference', to: '#' },
-      { label: 'Status', to: '#' },
-      { label: 'Security', to: '#' }
+      { label: t('marketing.footer.docs'), to: '#' },
+      { label: t('marketing.footer.api'), to: '#' },
+      { label: t('marketing.footer.statusPage'), to: '#' },
+      { label: t('marketing.footer.security'), to: '#' }
     ]
   }
-]
+])
 
 const social = [
   { icon: 'i-simple-icons-github', label: 'GitHub', to: 'https://github.com' },
@@ -43,7 +45,7 @@ const social = [
         <div class="max-w-xs">
           <AppLogo />
           <p class="mt-3 text-sm text-muted">
-            Revenue reporting for subscription businesses. Know what moved, and why.
+            {{ $t('marketing.footer.blurb') }}
           </p>
           <div class="mt-5 flex gap-1">
             <UButton
@@ -58,6 +60,9 @@ const social = [
               target="_blank"
               rel="noopener"
             />
+          </div>
+          <div class="mt-4">
+            <LanguageSwitcher variant="ghost" />
           </div>
         </div>
 
@@ -80,10 +85,10 @@ const social = [
 
       <div class="mt-10 flex flex-col gap-3 border-t border-default pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p class="text-xs text-dimmed">
-          &copy; {{ new Date().getFullYear() }} Cadence. A Nuxt dashboard template.
+          {{ $t('marketing.footer.rights', { year: new Date().getFullYear() }) }}
         </p>
         <p class="text-xs text-dimmed">
-          Built with Nuxt 4, Nuxt UI and Tailwind CSS
+          {{ $t('marketing.footer.builtWith') }}
         </p>
       </div>
     </div>

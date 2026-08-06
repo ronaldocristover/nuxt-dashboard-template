@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { OverviewResponse } from '#shared/types'
-import { formatCurrencyExact, formatDate } from '#shared/format'
 
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-useSeoMeta({ title: 'Overview', robots: 'noindex' })
-
+const { t } = useI18n()
 const { user } = useAuth()
 const { notify } = useApiError()
+const fmt = useFormat()
+
+useSeoMeta({ title: () => t('nav.overview'), robots: 'noindex' })
 
 const { data, status, error, refresh } = await useApiFetch<OverviewResponse>('/api/metrics/overview')
 
@@ -20,26 +21,26 @@ async function onRefresh() {
   try {
     await refresh()
   } catch (cause) {
-    notify(cause, 'Could not refresh')
+    notify(cause, t('overview.refreshFailed'))
   } finally {
     refreshing.value = false
   }
 }
 
-const INVOICE_STATUS = {
-  paid: { label: 'Paid', color: 'success' as const },
-  open: { label: 'Open', color: 'neutral' as const },
-  failed: { label: 'Failed', color: 'error' as const }
-}
+const INVOICE_COLOR = {
+  paid: 'success',
+  open: 'neutral',
+  failed: 'error'
+} as const
 
 /** Greets by first name only — a dashboard is not a formal letter. */
-const firstName = computed(() => user.value?.name?.split(' ')[0] ?? 'there')
+const firstName = computed(() => user.value?.name?.split(' ')[0] ?? '')
 </script>
 
 <template>
   <UDashboardPanel id="overview">
     <template #header>
-      <UDashboardNavbar title="Overview">
+      <UDashboardNavbar :title="$t('nav.overview')">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -49,12 +50,12 @@ const firstName = computed(() => user.value?.name?.split(' ')[0] ?? 'there')
             color="neutral"
             variant="ghost"
             :loading="refreshing"
-            aria-label="Refresh figures"
+            :aria-label="$t('overview.refresh')"
             @click="onRefresh"
           />
           <UButton
             to="/dashboard/analytics"
-            label="Analytics"
+            :label="$t('nav.analytics')"
             trailing-icon="i-lucide-arrow-right"
             size="sm"
             class="hidden sm:inline-flex"
@@ -67,10 +68,10 @@ const firstName = computed(() => user.value?.name?.split(' ')[0] ?? 'there')
       <div class="space-y-4 sm:space-y-5">
         <div>
           <h2 class="font-display text-xl font-semibold tracking-tight text-highlighted sm:text-2xl">
-            Good to see you, {{ firstName }}
+            {{ $t('overview.greeting', { name: firstName }) }}
           </h2>
           <p class="mt-1 text-sm text-muted">
-            Here is where recurring revenue stands this month.
+            {{ $t('overview.subtitle') }}
           </p>
         </div>
 
@@ -79,9 +80,9 @@ const firstName = computed(() => user.value?.name?.split(' ')[0] ?? 'there')
           color="error"
           variant="subtle"
           icon="i-lucide-circle-alert"
-          title="These figures could not be loaded"
-          :description="error.statusMessage ?? 'The request did not complete. Try again.'"
-          :actions="[{ label: 'Try again', variant: 'subtle', color: 'error', onClick: onRefresh }]"
+          :title="$t('overview.loadFailed')"
+          :description="$t('overview.loadFailedBody')"
+          :actions="[{ label: $t('common.retry'), variant: 'subtle', color: 'error', onClick: onRefresh }]"
         />
 
         <template v-else>
@@ -110,13 +111,14 @@ const firstName = computed(() => user.value?.name?.split(' ')[0] ?? 'there')
             </div>
 
             <ChartsChartFrame
-              title="Monthly recurring revenue"
-              subtitle="Closing balance, trailing 12 months"
+              :title="$t('overview.mrrChart')"
+              :subtitle="$t('overview.mrrChartSub')"
               :height="248"
             >
               <ChartsAreaChart
                 v-if="data"
                 :points="data.mrrSeries"
+                granularity="month"
                 format="currency"
                 :height="248"
               />
@@ -124,16 +126,20 @@ const firstName = computed(() => user.value?.name?.split(' ')[0] ?? 'there')
           </div>
 
           <div class="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] xl:gap-5">
-            <ActivityFeed :events="data?.activity ?? []" :loading="pending" />
+            <ActivityFeed
+              :events="data?.activity ?? []"
+              :generated-at="data?.generatedAt"
+              :loading="pending"
+            />
 
             <div class="rounded-[calc(var(--ui-radius)*1.5)] bg-default ring ring-default">
               <div class="flex items-center justify-between gap-3 border-b border-default px-4 py-3.5 sm:px-5">
                 <h3 class="text-sm font-semibold text-highlighted">
-                  Recent invoices
+                  {{ $t('overview.invoices') }}
                 </h3>
                 <UBadge
                   v-if="data?.invoices.some(invoice => invoice.status === 'failed')"
-                  label="Payment failed"
+                  :label="$t('overview.paymentFailed')"
                   color="error"
                   variant="subtle"
                   size="sm"
@@ -155,15 +161,15 @@ const firstName = computed(() => user.value?.name?.split(' ')[0] ?? 'there')
                       {{ invoice.subscriber }}
                     </p>
                     <p class="tnum mt-0.5 text-xs text-dimmed">
-                      {{ invoice.number }} · {{ formatDate(invoice.issuedAt) }}
+                      {{ invoice.number }} · {{ fmt.date(invoice.issuedAt) }}
                     </p>
                   </div>
                   <span class="tnum shrink-0 text-sm text-default">
-                    {{ formatCurrencyExact(invoice.amount) }}
+                    {{ fmt.currencyExact(invoice.amount) }}
                   </span>
                   <UBadge
-                    :label="INVOICE_STATUS[invoice.status].label"
-                    :color="INVOICE_STATUS[invoice.status].color"
+                    :label="$t(`status.${invoice.status}`)"
+                    :color="INVOICE_COLOR[invoice.status]"
                     variant="subtle"
                     size="sm"
                     class="shrink-0"

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { DualSeriesPoint } from '#shared/types'
-import { formatNumber } from '#shared/format'
+import type { DualSeriesPoint, Granularity } from '#shared/types'
 import { niceTicks, thinLabels } from '~/utils/chart'
 
 /**
@@ -12,10 +11,21 @@ const props = withDefaults(defineProps<{
   points: DualSeriesPoint[]
   primaryLabel: string
   secondaryLabel: string
+  /** `week` buckets are numbered; `day` buckets carry a date. */
+  granularity?: Granularity
   height?: number
 }>(), {
+  granularity: 'week',
   height: 260
 })
+
+const { t } = useI18n()
+const fmt = useFormat()
+
+function pointLabel(point: DualSeriesPoint, index: number): string {
+  if (props.granularity === 'week') return t('charts.week', { n: index + 1 })
+  return fmt.value.axis(point.at, props.granularity)
+}
 
 const { el, width } = useElementWidth()
 
@@ -74,9 +84,11 @@ const tooltipStyle = computed(() => {
   }
 })
 
-const summary = computed(() =>
-  `Grouped bar chart comparing ${props.primaryLabel} and ${props.secondaryLabel} across ${props.points.length} periods.`
-)
+const summary = computed(() => t('charts.barSummary', {
+  primary: props.primaryLabel,
+  secondary: props.secondaryLabel,
+  count: props.points.length
+}))
 </script>
 
 <template>
@@ -108,12 +120,12 @@ const summary = computed(() =>
             dominant-baseline="middle"
             class="fill-dimmed text-[10px] tnum"
           >
-            {{ formatNumber(tick) }}
+            {{ fmt.number(tick) }}
           </text>
         </template>
       </g>
 
-      <g v-for="(point, index) in points" :key="point.label">
+      <g v-for="(point, index) in points" :key="point.at">
         <!-- A full-height hit area, so hovering anywhere in the column works. -->
         <rect
           :x="PAD.left + index * geometry.slot"
@@ -150,7 +162,7 @@ const summary = computed(() =>
           text-anchor="middle"
           class="fill-dimmed text-[10px]"
         >
-          {{ point.label }}
+          {{ pointLabel(point, index) }}
         </text>
       </g>
     </svg>
@@ -161,7 +173,7 @@ const summary = computed(() =>
       :style="tooltipStyle"
     >
       <p class="text-[10px] uppercase tracking-wide text-inverted/70">
-        {{ activePoint.label }}
+        {{ active === null ? '' : pointLabel(activePoint, active) }}
       </p>
       <div class="mt-1 space-y-0.5">
         <p class="flex items-center justify-between gap-3 text-xs text-inverted">
@@ -169,14 +181,14 @@ const summary = computed(() =>
             <span class="size-2 rounded-full" style="background: var(--cadence-new)" />
             {{ primaryLabel }}
           </span>
-          <span class="tnum font-semibold">{{ formatNumber(activePoint.primary) }}</span>
+          <span class="tnum font-semibold">{{ fmt.number(activePoint.primary) }}</span>
         </p>
         <p class="flex items-center justify-between gap-3 text-xs text-inverted">
           <span class="flex items-center gap-1.5">
             <span class="size-2 rounded-full" style="background: var(--cadence-churn)" />
             {{ secondaryLabel }}
           </span>
-          <span class="tnum font-semibold">{{ formatNumber(activePoint.secondary) }}</span>
+          <span class="tnum font-semibold">{{ fmt.number(activePoint.secondary) }}</span>
         </p>
       </div>
     </div>

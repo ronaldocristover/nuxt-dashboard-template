@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxt/eslint'],
+  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxtjs/i18n'],
 
   devtools: { enabled: true },
 
@@ -49,6 +49,36 @@ export default defineNuxtConfig({
         commaDangle: 'never',
         braceStyle: '1tbs'
       }
+    }
+  },
+
+  i18n: {
+    // `no_prefix` keeps one canonical URL set and stores the choice in a
+    // cookie. Nothing in the app has to remember to localise a link, which is
+    // the failure mode that makes half-translated apps.
+    //
+    // If you need per-language URLs for SEO on the marketing pages, switch to
+    // `prefix_except_default` and replace every `to="/…"` with
+    // `:to="localePath('/…')"` — see README.
+    strategy: 'no_prefix',
+    defaultLocale: 'en',
+    // `en` is the source of truth; a key missing from another file falls back
+    // to English rather than rendering the raw key. Configured in
+    // `i18n/i18n.config.ts`, which vue-i18n owns.
+    vueI18n: './i18n.config.ts',
+    locales: [
+      { code: 'en', name: 'English', language: 'en-US', file: 'en.json' },
+      { code: 'id', name: 'Bahasa Indonesia', language: 'id-ID', file: 'id.json' },
+      { code: 'zh-Hans', name: '简体中文', language: 'zh-Hans-CN', file: 'zh-Hans.json' },
+      { code: 'zh-Hant', name: '繁體中文', language: 'zh-Hant-TW', file: 'zh-Hant.json' }
+    ],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'cadence-locale',
+      alwaysRedirect: false,
+      fallbackLocale: 'en',
+      // The cookie must outlive the session or the choice is lost on return.
+      cookieSecure: false
     }
   }
 })

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-const links = [
-  { label: 'Product', to: '#product' },
-  { label: 'How it works', to: '#how' },
-  { label: 'Pricing', to: '#pricing' },
-  { label: 'FAQ', to: '#faq' }
-]
+const { t } = useI18n()
+
+const links = computed(() => [
+  { label: t('nav.product'), to: '#product' },
+  { label: t('nav.howItWorks'), to: '#how' },
+  { label: t('nav.pricing'), to: '#pricing' },
+  { label: t('nav.faq'), to: '#faq' }
+])
 
 const open = ref(false)
 const route = useRoute()
@@ -24,7 +26,7 @@ watch(() => route.fullPath, () => {
         <AppLogo />
       </NuxtLink>
 
-      <nav class="hidden items-center gap-1 md:flex" aria-label="Main">
+      <nav class="hidden items-center gap-1 md:flex" :aria-label="$t('nav.main')">
         <a
           v-for="link in links"
           :key="link.to"
@@ -36,21 +38,22 @@ watch(() => route.fullPath, () => {
       </nav>
 
       <div class="flex items-center gap-1.5">
+        <LanguageSwitcher variant="ghost" class="hidden sm:inline-flex" />
         <UColorModeButton />
 
         <template v-if="isAuthenticated">
-          <UButton to="/dashboard" label="Open dashboard" trailing-icon="i-lucide-arrow-right" class="hidden sm:inline-flex" />
-          <UButton to="/dashboard" icon="i-lucide-layout-dashboard" aria-label="Open dashboard" class="sm:hidden" />
+          <UButton to="/dashboard" :label="$t('marketing.openDashboard')" trailing-icon="i-lucide-arrow-right" class="hidden sm:inline-flex" />
+          <UButton to="/dashboard" icon="i-lucide-layout-dashboard" aria-:label="$t('marketing.openDashboard')" class="sm:hidden" />
         </template>
         <template v-else>
           <UButton
             to="/login"
-            label="Sign in"
+            :label="$t('marketing.signIn')"
             color="neutral"
             variant="ghost"
             class="hidden sm:inline-flex"
           />
-          <UButton to="/register" label="Start free trial" class="hidden sm:inline-flex" />
+          <UButton to="/register" :label="$t('marketing.startTrial')" class="hidden sm:inline-flex" />
         </template>
 
         <UButton
@@ -58,15 +61,15 @@ watch(() => route.fullPath, () => {
           variant="ghost"
           icon="i-lucide-menu"
           class="md:hidden"
-          aria-label="Open menu"
+          :aria-label="$t('common.openMenu')"
           @click="open = true"
         />
       </div>
     </div>
 
-    <USlideover v-model:open="open" title="Menu" side="right">
+    <USlideover v-model:open="open" :title="$t('common.menu')" side="right">
       <template #body>
-        <nav class="flex flex-col gap-1" aria-label="Mobile">
+        <nav class="flex flex-col gap-1" :aria-label="$t('nav.mobile')">
           <a
             v-for="link in links"
             :key="link.to"
@@ -79,14 +82,17 @@ watch(() => route.fullPath, () => {
         </nav>
 
         <div class="mt-6 space-y-2 border-t border-default pt-6">
+          <div class="pb-2 sm:hidden">
+            <LanguageSwitcher variant="ghost" />
+          </div>
           <template v-if="isAuthenticated">
-            <UButton to="/dashboard" label="Open dashboard" block trailing-icon="i-lucide-arrow-right" />
+            <UButton to="/dashboard" :label="$t('marketing.openDashboard')" block trailing-icon="i-lucide-arrow-right" />
           </template>
           <template v-else>
-            <UButton to="/register" label="Start free trial" block />
+            <UButton to="/register" :label="$t('marketing.startTrial')" block />
             <UButton
               to="/login"
-              label="Sign in"
+              :label="$t('marketing.signIn')"
               block
               color="neutral"
               variant="subtle"

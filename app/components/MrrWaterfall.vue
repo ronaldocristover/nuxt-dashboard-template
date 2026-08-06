@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { MrrMovement } from '#shared/types'
-import { formatCurrency, formatSigned, formatSignedCurrency } from '#shared/format'
 
 /**
  * The template's signature element, used on the marketing hero and again as
@@ -27,12 +26,22 @@ interface Segment {
   direction: 'up' | 'down'
 }
 
+const { t } = useI18n()
+const fmt = useFormat()
+
 const segments = computed<Segment[]>(() => [
-  { key: 'new', label: 'New business', value: props.movement.new, color: 'var(--cadence-new)', direction: 'up' },
-  { key: 'expansion', label: 'Expansion', value: props.movement.expansion, color: 'var(--cadence-expansion)', direction: 'up' },
-  { key: 'contraction', label: 'Contraction', value: -props.movement.contraction, color: 'var(--cadence-contraction)', direction: 'down' },
-  { key: 'churn', label: 'Churn', value: -props.movement.churn, color: 'var(--cadence-churn)', direction: 'down' }
+  { key: 'new', label: t('waterfall.new'), value: props.movement.new, color: 'var(--cadence-new)', direction: 'up' },
+  { key: 'expansion', label: t('waterfall.expansion'), value: props.movement.expansion, color: 'var(--cadence-expansion)', direction: 'up' },
+  { key: 'contraction', label: t('waterfall.contraction'), value: -props.movement.contraction, color: 'var(--cadence-contraction)', direction: 'down' },
+  { key: 'churn', label: t('waterfall.churn'), value: -props.movement.churn, color: 'var(--cadence-churn)', direction: 'down' }
 ])
+
+const ariaLabel = computed(() => t('waterfall.aria', {
+  new: fmt.value.signedCurrency(props.movement.new),
+  expansion: fmt.value.signedCurrency(props.movement.expansion),
+  contraction: fmt.value.signedCurrency(-props.movement.contraction),
+  churn: fmt.value.signedCurrency(-props.movement.churn)
+}))
 
 const totalMovement = computed(() =>
   segments.value.reduce((sum, segment) => sum + Math.abs(segment.value), 0) || 1
@@ -71,21 +80,21 @@ const hovered = ref<string | null>(null)
     <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-6 sm:gap-y-2">
       <div>
         <p class="eyebrow text-dimmed">
-          Net new MRR this month
+          {{ $t('waterfall.eyebrow') }}
         </p>
         <div class="mt-1 flex items-baseline gap-2.5">
           <span
             class="tnum-display font-semibold text-highlighted"
             :class="variant === 'hero' ? 'text-display-sm sm:text-display-md' : 'text-2xl sm:text-3xl'"
           >
-            {{ formatSignedCurrency(net) }}
+            {{ fmt.signedCurrency(net) }}
           </span>
           <span
             class="tnum inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-xs font-medium"
             :class="net >= 0 ? 'bg-success/10 text-success' : 'bg-error/10 text-error'"
           >
             <UIcon :name="net >= 0 ? 'i-lucide-trending-up' : 'i-lucide-trending-down'" class="size-3" />
-            {{ formatSigned(netPercent) }}
+            {{ fmt.signed(netPercent) }}
           </span>
         </div>
       </div>
@@ -93,19 +102,19 @@ const hovered = ref<string | null>(null)
       <dl class="flex items-end gap-4 sm:gap-5 sm:text-right">
         <div>
           <dt class="eyebrow text-dimmed">
-            Opening
+            {{ $t('waterfall.opening') }}
           </dt>
           <dd class="tnum text-sm font-medium text-muted">
-            {{ formatCurrency(movement.starting) }}
+            {{ fmt.currency(movement.starting) }}
           </dd>
         </div>
         <UIcon name="i-lucide-arrow-right" class="mb-1 size-4 shrink-0 text-dimmed" />
         <div>
           <dt class="eyebrow text-dimmed">
-            Closing
+            {{ $t('waterfall.closing') }}
           </dt>
           <dd class="tnum text-sm font-semibold text-highlighted">
-            {{ formatCurrency(movement.ending) }}
+            {{ fmt.currency(movement.ending) }}
           </dd>
         </div>
       </dl>
@@ -117,7 +126,7 @@ const hovered = ref<string | null>(null)
       class="flex w-full gap-1 overflow-hidden"
       :class="variant === 'hero' ? 'h-14 sm:h-16' : 'h-12'"
       role="img"
-      :aria-label="`Movement breakdown: new business ${formatSignedCurrency(movement.new)}, expansion ${formatSignedCurrency(movement.expansion)}, contraction ${formatSignedCurrency(-movement.contraction)}, churn ${formatSignedCurrency(-movement.churn)}.`"
+      :aria-label="ariaLabel"
       @pointerleave="hovered = null"
     >
       <div
@@ -157,7 +166,7 @@ const hovered = ref<string | null>(null)
           <span class="truncate">{{ bar.label }}</span>
         </dt>
         <dd class="tnum mt-0.5 text-sm font-semibold" :class="bar.direction === 'up' ? 'text-highlighted' : 'text-muted'">
-          {{ formatSignedCurrency(bar.value) }}
+          {{ fmt.signedCurrency(bar.value) }}
         </dd>
       </div>
     </dl>

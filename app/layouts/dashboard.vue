@@ -2,59 +2,26 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
 
 const route = useRoute()
+const { t } = useI18n()
 
 /**
  * Navigation lives in the layout, not in a config file, because it is short
  * enough to read here and every entry needs `active` computed against the
- * current route.
+ * current route. Labels come from translations so the sidebar follows the
+ * reader's language.
  */
 const primary = computed<NavigationMenuItem[]>(() => [
-  {
-    label: 'Overview',
-    icon: 'i-lucide-layout-dashboard',
-    to: '/dashboard',
-    active: route.path === '/dashboard'
-  },
-  {
-    label: 'Analytics',
-    icon: 'i-lucide-chart-line',
-    to: '/dashboard/analytics',
-    active: route.path === '/dashboard/analytics'
-  },
-  {
-    label: 'Subscribers',
-    icon: 'i-lucide-users',
-    to: '/dashboard/subscribers',
-    active: route.path === '/dashboard/subscribers'
-  },
-  {
-    label: 'Forms',
-    icon: 'i-lucide-square-pen',
-    to: '/dashboard/forms',
-    active: route.path === '/dashboard/forms'
-  },
-  {
-    label: 'Layouts',
-    icon: 'i-lucide-layout-grid',
-    to: '/dashboard/layouts',
-    active: route.path === '/dashboard/layouts'
-  },
-  {
-    label: 'Settings',
-    icon: 'i-lucide-settings',
-    to: '/dashboard/settings',
-    active: route.path === '/dashboard/settings'
-  }
+  { label: t('nav.overview'), icon: 'i-lucide-layout-dashboard', to: '/dashboard', active: route.path === '/dashboard' },
+  { label: t('nav.analytics'), icon: 'i-lucide-chart-line', to: '/dashboard/analytics', active: route.path === '/dashboard/analytics' },
+  { label: t('nav.subscribers'), icon: 'i-lucide-users', to: '/dashboard/subscribers', active: route.path === '/dashboard/subscribers' },
+  { label: t('nav.forms'), icon: 'i-lucide-square-pen', to: '/dashboard/forms', active: route.path === '/dashboard/forms' },
+  { label: t('nav.layouts'), icon: 'i-lucide-layout-grid', to: '/dashboard/layouts', active: route.path === '/dashboard/layouts' },
+  { label: t('nav.settings'), icon: 'i-lucide-settings', to: '/dashboard/settings', active: route.path === '/dashboard/settings' }
 ])
 
 const secondary = computed<NavigationMenuItem[]>(() => [
-  { label: 'Back to site', icon: 'i-lucide-arrow-left', to: '/' },
-  {
-    label: 'Documentation',
-    icon: 'i-lucide-book-open',
-    to: 'https://nuxt.com/docs',
-    target: '_blank'
-  }
+  { label: t('nav.backToSite'), icon: 'i-lucide-arrow-left', to: '/' },
+  { label: t('nav.documentation'), icon: 'i-lucide-book-open', to: 'https://nuxt.com/docs', target: '_blank' }
 ])
 </script>
 
@@ -75,12 +42,7 @@ const secondary = computed<NavigationMenuItem[]>(() => [
       </template>
 
       <template #default="{ collapsed }">
-        <UNavigationMenu
-          :items="primary"
-          :collapsed="collapsed"
-          orientation="vertical"
-          tooltip
-        />
+        <UNavigationMenu :items="primary" :collapsed="collapsed" orientation="vertical" tooltip />
 
         <div class="flex-1" />
 

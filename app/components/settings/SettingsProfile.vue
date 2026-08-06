@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { profileSchema, type ProfileInput } from '#shared/schemas'
+import { createProfileSchema, type ProfileInput } from '#shared/schemas'
 import { initials } from '#shared/format'
 
+const { t } = useI18n()
 const { user, updateProfile } = useAuth()
+
+const schema = computed(() => createProfileSchema(t))
 const { notify, notifySuccess } = useApiError()
 
 const TIMEZONES = [
@@ -41,9 +44,9 @@ async function onSubmit(event: FormSubmitEvent<ProfileInput>) {
   loading.value = true
   try {
     await updateProfile(event.data)
-    notifySuccess('Profile saved')
+    notifySuccess(t('settings.profile.saved'))
   } catch (error) {
-    notify(error, 'Could not save your profile')
+    notify(error, t('settings.profile.failed'))
   } finally {
     loading.value = false
   }
@@ -52,13 +55,13 @@ async function onSubmit(event: FormSubmitEvent<ProfileInput>) {
 
 <template>
   <UForm
-    :schema="profileSchema"
+    :schema="schema"
     :state="state"
     @submit="onSubmit"
   >
     <PanelSection
-      title="Profile"
-      description="How your name appears to teammates, and where Cadence sends anything addressed to you."
+      :title="$t('settings.profile.title')"
+      :description="$t('settings.profile.description')"
     >
       <div class="flex flex-col gap-5 sm:flex-row sm:items-start">
         <div class="flex items-center gap-3 sm:flex-col sm:gap-3">
@@ -77,28 +80,28 @@ async function onSubmit(event: FormSubmitEvent<ProfileInput>) {
         </div>
 
         <div class="grid flex-1 gap-4 sm:grid-cols-2">
-          <UFormField label="Full name" name="name" required class="sm:col-span-2">
+          <UFormField :label="$t('settings.profile.name')" name="name" required class="sm:col-span-2">
             <UInput v-model="state.name" class="w-full" autocomplete="name" />
           </UFormField>
 
-          <UFormField label="Email address" name="email" required class="sm:col-span-2">
+          <UFormField :label="$t('settings.profile.email')" name="email" required class="sm:col-span-2">
             <UInput v-model="state.email" type="email" class="w-full" autocomplete="email" />
           </UFormField>
 
-          <UFormField label="Job title" name="jobTitle">
-            <UInput v-model="state.jobTitle" class="w-full" placeholder="Head of Revenue Operations" />
+          <UFormField :label="$t('settings.profile.jobTitle')" name="jobTitle">
+            <UInput v-model="state.jobTitle" class="w-full" :placeholder="$t('settings.profile.jobPlaceholder')" />
           </UFormField>
 
-          <UFormField label="Company" name="company">
-            <UInput v-model="state.company" class="w-full" placeholder="Northwind Labs" />
+          <UFormField :label="$t('settings.profile.company')" name="company">
+            <UInput v-model="state.company" class="w-full" :placeholder="$t('settings.profile.companyPlaceholder')" />
           </UFormField>
 
           <UFormField
-            label="Timezone"
+            :label="$t('settings.profile.timezone')"
             name="timezone"
             required
             class="sm:col-span-2"
-            help="Reporting periods and digest delivery follow this timezone."
+            :help="$t('settings.profile.timezoneHelp')"
           >
             <USelect v-model="state.timezone" :items="TIMEZONES" class="w-full" />
           </UFormField>
@@ -106,7 +109,7 @@ async function onSubmit(event: FormSubmitEvent<ProfileInput>) {
       </div>
 
       <template #footer>
-        <UButton type="submit" label="Save changes" :loading="loading" />
+        <UButton type="submit" :label="$t('common.save')" :loading="loading" />
       </template>
     </PanelSection>
   </UForm>

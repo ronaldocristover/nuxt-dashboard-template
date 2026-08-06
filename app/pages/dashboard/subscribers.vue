@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { Subscriber, SubscribersResponse } from '#shared/types'
-import { formatCurrency, formatNumber, initials } from '#shared/format'
+import { initials } from '#shared/format'
 
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-useSeoMeta({ title: 'Subscribers', robots: 'noindex' })
-
+const { t } = useI18n()
+const fmt = useFormat()
 const { notifySuccess } = useApiError()
+
+useSeoMeta({ title: () => t('subscribers.title'), robots: 'noindex' })
 
 // --- Filters -----------------------------------------------------------------
 
@@ -72,13 +74,13 @@ function clearFilters() {
 
 // --- Sorting -----------------------------------------------------------------
 
-const COLUMNS: Array<{ key: SortKey | 'select' | 'actions', label: string, sortable: boolean, align?: 'right' }> = [
-  { key: 'company', label: 'Account', sortable: true },
-  { key: 'name', label: 'Contact', sortable: true },
-  { key: 'mrr', label: 'MRR', sortable: true, align: 'right' },
-  { key: 'seats', label: 'Seats', sortable: true, align: 'right' },
-  { key: 'joinedAt', label: 'Status', sortable: false }
-]
+const COLUMNS = computed<Array<{ key: SortKey, label: string, sortable: boolean, align?: 'right' }>>(() => [
+  { key: 'company', label: t('subscribers.columnAccount'), sortable: true },
+  { key: 'name', label: t('subscribers.columnContact'), sortable: true },
+  { key: 'mrr', label: t('subscribers.columnMrr'), sortable: true, align: 'right' },
+  { key: 'seats', label: t('subscribers.columnSeats'), sortable: true, align: 'right' },
+  { key: 'joinedAt', label: t('subscribers.columnStatus'), sortable: false }
+])
 
 function toggleSort(key: SortKey) {
   if (sort.value === key) {
@@ -155,7 +157,12 @@ function exportSelected() {
   link.click()
   URL.revokeObjectURL(url)
 
-  notifySuccess('Export ready', `${chosen.length} ${chosen.length === 1 ? 'row' : 'rows'} downloaded as CSV.`)
+  notifySuccess(
+    t('subscribers.exportReady'),
+    chosen.length === 1
+      ? t('subscribers.exportBodyOne')
+      : t('subscribers.exportBody', { count: chosen.length })
+  )
 }
 
 // --- Detail ------------------------------------------------------------------
@@ -170,29 +177,27 @@ function openDetail(row: Subscriber) {
 
 // --- Display -----------------------------------------------------------------
 
-const PLAN_OPTIONS = [
-  { label: 'All plans', value: 'all' },
-  { label: 'Starter', value: 'starter' },
-  { label: 'Growth', value: 'growth' },
-  { label: 'Scale', value: 'scale' }
-]
+const PLAN_OPTIONS = computed(() => [
+  { label: t('subscribers.allPlans'), value: 'all' },
+  { label: t('plans.starter'), value: 'starter' },
+  { label: t('plans.growth'), value: 'growth' },
+  { label: t('plans.scale'), value: 'scale' }
+])
 
-const STATUS_OPTIONS = [
-  { label: 'All statuses', value: 'all' },
-  { label: 'Active', value: 'active' },
-  { label: 'Trialing', value: 'trialing' },
-  { label: 'Past due', value: 'past_due' },
-  { label: 'Churned', value: 'churned' }
-]
+const STATUS_OPTIONS = computed(() => [
+  { label: t('subscribers.allStatuses'), value: 'all' },
+  { label: t('status.active'), value: 'active' },
+  { label: t('status.trialing'), value: 'trialing' },
+  { label: t('status.past_due'), value: 'past_due' },
+  { label: t('status.churned'), value: 'churned' }
+])
 
-const STATUS_META = {
-  active: { label: 'Active', color: 'success' as const },
-  trialing: { label: 'Trialing', color: 'info' as const },
-  past_due: { label: 'Past due', color: 'warning' as const },
-  churned: { label: 'Churned', color: 'neutral' as const }
-}
-
-const PLAN_LABELS = { starter: 'Starter', growth: 'Growth', scale: 'Scale' } as const
+const STATUS_COLOR = {
+  active: 'success',
+  trialing: 'info',
+  past_due: 'warning',
+  churned: 'neutral'
+} as const
 
 const showingFrom = computed(() => ((data.value?.page ?? 1) - 1) * pageSize.value + 1)
 const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length - 1, data.value?.total ?? 0))
@@ -201,7 +206,7 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
 <template>
   <UDashboardPanel id="subscribers">
     <template #header>
-      <UDashboardNavbar title="Subscribers">
+      <UDashboardNavbar :title="$t('subscribers.title')">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -211,7 +216,7 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
             color="neutral"
             variant="ghost"
             :loading="pending"
-            aria-label="Refresh list"
+            :aria-label="$t('subscribers.refresh')"
             @click="refresh()"
           />
         </template>
@@ -224,26 +229,26 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
         <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
           <div>
             <p class="eyebrow text-dimmed">
-              Accounts
+              {{ $t('subscribers.accounts') }}
             </p>
             <p class="tnum text-lg font-semibold text-highlighted">
-              {{ formatNumber(data?.total ?? 0) }}
+              {{ fmt.number(data?.total ?? 0) }}
             </p>
           </div>
           <div>
             <p class="eyebrow text-dimmed">
-              Combined MRR
+              {{ $t('subscribers.combinedMrr') }}
             </p>
             <p class="tnum text-lg font-semibold text-highlighted">
-              {{ formatCurrency(data?.totals.mrr ?? 0) }}
+              {{ fmt.currency(data?.totals.mrr ?? 0) }}
             </p>
           </div>
           <div>
             <p class="eyebrow text-dimmed">
-              Seats
+              {{ $t('subscribers.seats') }}
             </p>
             <p class="tnum text-lg font-semibold text-highlighted">
-              {{ formatNumber(data?.totals.seats ?? 0) }}
+              {{ fmt.number(data?.totals.seats ?? 0) }}
             </p>
           </div>
         </div>
@@ -253,7 +258,7 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
           <UInput
             v-model="search"
             icon="i-lucide-search"
-            placeholder="Search account, contact or email"
+            :placeholder="$t('subscribers.searchPlaceholder')"
             class="w-full sm:max-w-xs"
             :ui="{ trailing: 'pe-1' }"
           >
@@ -263,20 +268,20 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
                 variant="link"
                 size="sm"
                 icon="i-lucide-x"
-                aria-label="Clear search"
+                :aria-label="$t('subscribers.clearSearch')"
                 @click="search = ''"
               />
             </template>
           </UInput>
 
           <div class="flex gap-2">
-            <USelect v-model="plan" :items="PLAN_OPTIONS" class="flex-1 sm:w-36" aria-label="Filter by plan" />
-            <USelect v-model="status" :items="STATUS_OPTIONS" class="flex-1 sm:w-40" aria-label="Filter by status" />
+            <USelect v-model="plan" :items="PLAN_OPTIONS" class="flex-1 sm:w-36" :aria-label="$t('subscribers.filterPlan')" />
+            <USelect v-model="status" :items="STATUS_OPTIONS" class="flex-1 sm:w-40" :aria-label="$t('subscribers.filterStatus')" />
           </div>
 
           <UButton
             v-if="hasFilters"
-            label="Clear"
+            :label="$t('subscribers.clearFilters')"
             color="neutral"
             variant="ghost"
             icon="i-lucide-filter-x"
@@ -291,18 +296,18 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
           class="flex flex-wrap items-center gap-3 rounded-[calc(var(--ui-radius)*1.5)] bg-primary/5 px-4 py-3 ring ring-primary/20"
         >
           <p class="text-sm font-medium text-highlighted">
-            {{ selected.size }} selected on this page
+            {{ $t('subscribers.selectedOnPage', { count: selected.size }) }}
           </p>
           <div class="flex flex-wrap gap-2 sm:ms-auto">
             <UButton
-              label="Export CSV"
+              :label="$t('subscribers.exportCsv')"
               icon="i-lucide-download"
               size="sm"
               variant="subtle"
               @click="exportSelected"
             />
             <UButton
-              label="Clear selection"
+              :label="$t('subscribers.clearSelection')"
               size="sm"
               color="neutral"
               variant="ghost"
@@ -316,9 +321,9 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
           color="error"
           variant="subtle"
           icon="i-lucide-circle-alert"
-          title="Subscribers could not be loaded"
-          :description="error.statusMessage ?? 'The request did not complete.'"
-          :actions="[{ label: 'Try again', variant: 'subtle', color: 'error', onClick: () => refresh() }]"
+          :title="$t('subscribers.loadFailed')"
+          :description="$t('subscribers.loadFailedBody')"
+          :actions="[{ label: $t('common.retry'), variant: 'subtle', color: 'error', onClick: () => refresh() }]"
         />
 
         <div v-else class="overflow-hidden rounded-[calc(var(--ui-radius)*1.5)] bg-default ring ring-default">
@@ -333,7 +338,7 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
                     <UCheckbox
                       :model-value="allOnPageSelected"
                       :indeterminate="someOnPageSelected"
-                      aria-label="Select all rows on this page"
+                      :aria-label="$t('subscribers.selectAll')"
                       @update:model-value="toggleAll(Boolean($event))"
                     />
                   </th>
@@ -343,13 +348,13 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
                     scope="col"
                     class="px-3 py-2.5 font-medium text-muted"
                     :class="column.align === 'right' ? 'text-right' : 'text-left'"
-                    :aria-sort="column.sortable ? ariaSort(column.key as SortKey) : undefined"
+                    :aria-sort="column.sortable ? ariaSort(column.key) : undefined"
                   >
                     <button
                       v-if="column.sortable"
                       type="button"
                       class="inline-flex items-center gap-1 rounded transition-colors hover:text-highlighted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                      @click="toggleSort(column.key as SortKey)"
+                      @click="toggleSort(column.key)"
                     >
                       {{ column.label }}
                       <UIcon :name="sortIcon(column.key as SortKey)" class="size-3.5" />
@@ -380,7 +385,7 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
                   <td class="ps-4">
                     <UCheckbox
                       :model-value="selected.has(row.id)"
-                      :aria-label="`Select ${row.company}`"
+                      :aria-label="$t('subscribers.selectRow', { name: row.company })"
                       @update:model-value="toggleRow(row.id, Boolean($event))"
                     />
                   </td>
@@ -396,7 +401,7 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
                           {{ row.company }}
                         </p>
                         <p class="truncate text-xs text-dimmed">
-                          {{ PLAN_LABELS[row.plan] }} · {{ row.country }}
+                          {{ $t(`plans.${row.plan}`) }} · {{ row.country }}
                         </p>
                       </div>
                     </div>
@@ -410,20 +415,20 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
                     </p>
                   </td>
                   <td class="tnum px-3 py-3 text-right font-medium text-highlighted">
-                    {{ formatCurrency(row.mrr) }}
+                    {{ fmt.currency(row.mrr) }}
                   </td>
                   <td class="tnum px-3 py-3 text-right text-muted">
-                    {{ formatNumber(row.seats) }}
+                    {{ fmt.number(row.seats) }}
                   </td>
                   <td class="px-3 py-3">
                     <UBadge
-                      :label="STATUS_META[row.status].label"
-                      :color="STATUS_META[row.status].color"
+                      :label="$t(`status.${row.status}`)"
+                      :color="STATUS_COLOR[row.status]"
                       variant="subtle"
                       size="sm"
                     />
                     <p class="mt-1 text-xs text-dimmed">
-                      Seen {{ row.lastSeenLabel }}
+                      {{ $t('subscribers.seenAt', { when: data ? fmt.relative(row.lastSeenAt, data.generatedAt) : '' }) }}
                     </p>
                   </td>
                   <td class="pe-4 text-right">
@@ -432,7 +437,7 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
                       color="neutral"
                       variant="ghost"
                       size="sm"
-                      :aria-label="`Open details for ${row.company}`"
+                      :aria-label="$t('subscribers.openDetails', { name: row.company })"
                       @click="openDetail(row)"
                     />
                   </td>
@@ -458,7 +463,7 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
                   <UCheckbox
                     :model-value="selected.has(row.id)"
                     class="mt-1"
-                    :aria-label="`Select ${row.company}`"
+                    :aria-label="$t('subscribers.selectRow', { name: row.company })"
                     @update:model-value="toggleRow(row.id, Boolean($event))"
                   />
 
@@ -477,19 +482,19 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
                         </p>
                       </div>
                       <span class="tnum shrink-0 text-sm font-semibold text-highlighted">
-                        {{ formatCurrency(row.mrr) }}
+                        {{ fmt.currency(row.mrr) }}
                       </span>
                     </div>
 
                     <div class="mt-2 flex flex-wrap items-center gap-2">
                       <UBadge
-                        :label="STATUS_META[row.status].label"
-                        :color="STATUS_META[row.status].color"
+                        :label="$t(`status.${row.status}`)"
+                        :color="STATUS_COLOR[row.status]"
                         variant="subtle"
                         size="sm"
                       />
                       <span class="text-xs text-dimmed">
-                        {{ PLAN_LABELS[row.plan] }} · {{ formatNumber(row.seats) }} seats · seen {{ row.lastSeenLabel }}
+                        {{ $t(`plans.${row.plan}`) }} · {{ fmt.number(row.seats) }} · {{ $t('subscribers.seenAt', { when: data ? fmt.relative(row.lastSeenAt, data.generatedAt) : '' }) }}
                       </span>
                     </div>
                   </button>
@@ -501,11 +506,9 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
           <EmptyState
             v-if="!pending && rows.length === 0"
             icon="i-lucide-users"
-            :title="hasFilters ? 'No subscribers match those filters' : 'No subscribers yet'"
-            :description="hasFilters
-              ? 'Try a broader search, or clear the filters to see everyone.'
-              : 'Connect your billing provider and accounts will appear here.'"
-            :action-label="hasFilters ? 'Clear filters' : undefined"
+            :title="hasFilters ? $t('subscribers.emptyFiltered') : $t('subscribers.empty')"
+            :description="hasFilters ? $t('subscribers.emptyFilteredBody') : $t('subscribers.emptyBody')"
+            :action-label="hasFilters ? $t('subscribers.clearFilters') : undefined"
             @action="clearFilters"
           />
 
@@ -515,8 +518,11 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
             class="flex flex-col gap-3 border-t border-default px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
           >
             <p class="tnum text-xs text-muted">
-              Showing {{ formatNumber(showingFrom) }}–{{ formatNumber(showingTo) }}
-              of {{ formatNumber(data?.total ?? 0) }}
+              {{ $t('subscribers.showing', {
+                from: fmt.number(showingFrom),
+                to: fmt.number(showingTo),
+                total: fmt.number(data?.total ?? 0)
+              }) }}
             </p>
 
             <div class="flex items-center gap-3">
@@ -525,7 +531,7 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
                 :items="[10, 25, 50]"
                 size="sm"
                 class="w-20"
-                aria-label="Rows per page"
+                :aria-label="$t('subscribers.rowsPerPage')"
               />
               <UPagination
                 v-model:page="page"
@@ -540,7 +546,7 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
 
         <!-- Inside the panel body so the page keeps a single root element.
              The slideover teleports to the app root regardless. -->
-        <SubscriberDetail v-model:open="detailOpen" :subscriber="detailRow" />
+        <SubscriberDetail v-model:open="detailOpen" :subscriber="detailRow" :generated-at="data?.generatedAt" />
       </div>
     </template>
   </UDashboardPanel>

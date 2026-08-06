@@ -6,21 +6,26 @@
  * screens — on a phone, someone opening a sign-in page wants the form, not a
  * testimonial pushing it below the fold.
  */
-const points = [
-  'Every MRR movement traced to the account that caused it',
-  'Cohort retention that updates as invoices settle',
-  'Alerts the hour a payment fails, not the week after'
-]
+const { t } = useI18n()
+
+const points = computed(() => [
+  t('auth.panel.point1'),
+  t('auth.panel.point2'),
+  t('auth.panel.point3')
+])
 </script>
 
 <template>
   <div class="flex min-h-svh bg-default">
     <main class="flex w-full flex-col px-5 py-6 sm:px-8 lg:w-[52%] lg:px-12 xl:px-20">
-      <header class="flex items-center justify-between">
+      <header class="flex items-center justify-between gap-2">
         <NuxtLink to="/" class="rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
           <AppLogo />
         </NuxtLink>
-        <UColorModeButton />
+        <div class="flex items-center gap-1">
+          <LanguageSwitcher />
+          <UColorModeButton />
+        </div>
       </header>
 
       <div class="flex flex-1 items-center py-10">
@@ -33,10 +38,10 @@ const points = [
         <p>&copy; {{ new Date().getFullYear() }} Cadence</p>
         <nav class="flex gap-4">
           <NuxtLink to="/" class="transition-colors hover:text-default">
-            Privacy
+            {{ $t('auth.panel.privacy') }}
           </NuxtLink>
           <NuxtLink to="/" class="transition-colors hover:text-default">
-            Terms
+            {{ $t('auth.panel.terms') }}
           </NuxtLink>
         </nav>
       </footer>
@@ -51,20 +56,20 @@ const points = [
       />
 
       <p class="eyebrow relative text-slate-400">
-        Revenue operations
+        {{ $t('auth.panel.eyebrow') }}
       </p>
 
       <div class="relative">
         <blockquote class="font-display text-3xl font-medium leading-[1.2] tracking-tight text-white xl:text-[2.5rem]">
-          &ldquo;We stopped arguing about the MRR number and started arguing about what to do next.&rdquo;
+          &ldquo;{{ $t('auth.panel.quote') }}&rdquo;
         </blockquote>
         <figcaption class="mt-6 flex items-center gap-3">
           <span class="flex size-9 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white">
             HN
           </span>
           <span class="text-sm">
-            <span class="block font-medium text-white">Hana Nakamura</span>
-            <span class="block text-slate-400">VP Finance, Northwind Labs</span>
+            <span class="block font-medium text-white">{{ $t('auth.panel.author') }}</span>
+            <span class="block text-slate-400">{{ $t('auth.panel.role') }}</span>
           </span>
         </figcaption>
       </div>
