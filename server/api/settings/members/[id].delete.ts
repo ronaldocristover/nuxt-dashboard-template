@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
   // `removeMember` also refuses to remove the owner, which would leave the
   // workspace without an administrator.
-  if (!db.removeMember(id)) {
+  if (!await db.removeMember(id)) {
     throw createError({ statusCode: 400, statusMessage: 'That member cannot be removed' })
   }
 

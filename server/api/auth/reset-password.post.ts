@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const { token, password } = body.data
-  const email = db.consumeResetToken(token)
+  const email = await db.consumeResetToken(token)
 
   if (!email) {
     throw createError({
@@ -26,13 +26,13 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const user = db.findUserByEmail(email)
+  const user = await db.findUserByEmail(email)
 
   if (!user) {
     throw createError({ statusCode: 400, statusMessage: 'This reset link is no longer valid' })
   }
 
-  db.setPassword(user.id, hashPassword(password))
+  await db.setPassword(user.id, hashPassword(password))
 
   return { ok: true, message: 'Password updated. Sign in with your new password.' }
 })

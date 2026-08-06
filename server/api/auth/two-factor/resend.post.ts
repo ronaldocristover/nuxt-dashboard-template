@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const code = generateCode()
-  db.createTwoFactorCode(pending.user.id, code)
+  await db.createTwoFactorCode(pending.user.id, code)
 
   console.info(`[cadence] two-step code for ${pending.user.email}: ${code}`)
 

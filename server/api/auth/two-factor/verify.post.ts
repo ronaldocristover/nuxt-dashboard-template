@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 422, statusMessage: 'Enter all six digits' })
   }
 
-  const outcome = db.verifyTwoFactorCode(pending.user.id, body.data.code)
+  const outcome = await db.verifyTwoFactorCode(pending.user.id, body.data.code)
 
   if (outcome === 'invalid') {
     throw createError({ statusCode: 401, statusMessage: 'That code is not right' })
@@ -47,6 +47,6 @@ export default defineEventHandler(async (event) => {
 
   await promotePendingSession(event, pending.user.id, pending.remember)
 
-  const stored = db.findUserById(pending.user.id)
+  const stored = await db.findUserById(pending.user.id)
   return { user: stored ? publicUser(stored) : null }
 })

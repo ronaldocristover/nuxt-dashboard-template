@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const token = generateToken()
-  db.createVerifyToken(current.id, token)
+  await db.createVerifyToken(current.id, token)
 
   const url = `${useRuntimeConfig().appUrl}/verify-email?token=${token}`
 

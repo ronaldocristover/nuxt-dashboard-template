@@ -92,7 +92,7 @@ export async function getPendingUser(event: H3Event): Promise<{ user: User, reme
     return null
   }
 
-  const stored = db.findUserById(pendingUserId)
+  const stored = await db.findUserById(pendingUserId)
   if (!stored) {
     await session.clear()
     return null
@@ -117,7 +117,7 @@ export async function getCurrentUser(event: H3Event): Promise<User | null> {
   const userId = session.data.userId
   if (!userId) return null
 
-  const user = db.findUserById(userId)
+  const user = await db.findUserById(userId)
   if (!user) {
     // The session outlived its user. Drop it rather than 500.
     await session.clear()

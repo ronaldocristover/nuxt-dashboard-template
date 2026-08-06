@@ -19,7 +19,7 @@ export default defineEventHandler(async (event): Promise<SignInResult> => {
   }
 
   const { email, password, remember } = body.data
-  const user = db.findUserByEmail(email)
+  const user = await db.findUserByEmail(email)
 
   // One message for both "no such account" and "wrong password", so the
   // response cannot be used to discover which addresses are registered.
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event): Promise<SignInResult> => {
   // instead — it carries no `userId`, so nothing is authorised by it.
   if (user.twoFactorEnabled) {
     const code = generateCode()
-    db.createTwoFactorCode(user.id, code)
+    await db.createTwoFactorCode(user.id, code)
     await setPendingSession(event, user.id, remember)
 
     // ------------------------------------------------------------------

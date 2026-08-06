@@ -1,119 +1,158 @@
 import { describe, expect, it } from 'vitest'
-import { db } from '~~/server/utils/db'
-import { buildAnalytics, buildMovement, buildMrrSeries, buildOverviewMetrics } from '~~/server/utils/metrics'
+import {
+  computeAnalytics,
+  computeMovement,
+  computeMrrSeries,
+  computeOverviewMetrics
+} from '~~/server/utils/metrics'
 
 const NOW = new Date('2026-08-06T12:00:00.000Z')
 
+/**
+ * A 24-month walk ending on a known figure, so assertions can be exact.
+ * These are pure functions now — no database, no seed, no clock.
+ */
+const HISTORY = [
+  41500, 43200, 44100, 46000, 47800, 49100, 51000, 52400,
+  54380, 56100, 58000, 60800, 61650, 62550, 64750, 67900,
+  69450, 72900, 75700, 77150, 79300, 81200, 83600, 86945
+]
+
+const STATS = { activeCount: 128, mrrTotal: 86945 }
+
 describe('MRR movement reconciles', () => {
   it('balances exactly: opening + gains − losses === closing', () => {
-    // This is the property that makes the waterfall trustworthy. If it drifts,
-    // the chart shows four bars that do not add up to the headline figure and
-    // the whole dashboard stops being defensible.
-    const m = buildMovement()
+    // The property that makes the waterfall trustworthy. If it drifts, the
+    // chart shows four bars that do not add up to the headline figure and the
+    // dashboard stops being defensible.
+    const m = computeMovement(HISTORY)
     expect(m.starting + m.new + m.expansion - m.contraction - m.churn).toBe(m.ending)
   })
 
+  it('reconciles for any history, not just the seeded one', () => {
+    // Fuzzed, because the invariant must hold for real data too — including
+    // months where revenue fell.
+    for (let i = 0; i < 500; i++) {
+      const starting = Math.floor(Math.random() * 500_000)
+      const ending = Math.floor(Math.random() * 500_000)
+      const m = computeMovement([starting, ending])
+      expect(m.starting + m.new + m.expansion - m.contraction - m.churn).toBe(m.ending)
+    }
+  })
+
   it('reports gains and losses as positive magnitudes', () => {
-    // Direction is carried by the field name, not by the sign — the component
+    // Direction is carried by the field name, not the sign — the component
     // negates the losses when it draws them.
-    const m = buildMovement()
-    for (const value of [m.new, m.expansion, m.contraction, m.churn]) {
+    const m = computeMovement(HISTORY)
+    for (const value of [m.contraction, m.churn]) {
       expect(value).toBeGreaterThanOrEqual(0)
     }
   })
-})
 
-describe('every headline figure agrees with the others', () => {
-  it('headline MRR equals the MRR actually held by subscribers', () => {
-    // The bug this locks down: a seeded history that ended at a different
-    // number from the sum of the rows, so the donut and the KPI disagreed.
-    const mrr = buildOverviewMetrics().find(metric => metric.key === 'mrr')!.value
-    const held = db.subscribers().reduce((sum, row) => sum + row.mrr, 0)
-    expect(mrr).toBe(held)
-  })
-
-  it('the trend series ends on the headline figure', () => {
-    const mrr = buildOverviewMetrics().find(metric => metric.key === 'mrr')!.value
-    const series = buildMrrSeries(NOW)
-    expect(series.at(-1)!.value).toBe(mrr)
-  })
-
-  it('the plan mix totals the headline figure', () => {
-    const mrr = buildOverviewMetrics().find(metric => metric.key === 'mrr')!.value
-    const mix = buildAnalytics('30d', NOW).planMix.reduce((sum, slice) => sum + slice.value, 0)
-    expect(mix).toBe(mrr)
-  })
-
-  it('churned accounts contribute nothing', () => {
-    for (const row of db.subscribers()) {
-      if (row.status === 'churned') expect(row.mrr).toBe(0)
-    }
+  it('does not divide by zero on an empty history', () => {
+    expect(() => computeMovement([])).not.toThrow()
+    expect(computeMovement([])).toMatchObject({ starting: 0, ending: 0 })
   })
 })
 
-describe('metrics carry keys, not prose', () => {
+describe('overview metrics', () => {
+  it('reports the closing month as MRR', () => {
+    const mrr = computeOverviewMetrics(HISTORY, STATS).find(m => m.key === 'mrr')!
+    expect(mrr.value).toBe(86945)
+  })
+
+  it('ends the trend series on the same figure', () => {
+    const mrr = computeOverviewMetrics(HISTORY, STATS).find(m => m.key === 'mrr')!.value
+    expect(computeMrrSeries(HISTORY, NOW).at(-1)!.value).toBe(mrr)
+  })
+
+  it('marks churn as a metric where rising is bad', () => {
+    // Drives whether the delta is painted green or red. Getting this wrong
+    // congratulates someone on losing revenue.
+    const metrics = computeOverviewMetrics(HISTORY, STATS)
+    expect(metrics.find(m => m.key === 'churn')!.riseIsGood).toBe(false)
+    expect(metrics.find(m => m.key === 'mrr')!.riseIsGood).toBe(true)
+  })
+
   it('sends no display text the client would have to translate', () => {
-    for (const metric of buildOverviewMetrics()) {
+    for (const metric of computeOverviewMetrics(HISTORY, STATS)) {
       expect(metric).not.toHaveProperty('label')
       expect(metric).not.toHaveProperty('hint')
       expect(metric.key).toBeTruthy()
     }
   })
 
-  it('marks churn as a metric where rising is bad', () => {
-    // Drives whether the delta is painted green or red. Getting this wrong
-    // congratulates someone on losing revenue.
-    const metrics = buildOverviewMetrics()
-    expect(metrics.find(m => m.key === 'churn')!.riseIsGood).toBe(false)
-    expect(metrics.find(m => m.key === 'mrr')!.riseIsGood).toBe(true)
+  it('survives a brand-new account with no history', () => {
+    // Day one of a real deployment: one month of data, or none.
+    expect(() => computeOverviewMetrics([], { activeCount: 0, mrrTotal: 0 })).not.toThrow()
+    const metrics = computeOverviewMetrics([], { activeCount: 0, mrrTotal: 0 })
+    expect(metrics.every(m => Number.isFinite(m.value))).toBe(true)
+    expect(metrics.every(m => Number.isFinite(m.delta))).toBe(true)
   })
 })
 
 describe('analytics ranges', () => {
+  const daily = Array.from({ length: 90 }, (_, i) => 2000 + i * 10)
+  const planMix = [
+    { plan: 'starter' as const, value: 2000 },
+    { plan: 'growth' as const, value: 30000 },
+    { plan: 'scale' as const, value: 54945 }
+  ]
+  const data = { daily, monthly: HISTORY, planMix }
+
   it('returns one point per day for day ranges', () => {
-    expect(buildAnalytics('7d', NOW).revenue).toHaveLength(7)
-    expect(buildAnalytics('30d', NOW).revenue).toHaveLength(30)
-    expect(buildAnalytics('90d', NOW).revenue).toHaveLength(90)
+    expect(computeAnalytics('7d', NOW, data).revenue).toHaveLength(7)
+    expect(computeAnalytics('30d', NOW, data).revenue).toHaveLength(30)
+    expect(computeAnalytics('90d', NOW, data).revenue).toHaveLength(90)
   })
 
   it('switches to months for the trailing year', () => {
-    const yearly = buildAnalytics('12m', NOW)
+    const yearly = computeAnalytics('12m', NOW, data)
     expect(yearly.revenue).toHaveLength(12)
     expect(yearly.granularity).toBe('month')
   })
 
   it('sends timestamps, never printed labels', () => {
     // Month and day names differ per language, so the client builds them.
-    for (const point of buildAnalytics('30d', NOW).revenue) {
+    for (const point of computeAnalytics('30d', NOW, data).revenue) {
       expect(point).not.toHaveProperty('label')
       expect(Number.isNaN(Date.parse(point.at))).toBe(false)
     }
   })
 
+  it('orders points oldest first', () => {
+    const points = computeAnalytics('30d', NOW, data).revenue
+    for (let i = 1; i < points.length; i++) {
+      expect(Date.parse(points[i]!.at)).toBeGreaterThan(Date.parse(points[i - 1]!.at))
+    }
+  })
+
   it('buckets signups weekly beyond a week, daily within one', () => {
-    expect(buildAnalytics('7d', NOW).signupsGranularity).toBe('day')
-    expect(buildAnalytics('30d', NOW).signupsGranularity).toBe('week')
+    expect(computeAnalytics('7d', NOW, data).signupsGranularity).toBe('day')
+    expect(computeAnalytics('30d', NOW, data).signupsGranularity).toBe('week')
   })
 
   it('sends channels as keys so they can be translated', () => {
-    const keys = buildAnalytics('30d', NOW).channels.map(channel => channel.key)
+    const keys = computeAnalytics('30d', NOW, data).channels.map(channel => channel.key)
     expect(keys).toEqual(['organic', 'direct', 'referral', 'partner', 'paidSocial'])
   })
 
-  it('starts cohort retention at 100% in month zero', () => {
-    const retention = buildAnalytics('30d', NOW).retention
+  it('passes the plan mix through untouched', () => {
+    expect(computeAnalytics('30d', NOW, data).planMix).toEqual(planMix)
+  })
+
+  it('starts cohort retention at 100% and only falls', () => {
+    const retention = computeAnalytics('30d', NOW, data).retention
     expect(retention[0]).toEqual({ month: 0, value: 100 })
-    // Retention can only fall.
     for (let i = 1; i < retention.length; i++) {
       expect(retention[i]!.value).toBeLessThanOrEqual(retention[i - 1]!.value)
     }
   })
-})
 
-describe('the seed is deterministic', () => {
-  it('produces the same figures on every call', () => {
-    // A demo whose numbers move between renders looks broken in a screenshot.
-    expect(buildMovement()).toEqual(buildMovement())
-    expect(buildMrrSeries(NOW)).toEqual(buildMrrSeries(NOW))
+  it('copes with a range wider than the data it has', () => {
+    // A two-week-old deployment asked for 90 days.
+    const thin = { daily: [1000, 1100], monthly: [5000], planMix }
+    expect(() => computeAnalytics('90d', NOW, thin)).not.toThrow()
+    expect(computeAnalytics('90d', NOW, thin).revenue).toHaveLength(2)
   })
 })

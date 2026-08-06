@@ -62,6 +62,8 @@ The domain is fictional; every page is built to be rebranded and rewired.
 ```bash
 npm install
 cp .env.example .env      # then set NUXT_SESSION_PASSWORD
+npm run db:migrate        # creates .data/cadence.db
+npm run db:seed           # 148 subscribers, 24 months of history
 npm run dev
 ```
 
@@ -86,6 +88,11 @@ Both are shown on the sign-in page while `NUXT_PUBLIC_DEMO_MODE` is `true`. Set 
 | `npm run typecheck` | `vue-tsc` across app and server |
 | `npm run lint` / `lint:fix` | ESLint |
 | `npm run i18n:check` | Compares every locale file against `en.json` |
+| `npm run db:migrate` | Applies pending migrations |
+| `npm run db:seed` | Loads the demo dataset (idempotent) |
+| `npm run db:generate` | Generates a migration from schema changes |
+| `npm run db:studio` | Opens Drizzle Studio |
+| `npm run db:reset` | Deletes the database, migrates, reseeds |
 | `npm run test` / `test:watch` | Vitest unit suite |
 | `npm run verify` | Everything CI runs: lint, typecheck, locales, tests |
 
@@ -97,6 +104,8 @@ Both are shown on the sign-in page while `NUXT_PUBLIC_DEMO_MODE` is `true`. Set 
 | --- | --- | --- |
 | `NUXT_SESSION_PASSWORD` | **In production** | Seals the session cookie. Must be ≥ 32 characters. Generate with `openssl rand -base64 32`. |
 | `NUXT_APP_URL` | For reset emails | Absolute origin used to build password-reset links. |
+| `DATABASE_URL` | No | libsql connection string. Defaults to `file:./.data/cadence.db`. |
+| `DATABASE_AUTH_TOKEN` | For Turso | Auth token when `DATABASE_URL` points at a hosted database. |
 | `NUXT_PUBLIC_DEMO_MODE` | No | Shows the demo credentials on the sign-in page. Default `true`. |
 
 In development a fallback session secret is used so the template runs with no setup.
@@ -195,32 +204,63 @@ their components (`app/components/{forms,grid,icons,overlays,wizard,table}/`),
 
 ---
 
-## Connecting a real backend
+## The database
 
-The demo runs on an in-memory store. It resets on restart, which is intentional for a demo and
-unsuitable for anything else.
-
-**One file holds all of it: `server/utils/db.ts`.** Keep the method signatures, change the
-bodies, and no page, component or composable needs to be touched.
+**SQLite via Drizzle**, over the `libsql` driver. Real tables, real migrations, real
+persistence — a session, a pending two-step code and a verification token all survive a restart.
 
 ```
 app/pages, app/components     never call an API directly
   └── app/composables         useAuth, useApiFetch — the only callers
         └── server/api/*      validate input, check the session
-              └── server/utils/db.ts   ← replace this
+              └── server/utils/db.ts        every query lives here
+                    └── server/database/    schema, client, migrations, seed
 ```
 
-Types in `shared/types.ts` describe the API contract; Zod schemas in `shared/schemas.ts` are
-used by the form on the client **and** the route on the server, so validation rules cannot
-drift apart.
+`server/utils/db.ts` is the only file that issues a query. The API routes call nothing else, so
+moving to Postgres means changing the dialect in `server/database/{client,schema}.ts` and the
+queries in that one file — no page, component or composable is affected.
 
-### A typical migration
+### Why libsql
 
-1. Add your database client (Drizzle, Prisma, Mongo — anything).
-2. Rewrite the methods in `server/utils/db.ts` to read and write real rows.
-3. Replace the aggregation in `server/utils/metrics.ts` with your own queries.
-4. Send real email where `server/api/auth/forgot-password.post.ts` currently logs the reset link.
-5. Delete the seed helpers at the top of `db.ts`.
+It ships prebuilt, so `npm install` needs no compiler — unlike `better-sqlite3`, which fails on
+any machine without build tools. And the same driver talks to a local file *or* to Turso, so
+going from a file to a hosted database is one environment variable:
+
+```bash
+DATABASE_URL=libsql://your-db.turso.io
+DATABASE_AUTH_TOKEN=…
+```
+
+### Filtering happens in SQL
+
+The subscribers list runs two queries per request — one for the page, one for the totals — with
+`WHERE`, `ORDER BY` and `LIMIT` done by the database. Aggregates for the metrics pipeline are
+`SUM` and `GROUP BY`, not JavaScript over an array. That is the point of having a database: the
+work does not grow with the row count.
+
+### Migrations
+
+`npm run db:migrate` applies them; `npm run db:generate` creates a new one after a schema
+change. In development a Nitro plugin runs pending migrations on boot, so a fresh clone works
+with no database step. In production it does **not** — migrations are a deploy step, so a
+rollout that fails halfway cannot leave a half-migrated schema behind a live process.
+
+### The seed
+
+`server/database/seed.ts` builds the demo dataset from a fixed-seed PRNG, so the figures are
+identical on every machine and in every screenshot. It clears the tables it owns first, so
+running it twice does not double the data. Delete the file once you have real data — nothing
+else imports it.
+
+### Still to wire up
+
+- Send real email where `server/api/auth/{forgot-password,resend-verification}.post.ts` and
+  `login.post.ts` currently log the link or code to the console.
+- Move the rate limiter in `server/utils/ratelimit.ts` off process memory if you run more than
+  one instance.
+- Turn on SQLite foreign keys (`PRAGMA foreign_keys = ON`) or move to a database that enforces
+  them by default — the schema declares the relationships, but SQLite ignores them unless asked.
 
 ### Other integration points
 

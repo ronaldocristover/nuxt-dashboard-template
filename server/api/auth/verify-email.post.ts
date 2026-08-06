@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'This verification link is missing its token' })
   }
 
-  const userId = db.consumeVerifyToken(body.data.token)
+  const userId = await db.consumeVerifyToken(body.data.token)
 
   if (!userId) {
     throw createError({
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const updated = db.setEmailVerified(userId)
+  const updated = await db.setEmailVerified(userId)
 
   if (!updated) {
     throw createError({ statusCode: 404, statusMessage: 'That account no longer exists' })

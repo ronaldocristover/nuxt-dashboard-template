@@ -13,5 +13,5 @@ export default defineEventHandler(async (event): Promise<AnalyticsResponse> => {
   const query = await getValidatedQuery(event, querySchema.safeParse)
 
   // An unrecognised range is a bad link, not a server error — fall back.
-  return buildAnalytics(query.success ? query.data.range : '30d', new Date())
+  return await buildAnalytics(query.success ? query.data.range : '30d', new Date())
 })

@@ -17,14 +17,14 @@ export default defineEventHandler(async (event) => {
   }
 
   const { email } = body.data
-  const user = db.findUserByEmail(email)
+  const user = await db.findUserByEmail(email)
   const config = useRuntimeConfig()
 
   let devResetUrl: string | undefined
 
   if (user) {
     const token = generateToken()
-    db.createResetToken(user.email, token)
+    await db.createResetToken(user.email, token)
 
     const resetUrl = `${config.appUrl}/reset-password?token=${token}`
 

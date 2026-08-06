@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 422, statusMessage: 'Enter your password to continue' })
   }
 
-  const stored = db.findUserById(current.id)
+  const stored = await db.findUserById(current.id)
 
   // Changing a security setting re-asks for the password. A stolen session
   // should not be able to switch two-step off.
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 403, statusMessage: 'Your password is incorrect' })
   }
 
-  const updated = db.setTwoFactor(current.id, body.data.enabled)
+  const updated = await db.setTwoFactor(current.id, body.data.enabled)
 
   return { user: updated ? publicUser(updated) : null }
 })

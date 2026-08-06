@@ -15,14 +15,14 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const existing = db.teamMembers().find(member => member.email === body.data.email)
+  const existing = await db.findMemberByEmail(body.data.email)
 
   if (existing) {
     throw createError({ statusCode: 409, statusMessage: 'That person is already on the team' })
   }
 
   // Send the invitation email here.
-  const member = db.inviteMember(body.data.email, body.data.role)
+  const member = await db.inviteMember(body.data.email, body.data.role)
 
   return { member }
 })
