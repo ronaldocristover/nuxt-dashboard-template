@@ -86,6 +86,8 @@ Both are shown on the sign-in page while `NUXT_PUBLIC_DEMO_MODE` is `true`. Set 
 | `npm run typecheck` | `vue-tsc` across app and server |
 | `npm run lint` / `lint:fix` | ESLint |
 | `npm run i18n:check` | Compares every locale file against `en.json` |
+| `npm run test` / `test:watch` | Vitest unit suite |
+| `npm run verify` | Everything CI runs: lint, typecheck, locales, tests |
 
 ---
 
@@ -430,6 +432,34 @@ reserves their height during SSR so nothing shifts when they appear.
 - The subscribers table becomes a stacked card list on small screens rather than scrolling sideways
 
 ---
+
+## Tests and CI
+
+`npm run test` runs a Vitest suite over the pure modules — formatters, Zod schemas, chart
+maths, password hashing and the metric aggregation. It finishes in under half a second, which
+is the point: a suite nobody minds running is a suite that actually runs.
+
+What it locks down, rather than what it merely covers:
+
+- **The waterfall reconciles.** `opening + new + expansion − contraction − churn === closing`,
+  and the headline MRR equals the plan-mix total, the end of the trend series, and the sum of
+  the subscriber rows. Four figures that must agree, asserted to agree.
+- **`formatRelative` never reads the clock.** It takes `now` as an argument, which is what stops
+  SSR and hydration disagreeing on "3 hours ago".
+- **Locale formatting really reaches `Intl`.** `86.945` for Indonesian, `86,945` for English —
+  if the locale stopped being passed, both would say the same thing and nothing else would fail.
+- **`monotonePath` cannot overshoot.** A plain cubic would dip below values the data never
+  reached, which on a revenue chart means inventing revenue.
+- **`verifyPassword` returns false rather than throwing** on a malformed stored hash, so one
+  corrupt row cannot 500 the sign-in route.
+- **Schemas emit translation keys**, not English prose.
+
+`.github/workflows/ci.yml` runs `lint`, `typecheck`, `i18n:check`, `test` and a production
+build on every push and pull request. `npm run verify` runs the same gate locally.
+
+Rendering and flows are checked by hand rather than in the suite — a screenshot makes a better
+assertion about a chart than any DOM query, and adding `@nuxt/test-utils` would triple the
+install for worse tests.
 
 ## Deployment
 
