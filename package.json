@@ -16,6 +16,7 @@
     "i18n:check": "node scripts/check-locales.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
+    "smoke": "node scripts/smoke.mjs",
     "verify": "npm run lint && npm run typecheck && npm run i18n:check && npm run test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "mkdir -p .data && drizzle-kit migrate",

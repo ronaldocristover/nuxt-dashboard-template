@@ -30,9 +30,10 @@ The domain is fictional; every page is built to be rebranded and rewired.
 - `/dashboard` — KPI cards, the MRR movement breakdown, revenue trend, activity feed, invoices
 - `/dashboard/analytics` — date-range switching, area / grouped-bar / donut charts, channels, cohort retention
 - `/dashboard/subscribers` — server-driven table: search, filter, sort, paginate, multi-select, CSV export, detail slideover
+- `/dashboard/kanban` — a renewal pipeline: drag or keyboard-move cards between five stages, edit in a slideover, add and rename stages, all persisted
 - `/dashboard/settings` — profile, account and password, notifications, billing, team members
 
-**Developer reference** — six pages documenting the template itself
+**Developer reference** — seven pages documenting the template itself
 
 - `/dashboard/forms` — every form control, plus a fully validated example form
 - `/dashboard/layouts` — 21 grid patterns, each showing the exact classes that produce it
@@ -95,6 +96,7 @@ Both are shown on the sign-in page while `NUXT_PUBLIC_DEMO_MODE` is `true`. Set 
 | `npm run db:reset` | Deletes the database, migrates, reseeds |
 | `npm run test` / `test:watch` | Vitest unit suite |
 | `npm run verify` | Everything CI runs: lint, typecheck, locales, tests |
+| `npm run smoke` | Asserts rendered page **content** against a running server (see below) |
 
 ---
 
@@ -493,13 +495,35 @@ What it locks down, rather than what it merely covers:
 - **`verifyPassword` returns false rather than throwing** on a malformed stored hash, so one
   corrupt row cannot 500 the sign-in route.
 - **Schemas emit translation keys**, not English prose.
+- **Board positions stay densely packed.** A 300-run fuzz moves cards at random and asserts every
+  stage is still numbered `0..n-1` afterwards. The same pure function runs on the client for the
+  optimistic update and on the server for the authoritative write, so a drift between them would
+  show up as cards silently reordering after a refresh.
 
 `.github/workflows/ci.yml` runs `lint`, `typecheck`, `i18n:check`, `test` and a production
 build on every push and pull request. `npm run verify` runs the same gate locally.
 
-Rendering and flows are checked by hand rather than in the suite — a screenshot makes a better
-assertion about a chart than any DOM query, and adding `@nuxt/test-utils` would triple the
-install for worse tests.
+### Why there is a separate smoke test
+
+Three bugs in this template shipped a page that returned **HTTP 200 and was still broken**: a
+component registered under the wrong auto-import name (blank body, 200), an unescaped `@` in a
+translation message that killed the client-side i18n compiler (every label rendered as
+`nav.overview`, 200), and a `shallowRef` that stopped optimistic board updates from re-rendering
+(the write succeeded, the screen did not move). Status-code assertions caught none of them.
+
+So `npm run smoke` asserts what is actually in the body — a known phrase per page, no dotted
+translation key where copy belongs, and that switching the locale cookie really changes the
+served copy. Point it at a running server:
+
+```bash
+npm run build
+node .output/server/index.mjs &
+npm run smoke                      # or SMOKE_URL=https://staging.example.com npm run smoke
+```
+
+Charts and drag interactions are still checked by hand — a screenshot makes a better assertion
+about a chart than any DOM query, and adding `@nuxt/test-utils` would triple the install for
+worse tests.
 
 ## Deployment
 

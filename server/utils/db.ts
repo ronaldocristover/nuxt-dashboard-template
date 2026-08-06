@@ -1,6 +1,10 @@
 import { and, asc, count, desc, eq, like, lt, or, sql, sum } from 'drizzle-orm'
 import type {
   ActivityEvent,
+  BoardCard,
+  BoardColumn,
+  BoardLabel,
+  BoardTone,
   Invoice,
   NotificationPreferences,
   Plan,
@@ -477,6 +481,173 @@ export const db = {
       .delete(schema.teamMembers)
       .where(and(eq(schema.teamMembers.id, id), sql`${schema.teamMembers.role} != 'owner'`))
       .returning({ id: schema.teamMembers.id })
+    return rows.length > 0
+  },
+
+  // --- Kanban board ----------------------------------------------------------
+
+  /**
+   * The whole board in two queries — columns, then every card ordered by
+   * column and position. Assembling in memory beats one query per column.
+   */
+  async board(): Promise<BoardColumn[]> {
+    const database = useDatabase()
+
+    const [columns, cards] = await Promise.all([
+      database.select().from(schema.boardColumns).orderBy(asc(schema.boardColumns.position)),
+      database
+        .select()
+        .from(schema.boardCards)
+        .orderBy(asc(schema.boardCards.columnId), asc(schema.boardCards.position))
+    ])
+
+    const byColumn = new Map<string, BoardCard[]>()
+    for (const card of cards) {
+      const list = byColumn.get(card.columnId) ?? []
+      list.push(card as BoardCard)
+      byColumn.set(card.columnId, list)
+    }
+
+    return columns.map(column => ({
+      ...column,
+      cards: (byColumn.get(column.id) ?? []).sort((a, b) => a.position - b.position)
+    }))
+  },
+
+  async allCards(): Promise<BoardCard[]> {
+    const rows = await useDatabase().select().from(schema.boardCards)
+    return rows as BoardCard[]
+  },
+
+  async findCard(id: string): Promise<BoardCard | undefined> {
+    const [row] = await useDatabase()
+      .select()
+      .from(schema.boardCards)
+      .where(eq(schema.boardCards.id, id))
+      .limit(1)
+    return row as BoardCard | undefined
+  },
+
+  async createCard(input: {
+    columnId: string
+    title: string
+    account: string
+    mrr: number
+    ownerName: string
+    ownerColor: string
+    dueAt: string | null
+    labels: BoardLabel[]
+  }): Promise<BoardCard> {
+    const database = useDatabase()
+
+    // Append to the end of its column. Read the current max rather than the row
+    // count, so a gap left by a delete cannot collide.
+    const [last] = await database
+      .select({ position: schema.boardCards.position })
+      .from(schema.boardCards)
+      .where(eq(schema.boardCards.columnId, input.columnId))
+      .orderBy(desc(schema.boardCards.position))
+      .limit(1)
+
+    const [row] = await database
+      .insert(schema.boardCards)
+      .values({
+        id: `card_${Date.now().toString(36)}_${Math.trunc(Number(`0.${Date.now()}`) * 1e6).toString(36)}`,
+        columnId: input.columnId,
+        position: last ? last.position + 1 : 0,
+        title: input.title,
+        account: input.account,
+        mrr: input.mrr,
+        ownerName: input.ownerName,
+        ownerColor: input.ownerColor,
+        dueAt: input.dueAt,
+        labels: input.labels,
+        notes: '',
+        commentCount: 0
+      })
+      .returning()
+
+    return row as BoardCard
+  },
+
+  async updateCard(id: string, patch: Partial<Omit<BoardCard, 'id' | 'position' | 'columnId'>>): Promise<BoardCard | undefined> {
+    const [row] = await useDatabase()
+      .update(schema.boardCards)
+      .set(patch)
+      .where(eq(schema.boardCards.id, id))
+      .returning()
+    return row as BoardCard | undefined
+  },
+
+  async deleteCard(id: string): Promise<boolean> {
+    const rows = await useDatabase()
+      .delete(schema.boardCards)
+      .where(eq(schema.boardCards.id, id))
+      .returning({ id: schema.boardCards.id })
+    return rows.length > 0
+  },
+
+  /**
+   * Applies a batch of position changes from `moveCard`.
+   *
+   * One statement per changed row, inside a transaction: a move that half-lands
+   * would leave two cards claiming the same position, and the board would
+   * render them in an arbitrary order until the next reload.
+   */
+  async applyCardPositions(changes: Array<{ id: string, columnId: string, position: number }>): Promise<void> {
+    if (changes.length === 0) return
+
+    const database = useDatabase()
+
+    await database.transaction(async (tx) => {
+      for (const change of changes) {
+        await tx
+          .update(schema.boardCards)
+          .set({ columnId: change.columnId, position: change.position })
+          .where(eq(schema.boardCards.id, change.id))
+      }
+    })
+  },
+
+  async createColumn(title: string, tone: BoardTone): Promise<BoardColumn> {
+    const database = useDatabase()
+
+    const [last] = await database
+      .select({ position: schema.boardColumns.position })
+      .from(schema.boardColumns)
+      .orderBy(desc(schema.boardColumns.position))
+      .limit(1)
+
+    const [row] = await database
+      .insert(schema.boardColumns)
+      .values({
+        id: `col_${Date.now().toString(36)}`,
+        title,
+        position: last ? last.position + 1 : 0,
+        tone
+      })
+      .returning()
+
+    return { ...row!, cards: [] }
+  },
+
+  async updateColumn(id: string, patch: { title?: string, tone?: BoardTone }): Promise<boolean> {
+    const rows = await useDatabase()
+      .update(schema.boardColumns)
+      .set(patch)
+      .where(eq(schema.boardColumns.id, id))
+      .returning({ id: schema.boardColumns.id })
+    return rows.length > 0
+  },
+
+  /** Cards go with it — the schema cascades, and an orphan card has nowhere to render. */
+  async deleteColumn(id: string): Promise<boolean> {
+    const database = useDatabase()
+    await database.delete(schema.boardCards).where(eq(schema.boardCards.columnId, id))
+    const rows = await database
+      .delete(schema.boardColumns)
+      .where(eq(schema.boardColumns.id, id))
+      .returning({ id: schema.boardColumns.id })
     return rows.length > 0
   },
 

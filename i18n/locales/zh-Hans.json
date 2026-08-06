@@ -35,6 +35,7 @@
     "overview": "概览",
     "analytics": "分析",
     "subscribers": "订阅客户",
+    "kanban": "看板",
     "forms": "表单",
     "layouts": "布局",
     "icons": "图标",
@@ -205,7 +206,15 @@
     "token": {
       "missing": "该重置链接缺少令牌"
     },
-    "timezone": "请选择时区"
+    "timezone": "请选择时区",
+    "board": {
+      "titleRequired": "请填写至少两个字符的名称",
+      "titleTooLong": "请少于 120 个字符",
+      "accountRequired": "这是哪个客户？",
+      "mrrNegative": "MRR 不能为负",
+      "tooManyLabels": "最多四个标签",
+      "columnTitleRequired": "请填写阶段名称"
+    }
   },
   "errors": {
     "expired": "登录状态已过期，请重新登录。",
@@ -647,6 +656,77 @@
       "security": "安全",
       "rights": "© {year} Cadence，一个 Nuxt 仪表盘模板。",
       "builtWith": "由 Nuxt 4、Nuxt UI 与 Tailwind CSS 构建"
+    }
+  },
+  "board": {
+    "heading": "进行中的续约",
+    "intro": "每个需要跟进的续约账户。拖动卡片切换阶段，也可以用键盘移动。",
+    "openRenewals": "待处理续约",
+    "mrrAtStake": "涉及 MRR",
+    "atStake": "涉及金额",
+    "addStage": "添加阶段",
+    "createStage": "创建阶段",
+    "renameStage": "重命名阶段",
+    "deleteStage": "删除阶段",
+    "deleteStageBody": "删除“{stage}”会同时删除其中的 {count} 张卡片，且无法撤销。",
+    "stageActions": "{stage} 的操作",
+    "collapse": "收起",
+    "expand": "展开",
+    "addCard": "添加续约",
+    "newCard": "新增续约",
+    "editCard": "编辑续约",
+    "createCard": "创建续约",
+    "confirmDelete": "确定永久删除？",
+    "emptyStage": "把卡片拖到这里",
+    "keyboardHint": "聚焦一张卡片后按住 Ctrl（或 ⌘）配合方向键即可在阶段间移动。",
+    "cardAria": "{title}，{mrr}，{column} 中第 {position} 张，共 {total} 张",
+    "loadFailed": "无法加载看板",
+    "loadFailedBody": "请求未完成，请重试。",
+    "moveFailed": "该移动未保存",
+    "cardCreated": "续约已添加",
+    "cardCreateFailed": "无法添加该续约",
+    "cardSaved": "续约已保存",
+    "cardSaveFailed": "无法保存该续约",
+    "cardDeleted": "续约已删除",
+    "cardDeleteFailed": "无法删除该续约",
+    "stageCreated": "阶段已添加",
+    "stageCreateFailed": "无法添加该阶段",
+    "stageSaveFailed": "无法重命名该阶段",
+    "stageDeleted": "阶段已删除",
+    "stageDeleteFailed": "无法删除该阶段",
+    "labels": {
+      "paymentFailed": "付款失败",
+      "usageDown": "使用量下降",
+      "championLeft": "关键联系人离职",
+      "contractEnding": "合约即将到期",
+      "priceObjection": "价格异议",
+      "competitor": "竞争对手"
+    },
+    "tones": {
+      "risk": "有风险",
+      "progress": "进行中",
+      "neutral": "中性",
+      "won": "已赢",
+      "lost": "已输"
+    },
+    "field": {
+      "title": "需要做什么",
+      "titlePlaceholder": "Northwind Labs 续约",
+      "account": "客户",
+      "mrr": "涉及 MRR",
+      "mrrHelp": "这笔续约每月的价值。",
+      "due": "续约日期",
+      "owner": "负责人",
+      "labels": "风险标签",
+      "labelsHelp": "最多四个。",
+      "notes": "备注",
+      "notesPlaceholder": "他们说了什么，下一步做什么？",
+      "activity": "动态",
+      "commentCount": "{count} 条评论",
+      "renews": "{date} 续约",
+      "stageName": "阶段名称",
+      "stagePlaceholder": "谈判中",
+      "stageTone": "强调色"
     }
   }
 }
