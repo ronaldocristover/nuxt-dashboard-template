@@ -1,0 +1,181 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   ---------------------------------------------------------------------------
+   Rebrand the whole template from this block. Nothing below `@theme static`
+   is referenced by class name anywhere else in the codebase, so swapping the
+   cobalt scale for your own palette recolours every page at once.
+   ------------------------------------------------------------------------ */
+
+@theme static {
+  /* Brand accent. Replace all eleven shades to keep contrast ratios intact. */
+  --color-cobalt-50: #eff3ff;
+  --color-cobalt-100: #dbe4ff;
+  --color-cobalt-200: #bcccff;
+  --color-cobalt-300: #93a9ff;
+  --color-cobalt-400: #6b84ff;
+  --color-cobalt-500: #2d5bff;
+  --color-cobalt-600: #1a42e6;
+  --color-cobalt-700: #1533b8;
+  --color-cobalt-800: #152e93;
+  --color-cobalt-900: #172c75;
+  --color-cobalt-950: #101c47;
+
+  /* Typefaces. Display carries personality, sans carries the UI, mono
+     carries every number so figures line up column to column. */
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'IBM Plex Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Display scale, tuned tighter than the Tailwind defaults so large
+     headings stay compact on mobile. */
+  --text-display-sm: 1.875rem;
+  --text-display-sm--line-height: 1.15;
+  --text-display-sm--letter-spacing: -0.02em;
+  --text-display-md: 2.5rem;
+  --text-display-md--line-height: 1.08;
+  --text-display-md--letter-spacing: -0.025em;
+  --text-display-lg: 3.5rem;
+  --text-display-lg--line-height: 1.02;
+  --text-display-lg--letter-spacing: -0.03em;
+  --text-display-xl: 4.5rem;
+  --text-display-xl--line-height: 0.98;
+  --text-display-xl--letter-spacing: -0.035em;
+}
+
+:root {
+  --ui-primary: var(--color-cobalt-600);
+  --ui-radius: 0.5rem;
+  --ui-container: var(--container-6xl);
+  --ui-header-height: --spacing(16);
+
+  /* Revenue-movement colours. Semantic, not decorative: every waterfall
+     segment, delta badge and chart series reads from these four. */
+  --cadence-new: var(--color-cobalt-500);
+  --cadence-expansion: #0d9488;
+  --cadence-contraction: #d97706;
+  --cadence-churn: #e11d48;
+}
+
+.dark {
+  --ui-primary: var(--color-cobalt-400);
+  --ui-bg: var(--color-slate-950);
+  --ui-bg-muted: color-mix(in oklab, var(--color-slate-900) 60%, transparent);
+
+  --cadence-new: var(--color-cobalt-400);
+  --cadence-expansion: #2dd4bf;
+  --cadence-contraction: #fbbf24;
+  --cadence-churn: #fb7185;
+}
+
+/* ---------------------------------------------------------------------------
+   Utilities
+   ------------------------------------------------------------------------ */
+
+/* Numbers only. Locks digit widths so a figure does not reflow as it
+   animates or updates, and keeps table columns aligned. */
+@utility tnum {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+  letter-spacing: -0.01em;
+}
+
+/* Section rhythm. One utility instead of per-section padding classes, which
+   is where competing specificity usually creeps in. */
+@utility section-y {
+  padding-block: --spacing(16);
+  @variant md {
+    padding-block: --spacing(24);
+  }
+}
+
+/* Same as `tnum`, tightened for display sizes. Monospace gives the comma a
+   full cell, which opens a visible gap at 40px+; this closes it without
+   giving up tabular alignment. */
+@utility tnum-display {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+  letter-spacing: -0.035em;
+}
+
+/* A panel that stays dark in both themes.
+   `bg-inverted` flips to white in dark mode, which turns a large panel into a
+   flashbang. These surfaces are meant to read as ink, not as an inversion. */
+@utility panel-ink {
+  background-color: var(--color-slate-900);
+  color: var(--color-white);
+}
+
+/* Small all-caps label used for eyebrows and chart legends. */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Bricolage's optical sizing axis makes large headings look thin at
+     default settings. Pin it to the size actually being rendered. */
+  .font-display {
+    font-optical-sizing: auto;
+    font-variation-settings: 'wdth' 100;
+  }
+
+  /* Nothing animates for people who asked it not to. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Page-load choreography
+   ---------------------------------------------------------------------------
+   One orchestrated entrance on the marketing hero, driven by a `--stagger`
+   custom property on each child. Used nowhere else.
+   ------------------------------------------------------------------------ */
+
+@keyframes cadence-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: cadence-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--stagger, 0) * 80ms);
+}
