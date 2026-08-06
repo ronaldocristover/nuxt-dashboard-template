@@ -24,11 +24,11 @@ const digestAt = shallowRef(new Time(9, 0))
     description="Numbers, dates, ranges and files. Each one stops a person having to format a value by hand."
   >
     <div class="divide-y divide-default">
-      <FormsRow title="Number" description="Steppers beat free text whenever the value is small and bounded.">
+      <ReferenceRow title="Number" description="Steppers beat free text whenever the value is small and bounded.">
         <UInputNumber v-model="seats" :min="1" :max="500" class="w-full" />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Number with units" description="Currency stays outside the field so the value can be selected cleanly.">
+      <ReferenceRow title="Number with units" description="Currency stays outside the field so the value can be selected cleanly.">
         <UInputNumber
           v-model="threshold"
           :min="0"
@@ -36,9 +36,9 @@ const digestAt = shallowRef(new Time(9, 0))
           class="w-full"
           :format-options="{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }"
         />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Slider" description="For a value where the approximate position matters more than the exact number." wide>
+      <ReferenceRow title="Slider" description="For a value where the approximate position matters more than the exact number." wide>
         <div class="space-y-6 pt-1.5">
           <div>
             <USlider v-model="seats" :min="1" :max="100" />
@@ -53,28 +53,28 @@ const digestAt = shallowRef(new Time(9, 0))
             </p>
           </div>
         </div>
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Rating" description="A bounded, ordinal judgement. Never use it for anything that needs to be averaged precisely.">
+      <ReferenceRow title="Rating" description="A bounded, ordinal judgement. Never use it for anything that needs to be averaged precisely.">
         <UInputRating v-model="rating" />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="One-time code" description="Split fields let someone paste a whole code and still see it digit by digit.">
+      <ReferenceRow title="One-time code" description="Split fields let someone paste a whole code and still see it digit by digit.">
         <UPinInput v-model="pin" :length="6" otp />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Tags" description="An open-ended list where the values are not known in advance.">
+      <ReferenceRow title="Tags" description="An open-ended list where the values are not known in advance.">
         <UInputTags v-model="segments" placeholder="Add a segment" class="w-full" />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Date and time" description="Billing dates are calendar dates, not timestamps — they do not shift with a timezone.">
+      <ReferenceRow title="Date and time" description="Billing dates are calendar dates, not timestamps — they do not shift with a timezone.">
         <div class="flex flex-wrap gap-2">
           <UInputDate v-model="renewsOn" />
           <UInputTime v-model="digestAt" />
         </div>
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Colour" description="Used by the theme editor. The value is a plain hex string.">
+      <ReferenceRow title="Colour" description="Used by the theme editor. The value is a plain hex string.">
         <div class="flex items-center gap-3">
           <UPopover>
             <UButton color="neutral" variant="subtle">
@@ -86,9 +86,9 @@ const digestAt = shallowRef(new Time(9, 0))
             </template>
           </UPopover>
         </div>
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="File upload" description="State what is accepted and how large it can be, before someone picks the wrong thing." wide>
+      <ReferenceRow title="File upload" description="State what is accepted and how large it can be, before someone picks the wrong thing." wide>
         <UFileUpload
           v-model="files"
           multiple
@@ -98,7 +98,7 @@ const digestAt = shallowRef(new Time(9, 0))
           description="CSV or TSV, up to 10 MB"
           class="w-full"
         />
-      </FormsRow>
+      </ReferenceRow>
     </div>
   </PanelSection>
 </template>

@@ -1,3 +1,4 @@
+import { and, asc, count, desc, eq, like, lt, or, sql, sum } from 'drizzle-orm'
 import type {
   ActivityEvent,
   Invoice,
@@ -8,390 +9,552 @@ import type {
   TeamMember,
   User
 } from '#shared/types'
-import { hashPassword } from './password'
+import { schema, useDatabase } from '../database/client'
 
 /**
  * ============================================================================
- * DEMO DATA STORE — replace this file
+ * DATA ACCESS
  * ============================================================================
  *
- * Everything the template needs lives behind the exported `db` object. It is
- * an in-memory store seeded from a fixed PRNG, so the numbers are identical on
- * every boot and the dashboard never looks broken in a screenshot.
+ * Every read and write the app performs goes through this object. The API
+ * routes call nothing else, so swapping SQLite for Postgres means changing the
+ * dialect in `server/database/{client,schema}.ts` and the queries here —
+ * no page, component or composable is affected.
  *
- * To connect a real backend, keep the method signatures below and change the
- * bodies. The API routes in `server/api/` call nothing else, so no page,
- * component or composable needs to be touched.
- *
- * State is per-process and resets on restart. That is intentional for a demo;
- * a real deployment needs a real database.
+ * Filtering, sorting, paging and aggregation are done in SQL, not by pulling
+ * rows into JavaScript. That is the whole reason for having a database: the
+ * subscribers table has one query per request regardless of how many rows exist.
  */
 
-/** Mulberry32. Small, fast, and seeded — same data every boot. */
-function prng(seed: number) {
-  let a = seed
-  return () => {
-    a |= 0
-    a = (a + 0x6d2b79f5) | 0
-    let t = Math.imul(a ^ (a >>> 15), 1 | a)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-const rand = prng(20260806)
-const pick = <T>(items: readonly T[]): T => items[Math.floor(rand() * items.length)]!
-const between = (min: number, max: number) => min + rand() * (max - min)
-const intBetween = (min: number, max: number) => Math.floor(between(min, max + 1))
-
-const FIRST_NAMES = [
-  'Amara', 'Bennet', 'Citra', 'Dara', 'Elias', 'Farah', 'Gideon', 'Hana',
-  'Ilya', 'Jonas', 'Kiran', 'Lena', 'Mateo', 'Nadia', 'Osman', 'Priya',
-  'Quinn', 'Rafael', 'Sasha', 'Tobias', 'Ugo', 'Vera', 'Wren', 'Ximena',
-  'Yusuf', 'Zara', 'Anton', 'Bianca', 'Cyrus', 'Delphine'
-] as const
-
-const LAST_NAMES = [
-  'Adeyemi', 'Bergström', 'Costa', 'Dubois', 'Eriksen', 'Fontaine', 'Gallo',
-  'Halvorsen', 'Ibrahim', 'Jansen', 'Kovač', 'Lindqvist', 'Moreau', 'Nakamura',
-  'Okonkwo', 'Petrov', 'Quintero', 'Rossi', 'Salvatierra', 'Tanaka',
-  'Ueda', 'Volkov', 'Wijaya', 'Xu', 'Yilmaz', 'Zieliński'
-] as const
-
-const COMPANY_HEADS = [
-  'Northwind', 'Lumen', 'Basalt', 'Verdant', 'Kestrel', 'Halcyon', 'Ironwood',
-  'Meridian', 'Cobalt', 'Solstice', 'Thistle', 'Aperture', 'Bellweather',
-  'Cinder', 'Driftwood', 'Everline', 'Foundry', 'Glasshouse', 'Harborview',
-  'Inkwell', 'Juniper', 'Keystone', 'Lantern', 'Mosswood', 'Nightjar',
-  'Orchard', 'Pallas', 'Quarry', 'Riverbend', 'Sandpiper'
-] as const
-
-const COMPANY_TAILS = ['Labs', 'Studio', 'Group', 'Systems', 'Collective', 'Works', 'Partners', 'Digital'] as const
-
-const COUNTRIES = ['Indonesia', 'Singapore', 'United States', 'Germany', 'Japan', 'Brazil', 'Nigeria', 'Netherlands', 'Australia', 'Canada'] as const
-
-const AVATAR_COLORS = ['#2d5bff', '#0d9488', '#d97706', '#e11d48', '#7c3aed', '#0891b2', '#65a30d', '#c026d3'] as const
-
-/** Plan pricing per seat. Drives every MRR figure in the template. */
-export const PLAN_PRICING: Record<Plan, { label: string, perSeat: number }> = {
-  starter: { label: 'Starter', perSeat: 12 },
-  growth: { label: 'Growth', perSeat: 29 },
-  scale: { label: 'Scale', perSeat: 64 }
-}
-
-const STATUS_WEIGHTS: Array<[SubscriberStatus, number]> = [
-  ['active', 0.7],
-  ['trialing', 0.12],
-  ['past_due', 0.08],
-  ['churned', 0.1]
-]
-
-function weightedStatus(): SubscriberStatus {
-  const roll = rand()
-  let cumulative = 0
-  for (const [status, weight] of STATUS_WEIGHTS) {
-    cumulative += weight
-    if (roll <= cumulative) return status
-  }
-  return 'active'
-}
-
-const DAY = 86_400_000
-
-/** Seed timestamps are relative to boot so "last seen" labels stay believable. */
-const BOOT = new Date()
-
-function seedSubscribers(count: number): Subscriber[] {
-  const rows: Subscriber[] = []
-  const seenEmails = new Set<string>()
-
-  for (let i = 0; i < count; i++) {
-    const first = pick(FIRST_NAMES)
-    const last = pick(LAST_NAMES)
-    const name = `${first} ${last}`
-    const company = `${pick(COMPANY_HEADS)} ${pick(COMPANY_TAILS)}`
-    const domain = company.split(' ')[0]!.toLowerCase()
-
-    let email = `${first.toLowerCase()}@${domain}.com`
-    let suffix = 2
-    while (seenEmails.has(email)) {
-      email = `${first.toLowerCase()}${suffix++}@${domain}.com`
-    }
-    seenEmails.add(email)
-
-    const plan = pick(['starter', 'starter', 'growth', 'growth', 'growth', 'scale'] as const)
-    const status = weightedStatus()
-    // Seat bands are deliberately overlapping and narrow enough that no single
-    // plan swamps the plan-mix chart.
-    const seats = plan === 'starter' ? intBetween(2, 8) : plan === 'growth' ? intBetween(4, 30) : intBetween(15, 45)
-
-    rows.push({
-      id: `sub_${(i + 1).toString().padStart(4, '0')}`,
-      name,
-      email,
-      company,
-      plan,
-      status,
-      // Churned accounts contribute nothing, which keeps the totals honest.
-      mrr: status === 'churned' ? 0 : seats * PLAN_PRICING[plan].perSeat,
-      seats,
-      country: pick(COUNTRIES),
-      avatarColor: pick(AVATAR_COLORS),
-      joinedAt: new Date(BOOT.getTime() - intBetween(1, 900) * DAY).toISOString(),
-      lastSeenAt: new Date(BOOT.getTime() - intBetween(0, 5000) * 60_000).toISOString()
-    })
-  }
-
-  return rows.sort((a, b) => b.mrr - a.mrr)
-}
-
-const ACTIVITY_KINDS: Array<{ kind: ActivityEvent['kind'], hasAmount: boolean }> = [
-  { kind: 'signup', hasAmount: false },
-  { kind: 'upgrade', hasAmount: true },
-  { kind: 'downgrade', hasAmount: true },
-  { kind: 'churn', hasAmount: true },
-  { kind: 'payment', hasAmount: true },
-  { kind: 'invite', hasAmount: false }
-]
-
-function seedActivity(subscribers: Subscriber[], count: number): ActivityEvent[] {
-  const events: ActivityEvent[] = []
-
-  for (let i = 0; i < count; i++) {
-    const subscriber = subscribers[intBetween(0, subscribers.length - 1)]!
-    const template = pick(ACTIVITY_KINDS)
-    const at = new Date(BOOT.getTime() - i * intBetween(20, 260) * 60_000)
-
-    events.push({
-      id: `evt_${(i + 1).toString().padStart(4, '0')}`,
-      kind: template.kind,
-      actor: subscriber.name,
-      company: subscriber.company,
-      plan: subscriber.plan,
-      amount: template.hasAmount ? Math.max(12, Math.round(subscriber.mrr || 240)) : undefined,
-      at: at.toISOString()
-    })
-  }
-
-  return events
-}
-
-function seedInvoices(subscribers: Subscriber[], count: number): Invoice[] {
-  return Array.from({ length: count }, (_, i) => {
-    const subscriber = subscribers[intBetween(0, subscribers.length - 1)]!
-    const status: Invoice['status'] = subscriber.status === 'past_due'
-      ? 'failed'
-      : rand() > 0.18 ? 'paid' : 'open'
-
-    return {
-      id: `inv_${(i + 1).toString().padStart(4, '0')}`,
-      number: `CAD-${2026}-${(4180 + i).toString()}`,
-      subscriber: subscriber.company,
-      amount: Math.max(12, subscriber.mrr || 290),
-      status,
-      issuedAt: new Date(BOOT.getTime() - i * intBetween(1, 4) * DAY).toISOString()
-    }
-  })
-}
-
-/**
- * 24 months of MRR, built as a compounding walk so the trend is upward but
- * not suspiciously smooth. Index 23 is the current month.
- *
- * The walk is then scaled so the closing month equals the MRR actually held
- * by the seeded subscribers. Without that, the headline MRR and the plan-mix
- * total would disagree — the fastest way to make a demo look untrustworthy.
- */
-function seedMrrHistory(closingTarget: number): number[] {
-  const walk: number[] = []
-  let value = 41_500
-  for (let i = 0; i < 24; i++) {
-    value *= 1 + between(0.012, 0.058) - (i % 7 === 0 ? between(0.01, 0.03) : 0)
-    walk.push(value)
-  }
-
-  const scale = closingTarget / walk[walk.length - 1]!
-
-  return walk.map((point, index) =>
-    // The closing month must match exactly; earlier months can round.
-    index === walk.length - 1 ? closingTarget : Math.round((point * scale) / 50) * 50
-  )
-}
-
-/** 90 days of daily revenue, used by the analytics ranges. */
-function seedDailyRevenue(): number[] {
-  const days: number[] = []
-  let value = 2_950
-  for (let i = 0; i < 90; i++) {
-    // Weekends are quieter — a shape buyers recognise from their own data.
-    const weekday = (i + 3) % 7
-    const weekendDip = weekday === 5 || weekday === 6 ? 0.72 : 1
-    value *= 1 + between(-0.035, 0.05)
-    days.push(Math.round(value * weekendDip))
-  }
-  return days
-}
-
-// --- Mutable state -----------------------------------------------------------
-
+const DEMO_EMAIL = 'demo@cadence.app'
 const DEMO_PASSWORD = 'Cadence2026'
 
-interface StoredUser extends User {
-  passwordHash: string
-}
-
-const users = new Map<string, StoredUser>()
-
-const owner: StoredUser = {
-  id: 'usr_0001',
-  name: 'Ronaldo Cristover',
-  email: 'demo@cadence.app',
-  role: 'owner',
-  jobTitle: 'Head of Revenue Operations',
-  company: 'Cadence',
-  timezone: 'Asia/Jakarta',
-  avatarColor: '#2d5bff',
-  createdAt: new Date(BOOT.getTime() - 420 * DAY).toISOString(),
-  passwordHash: hashPassword(DEMO_PASSWORD)
-}
-
-users.set(owner.email, owner)
-
-const subscribers = seedSubscribers(148)
-const activity = seedActivity(subscribers, 40)
-const invoices = seedInvoices(subscribers, 24)
-const mrrHistory = seedMrrHistory(subscribers.reduce((sum, row) => sum + row.mrr, 0))
-const dailyRevenue = seedDailyRevenue()
-
-const HOUR = 3_600_000
-
-const teamMembers: TeamMember[] = [
-  { id: 'tm_1', name: owner.name, email: owner.email, role: 'owner', status: 'active', avatarColor: '#2d5bff', lastSeenAt: BOOT.toISOString() },
-  { id: 'tm_2', name: 'Hana Nakamura', email: 'hana@cadence.app', role: 'admin', status: 'active', avatarColor: '#0d9488', lastSeenAt: new Date(BOOT.getTime() - 2 * HOUR).toISOString() },
-  { id: 'tm_3', name: 'Mateo Rossi', email: 'mateo@cadence.app', role: 'member', status: 'active', avatarColor: '#d97706', lastSeenAt: new Date(BOOT.getTime() - 28 * HOUR).toISOString() },
-  { id: 'tm_4', name: 'Priya Ibrahim', email: 'priya@cadence.app', role: 'member', status: 'invited', avatarColor: '#7c3aed', lastSeenAt: null }
-]
-
-let memberSequence = teamMembers.length
-
-let notifications: NotificationPreferences = {
-  productUpdates: true,
-  weeklyDigest: true,
-  paymentFailures: true,
-  churnAlerts: true,
-  newSignups: false,
-  channel: 'email'
-}
-
-/** Reset tokens, keyed by token. Cleared on use and on expiry. */
-const resetTokens = new Map<string, { email: string, expiresAt: number }>()
+/** Row shape as stored — includes the hash, which must never leave the server. */
+type StoredUser = typeof schema.users.$inferSelect
 
 const RESET_TTL = 30 * 60 * 1000
+const VERIFY_TTL = 24 * 60 * 60 * 1000
+const CODE_TTL = 10 * 60 * 1000
+const MAX_CODE_ATTEMPTS = 5
+
+function expiry(ttl: number): string {
+  return new Date(Date.now() + ttl).toISOString()
+}
+
+function nowIso(): string {
+  return new Date().toISOString()
+}
+
+/** Maps a row to the API type, dropping anything the client must not see. */
+function toUser(row: StoredUser): User {
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    role: row.role,
+    jobTitle: row.jobTitle,
+    company: row.company,
+    timezone: row.timezone,
+    avatarColor: row.avatarColor,
+    createdAt: row.createdAt,
+    emailVerifiedAt: row.emailVerifiedAt,
+    twoFactorEnabled: row.twoFactorEnabled
+  }
+}
+
+export interface SubscriberQuery {
+  q: string
+  plan: 'all' | Plan
+  status: 'all' | SubscriberStatus
+  sort: 'name' | 'company' | 'mrr' | 'seats' | 'joinedAt'
+  order: 'asc' | 'desc'
+  page: number
+  pageSize: number
+}
 
 export const db = {
-  demoCredentials: { email: owner.email, password: DEMO_PASSWORD },
+  demoCredentials: { email: DEMO_EMAIL, password: DEMO_PASSWORD },
 
-  findUserByEmail(email: string): StoredUser | undefined {
-    return users.get(email.trim().toLowerCase())
+  // --- Users -----------------------------------------------------------------
+
+  async findUserByEmail(email: string): Promise<StoredUser | undefined> {
+    const [row] = await useDatabase()
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.email, email.trim().toLowerCase()))
+      .limit(1)
+    return row
   },
 
-  findUserById(id: string): StoredUser | undefined {
-    for (const user of users.values()) {
-      if (user.id === id) return user
+  async findUserById(id: string): Promise<StoredUser | undefined> {
+    const [row] = await useDatabase()
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.id, id))
+      .limit(1)
+    return row
+  },
+
+  async createUser(input: { name: string, email: string, passwordHash: string }): Promise<StoredUser> {
+    const database = useDatabase()
+
+    const [counted] = await database.select({ total: count() }).from(schema.users)
+    const total = counted?.total ?? 0
+    const id = `usr_${String(total + 1).padStart(4, '0')}`
+
+    const [row] = await database
+      .insert(schema.users)
+      .values({
+        id,
+        name: input.name,
+        email: input.email,
+        passwordHash: input.passwordHash,
+        role: 'admin',
+        avatarColor: AVATAR_COLORS[total % AVATAR_COLORS.length]!,
+        createdAt: nowIso(),
+        // A fresh sign-up is unverified. That is the point of the flow.
+        emailVerifiedAt: null,
+        twoFactorEnabled: false
+      })
+      .returning()
+
+    return row!
+  },
+
+  async updateUser(id: string, patch: Partial<Omit<User, 'id'>>): Promise<StoredUser | undefined> {
+    const [row] = await useDatabase()
+      .update(schema.users)
+      .set({
+        ...(patch.name !== undefined ? { name: patch.name } : {}),
+        ...(patch.email !== undefined ? { email: patch.email.trim().toLowerCase() } : {}),
+        ...(patch.jobTitle !== undefined ? { jobTitle: patch.jobTitle } : {}),
+        ...(patch.company !== undefined ? { company: patch.company } : {}),
+        ...(patch.timezone !== undefined ? { timezone: patch.timezone } : {})
+      })
+      .where(eq(schema.users.id, id))
+      .returning()
+    return row
+  },
+
+  async setPassword(id: string, passwordHash: string): Promise<boolean> {
+    const rows = await useDatabase()
+      .update(schema.users)
+      .set({ passwordHash })
+      .where(eq(schema.users.id, id))
+      .returning({ id: schema.users.id })
+    return rows.length > 0
+  },
+
+  async setEmailVerified(id: string): Promise<StoredUser | undefined> {
+    const [row] = await useDatabase()
+      .update(schema.users)
+      .set({ emailVerifiedAt: nowIso() })
+      .where(eq(schema.users.id, id))
+      .returning()
+    return row
+  },
+
+  async setTwoFactor(id: string, enabled: boolean): Promise<StoredUser | undefined> {
+    const database = useDatabase()
+
+    const [row] = await database
+      .update(schema.users)
+      .set({ twoFactorEnabled: enabled })
+      .where(eq(schema.users.id, id))
+      .returning()
+
+    // Leaving a live code behind after disabling would let it still be used.
+    if (!enabled) {
+      await database.delete(schema.authTokens).where(
+        and(eq(schema.authTokens.userId, id), eq(schema.authTokens.kind, 'two_factor'))
+      )
     }
-    return undefined
+
+    return row
   },
 
-  createUser(input: { name: string, email: string, passwordHash: string }): StoredUser {
-    const user: StoredUser = {
-      id: `usr_${(users.size + 1).toString().padStart(4, '0')}`,
-      name: input.name,
-      email: input.email,
-      role: 'admin',
-      jobTitle: '',
-      company: '',
-      timezone: 'Asia/Jakarta',
-      avatarColor: AVATAR_COLORS[users.size % AVATAR_COLORS.length]!,
-      createdAt: new Date().toISOString(),
-      passwordHash: input.passwordHash
+  // --- Single-use credentials ------------------------------------------------
+
+  async createResetToken(email: string, token: string): Promise<void> {
+    const user = await this.findUserByEmail(email)
+    if (!user) return
+    await useDatabase().insert(schema.authTokens).values({
+      id: token,
+      kind: 'reset',
+      userId: user.id,
+      expiresAt: expiry(RESET_TTL)
+    })
+  },
+
+  async consumeResetToken(token: string): Promise<string | undefined> {
+    const user = await consumeToken(token, 'reset')
+    return user?.email
+  },
+
+  async createVerifyToken(userId: string, token: string): Promise<void> {
+    await useDatabase().insert(schema.authTokens).values({
+      id: token,
+      kind: 'verify',
+      userId,
+      expiresAt: expiry(VERIFY_TTL)
+    })
+  },
+
+  async consumeVerifyToken(token: string): Promise<string | undefined> {
+    const user = await consumeToken(token, 'verify')
+    return user?.id
+  },
+
+  /** Replaces any live code for this user — one at a time, by design. */
+  async createTwoFactorCode(userId: string, code: string): Promise<void> {
+    const database = useDatabase()
+    await database.delete(schema.authTokens).where(
+      and(eq(schema.authTokens.userId, userId), eq(schema.authTokens.kind, 'two_factor'))
+    )
+    await database.insert(schema.authTokens).values({
+      id: `2fa_${userId}_${Date.now()}`,
+      kind: 'two_factor',
+      userId,
+      code,
+      expiresAt: expiry(CODE_TTL),
+      attempts: 0
+    })
+  },
+
+  /**
+   * Checks a submitted code, reporting *why* it failed so the page can tell
+   * "wrong code" from "ask for a new one".
+   */
+  async verifyTwoFactorCode(
+    userId: string,
+    code: string
+  ): Promise<'ok' | 'invalid' | 'expired' | 'exhausted'> {
+    const database = useDatabase()
+
+    const [row] = await database
+      .select()
+      .from(schema.authTokens)
+      .where(and(eq(schema.authTokens.userId, userId), eq(schema.authTokens.kind, 'two_factor')))
+      .limit(1)
+
+    if (!row) return 'expired'
+
+    const drop = () => database.delete(schema.authTokens).where(eq(schema.authTokens.id, row.id))
+
+    if (new Date(row.expiresAt).getTime() < Date.now()) {
+      await drop()
+      return 'expired'
     }
-    users.set(user.email, user)
-    return user
-  },
 
-  updateUser(id: string, patch: Partial<Omit<User, 'id'>>): StoredUser | undefined {
-    const user = this.findUserById(id)
-    if (!user) return undefined
-
-    const nextEmail = patch.email?.trim().toLowerCase()
-    if (nextEmail && nextEmail !== user.email) {
-      users.delete(user.email)
-      user.email = nextEmail
-      users.set(nextEmail, user)
+    if (row.attempts >= MAX_CODE_ATTEMPTS) {
+      await drop()
+      return 'exhausted'
     }
 
-    Object.assign(user, { ...patch, email: user.email })
-    return user
-  },
-
-  setPassword(id: string, passwordHash: string): boolean {
-    const user = this.findUserById(id)
-    if (!user) return false
-    user.passwordHash = passwordHash
-    return true
-  },
-
-  createResetToken(email: string, token: string): void {
-    resetTokens.set(token, { email, expiresAt: Date.now() + RESET_TTL })
-  },
-
-  consumeResetToken(token: string): string | undefined {
-    const entry = resetTokens.get(token)
-    if (!entry) return undefined
-    resetTokens.delete(token)
-    if (entry.expiresAt < Date.now()) return undefined
-    return entry.email
-  },
-
-  subscribers: () => subscribers,
-  activity: () => activity,
-  invoices: () => invoices,
-  mrrHistory: () => mrrHistory,
-  dailyRevenue: () => dailyRevenue,
-  teamMembers: () => teamMembers,
-
-  notifications: () => notifications,
-  setNotifications(next: NotificationPreferences) {
-    notifications = next
-    return notifications
-  },
-
-  inviteMember(email: string, role: 'admin' | 'member'): TeamMember {
-    // A monotonic counter, not `length + 1` — removing a member and inviting
-    // another would otherwise reuse an id that is still referenced elsewhere.
-    const member: TeamMember = {
-      id: `tm_${++memberSequence}`,
-      name: email.split('@')[0]!.replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-      email,
-      role,
-      status: 'invited',
-      avatarColor: AVATAR_COLORS[teamMembers.length % AVATAR_COLORS.length]!,
-      lastSeenAt: null
+    if (row.code !== code) {
+      // Counting in SQL rather than read-modify-write, so two racing guesses
+      // cannot both read the same attempt count.
+      await database
+        .update(schema.authTokens)
+        .set({ attempts: sql`${schema.authTokens.attempts} + 1` })
+        .where(eq(schema.authTokens.id, row.id))
+      return 'invalid'
     }
-    teamMembers.push(member)
-    return member
+
+    await drop()
+    return 'ok'
   },
 
-  removeMember(id: string): boolean {
-    const index = teamMembers.findIndex(member => member.id === id)
-    if (index === -1 || teamMembers[index]!.role === 'owner') return false
-    teamMembers.splice(index, 1)
-    return true
+  /** Clears anything already past its expiry. Cheap, and keeps the table small. */
+  async pruneExpiredTokens(): Promise<number> {
+    const rows = await useDatabase()
+      .delete(schema.authTokens)
+      .where(lt(schema.authTokens.expiresAt, nowIso()))
+      .returning({ id: schema.authTokens.id })
+    return rows.length
+  },
+
+  // --- Subscribers -----------------------------------------------------------
+
+  /**
+   * One query for the page, one for the totals — filtering, sorting and paging
+   * all in SQL. The previous in-memory version pulled every row and sliced it
+   * in JavaScript, which is fine at 148 rows and hopeless at 148,000.
+   */
+  async listSubscribers(query: SubscriberQuery): Promise<{
+    rows: Subscriber[]
+    total: number
+    page: number
+    totals: { mrr: number, seats: number }
+  }> {
+    const database = useDatabase()
+
+    const filters = []
+    if (query.plan !== 'all') filters.push(eq(schema.subscribers.plan, query.plan))
+    if (query.status !== 'all') filters.push(eq(schema.subscribers.status, query.status))
+    if (query.q) {
+      const needle = `%${query.q.toLowerCase()}%`
+      filters.push(
+        or(
+          like(sql`lower(${schema.subscribers.name})`, needle),
+          like(sql`lower(${schema.subscribers.email})`, needle),
+          like(sql`lower(${schema.subscribers.company})`, needle)
+        )!
+      )
+    }
+
+    const where = filters.length ? and(...filters) : undefined
+
+    const [aggregate] = await database
+      .select({
+        total: count(),
+        mrr: sum(schema.subscribers.mrr),
+        seats: sum(schema.subscribers.seats)
+      })
+      .from(schema.subscribers)
+      .where(where)
+
+    const total = aggregate?.total ?? 0
+
+    // Clamp instead of returning an empty page: filtering down while on page 6
+    // should land the reader on the last real page, not a blank one.
+    const lastPage = Math.max(1, Math.ceil(total / query.pageSize))
+    const page = Math.min(query.page, lastPage)
+
+    const column = {
+      name: schema.subscribers.name,
+      company: schema.subscribers.company,
+      mrr: schema.subscribers.mrr,
+      seats: schema.subscribers.seats,
+      joinedAt: schema.subscribers.joinedAt
+    }[query.sort]
+
+    const rows = await database
+      .select()
+      .from(schema.subscribers)
+      .where(where)
+      .orderBy(query.order === 'asc' ? asc(column) : desc(column))
+      .limit(query.pageSize)
+      .offset((page - 1) * query.pageSize)
+
+    return {
+      rows,
+      total,
+      page,
+      totals: {
+        // `sum` comes back as a string from SQLite, and as null on no rows.
+        mrr: Number(aggregate?.mrr ?? 0),
+        seats: Number(aggregate?.seats ?? 0)
+      }
+    }
+  },
+
+  /** Aggregates the metrics pipeline needs, computed in SQL. */
+  async subscriberStats(): Promise<{ activeCount: number, mrrTotal: number }> {
+    const [row] = await useDatabase()
+      .select({ activeCount: count(), mrrTotal: sum(schema.subscribers.mrr) })
+      .from(schema.subscribers)
+      .where(sql`${schema.subscribers.status} != 'churned'`)
+
+    return { activeCount: row?.activeCount ?? 0, mrrTotal: Number(row?.mrrTotal ?? 0) }
+  },
+
+  /** MRR per plan, for the plan-mix chart. Grouped in SQL. */
+  async planMix(): Promise<Array<{ plan: Plan, value: number }>> {
+    const rows = await useDatabase()
+      .select({ plan: schema.subscribers.plan, value: sum(schema.subscribers.mrr) })
+      .from(schema.subscribers)
+      .where(sql`${schema.subscribers.status} != 'churned'`)
+      .groupBy(schema.subscribers.plan)
+
+    const byPlan = new Map(rows.map(row => [row.plan, Number(row.value ?? 0)]))
+    // Always return all three in a stable order, so a plan with no subscribers
+    // still appears as a zero slice rather than vanishing from the legend.
+    return (['starter', 'growth', 'scale'] as Plan[]).map(plan => ({
+      plan,
+      value: byPlan.get(plan) ?? 0
+    }))
+  },
+
+  // --- Read-only demo content -----------------------------------------------
+
+  async activity(limit = 8): Promise<ActivityEvent[]> {
+    const rows = await useDatabase()
+      .select()
+      .from(schema.activity)
+      .orderBy(desc(schema.activity.at))
+      .limit(limit)
+
+    return rows.map(row => ({
+      id: row.id,
+      kind: row.kind,
+      actor: row.actor,
+      company: row.company,
+      plan: row.plan,
+      amount: row.amount ?? undefined,
+      at: row.at
+    }))
+  },
+
+  async invoices(limit = 6): Promise<Invoice[]> {
+    return await useDatabase()
+      .select()
+      .from(schema.invoices)
+      .orderBy(desc(schema.invoices.issuedAt))
+      .limit(limit)
+  },
+
+  /** Monthly closing MRR, oldest first. */
+  async mrrHistory(): Promise<number[]> {
+    const rows = await useDatabase()
+      .select({ value: schema.revenueHistory.value })
+      .from(schema.revenueHistory)
+      .where(eq(schema.revenueHistory.kind, 'month'))
+      .orderBy(asc(schema.revenueHistory.seq))
+    return rows.map(row => row.value)
+  },
+
+  /** Daily collected revenue, oldest first. */
+  async dailyRevenue(): Promise<number[]> {
+    const rows = await useDatabase()
+      .select({ value: schema.revenueHistory.value })
+      .from(schema.revenueHistory)
+      .where(eq(schema.revenueHistory.kind, 'day'))
+      .orderBy(asc(schema.revenueHistory.seq))
+    return rows.map(row => row.value)
+  },
+
+  // --- Team ------------------------------------------------------------------
+
+  async teamMembers(): Promise<TeamMember[]> {
+    const rows = await useDatabase()
+      .select()
+      .from(schema.teamMembers)
+      // Owner first, then admins, then members — the order people expect.
+      .orderBy(
+        sql`case ${schema.teamMembers.role} when 'owner' then 0 when 'admin' then 1 else 2 end`,
+        asc(schema.teamMembers.name)
+      )
+    return rows
+  },
+
+  async inviteMember(email: string, role: 'admin' | 'member'): Promise<TeamMember> {
+    const database = useDatabase()
+
+    // A monotonic id, not `count + 1` — removing a member and inviting another
+    // would otherwise reuse an id that is still referenced elsewhere.
+    const [counted] = await database.select({ total: count() }).from(schema.teamMembers)
+    const total = counted?.total ?? 0
+
+    const [row] = await database
+      .insert(schema.teamMembers)
+      .values({
+        id: `tm_${Date.now()}_${total + 1}`,
+        name: email.split('@')[0]!.replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        email,
+        role,
+        status: 'invited',
+        avatarColor: AVATAR_COLORS[total % AVATAR_COLORS.length]!,
+        lastSeenAt: null
+      })
+      .returning()
+
+    return row!
+  },
+
+  async findMemberByEmail(email: string): Promise<TeamMember | undefined> {
+    const [row] = await useDatabase()
+      .select()
+      .from(schema.teamMembers)
+      .where(eq(schema.teamMembers.email, email))
+      .limit(1)
+    return row
+  },
+
+  async removeMember(id: string): Promise<boolean> {
+    // The owner cannot be removed: a workspace without one has no administrator.
+    const rows = await useDatabase()
+      .delete(schema.teamMembers)
+      .where(and(eq(schema.teamMembers.id, id), sql`${schema.teamMembers.role} != 'owner'`))
+      .returning({ id: schema.teamMembers.id })
+    return rows.length > 0
+  },
+
+  // --- Notification preferences ---------------------------------------------
+
+  async notifications(userId: string): Promise<NotificationPreferences> {
+    const database = useDatabase()
+
+    const [row] = await database
+      .select()
+      .from(schema.notificationPrefs)
+      .where(eq(schema.notificationPrefs.userId, userId))
+      .limit(1)
+
+    if (row) return stripUserId(row)
+
+    // First read for an account creates the row from the column defaults, so
+    // the settings page never has to cope with "no preferences yet".
+    const [created] = await database
+      .insert(schema.notificationPrefs)
+      .values({ userId })
+      .returning()
+
+    return stripUserId(created!)
+  },
+
+  async setNotifications(
+    userId: string,
+    next: NotificationPreferences
+  ): Promise<NotificationPreferences> {
+    const [row] = await useDatabase()
+      .insert(schema.notificationPrefs)
+      .values({ userId, ...next })
+      .onConflictDoUpdate({ target: schema.notificationPrefs.userId, set: next })
+      .returning()
+    return stripUserId(row!)
   }
+}
+
+const AVATAR_COLORS = [
+  '#2d5bff', '#0d9488', '#d97706', '#e11d48',
+  '#7c3aed', '#0891b2', '#65a30d', '#c026d3'
+] as const
+
+export { AVATAR_COLORS }
+
+/**
+ * Deletes a single-use token and returns its user, or `undefined` if it was
+ * missing or expired. Deleting first is deliberate: an expired token must be
+ * cleared, not left to be retried.
+ */
+async function consumeToken(token: string, kind: 'reset' | 'verify') {
+  const database = useDatabase()
+
+  const [row] = await database
+    .delete(schema.authTokens)
+    .where(and(eq(schema.authTokens.id, token), eq(schema.authTokens.kind, kind)))
+    .returning()
+
+  if (!row) return undefined
+  if (new Date(row.expiresAt).getTime() < Date.now()) return undefined
+
+  return await db.findUserById(row.userId)
+}
+
+function stripUserId(row: typeof schema.notificationPrefs.$inferSelect): NotificationPreferences {
+  const { userId: _userId, ...rest } = row
+  return rest
 }
 
 /** Strips the password hash before a user object crosses the network. */
 export function publicUser(user: StoredUser): User {
-  const { passwordHash: _passwordHash, ...rest } = user
-  return rest
+  return toUser(user)
+}
+
+/** Plan pricing per seat. Drives every MRR figure in the seed. */
+export const PLAN_PRICING: Record<Plan, { label: string, perSeat: number }> = {
+  starter: { label: 'Starter', perSeat: 12 },
+  growth: { label: 'Growth', perSeat: 29 },
+  scale: { label: 'Scale', perSeat: 64 }
 }

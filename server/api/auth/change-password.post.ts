@@ -18,13 +18,13 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const stored = db.findUserById(current.id)
+  const stored = await db.findUserById(current.id)
 
   if (!stored || !verifyPassword(body.data.currentPassword, stored.passwordHash)) {
     throw createError({ statusCode: 403, statusMessage: 'Your current password is incorrect' })
   }
 
-  db.setPassword(current.id, hashPassword(body.data.password))
+  await db.setPassword(current.id, hashPassword(body.data.password))
 
   return { ok: true, message: 'Password updated.' }
 })

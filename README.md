@@ -20,6 +20,8 @@ The domain is fictional; every page is built to be rebranded and rewired.
 
 - `/login` — email + password, show/hide, remember me, redirect-back, demo credentials
 - `/register` — sign-up with a live password strength meter
+- `/verify-email` — confirmation from an emailed link; four states in one page
+- `/two-factor` — six-digit challenge with auto-submit, resend cooldown and attempt limits
 - `/forgot-password` — request a reset link, with a distinct success screen
 - `/reset-password` — set a new password from a single-use token
 
@@ -28,9 +30,17 @@ The domain is fictional; every page is built to be rebranded and rewired.
 - `/dashboard` — KPI cards, the MRR movement breakdown, revenue trend, activity feed, invoices
 - `/dashboard/analytics` — date-range switching, area / grouped-bar / donut charts, channels, cohort retention
 - `/dashboard/subscribers` — server-driven table: search, filter, sort, paginate, multi-select, CSV export, detail slideover
-- `/dashboard/forms` — a live reference for every form control, plus a fully validated example form
-- `/dashboard/layouts` — 21 grid patterns (one column, two, three-plus, combinations, responsive), each showing the exact classes that produce it
 - `/dashboard/settings` — profile, account and password, notifications, billing, team members
+
+**Developer reference** — six pages documenting the template itself
+
+- `/dashboard/forms` — every form control, plus a fully validated example form
+- `/dashboard/layouts` — 21 grid patterns, each showing the exact classes that produce it
+- `/dashboard/icons` — searchable index of both bundled icon sets, with sizing and a11y rules
+- `/dashboard/overlays` — modals, slideovers, drawers, popovers, menus and toasts, all live
+- `/dashboard/wizard` — a four-step flow with per-step validation and an editable review
+- `/dashboard/table` — `UTable` with sorting, selection, expansion and column visibility
+- `/dashboard/navigation` — a three-level nested sidebar tree, live in the sidebar too
 
 **Everywhere**
 
@@ -52,6 +62,8 @@ The domain is fictional; every page is built to be rebranded and rewired.
 ```bash
 npm install
 cp .env.example .env      # then set NUXT_SESSION_PASSWORD
+npm run db:migrate        # creates .data/cadence.db
+npm run db:seed           # 148 subscribers, 24 months of history
 npm run dev
 ```
 
@@ -76,6 +88,13 @@ Both are shown on the sign-in page while `NUXT_PUBLIC_DEMO_MODE` is `true`. Set 
 | `npm run typecheck` | `vue-tsc` across app and server |
 | `npm run lint` / `lint:fix` | ESLint |
 | `npm run i18n:check` | Compares every locale file against `en.json` |
+| `npm run db:migrate` | Applies pending migrations |
+| `npm run db:seed` | Loads the demo dataset (idempotent) |
+| `npm run db:generate` | Generates a migration from schema changes |
+| `npm run db:studio` | Opens Drizzle Studio |
+| `npm run db:reset` | Deletes the database, migrates, reseeds |
+| `npm run test` / `test:watch` | Vitest unit suite |
+| `npm run verify` | Everything CI runs: lint, typecheck, locales, tests |
 
 ---
 
@@ -85,6 +104,8 @@ Both are shown on the sign-in page while `NUXT_PUBLIC_DEMO_MODE` is `true`. Set 
 | --- | --- | --- |
 | `NUXT_SESSION_PASSWORD` | **In production** | Seals the session cookie. Must be ≥ 32 characters. Generate with `openssl rand -base64 32`. |
 | `NUXT_APP_URL` | For reset emails | Absolute origin used to build password-reset links. |
+| `DATABASE_URL` | No | libsql connection string. Defaults to `file:./.data/cadence.db`. |
+| `DATABASE_AUTH_TOKEN` | For Turso | Auth token when `DATABASE_URL` points at a hosted database. |
 | `NUXT_PUBLIC_DEMO_MODE` | No | Shows the demo credentials on the sign-in page. Default `true`. |
 
 In development a fallback session secret is used so the template runs with no setup.
@@ -174,39 +195,72 @@ The product name lives in `app.name` in each `i18n/locales/*.json`, plus
 there are no hard-coded sentences in the pages, apart from the two developer reference pages
 noted below. The logo mark is inline SVG, so there are no image assets to regenerate.
 
-**Not translated:** `/dashboard/forms` and `/dashboard/layouts` are developer documentation
-for whoever buys the template, so their prose stays in English. Delete both pages, their
-components (`app/components/forms/`, `app/components/grid/`) and their sidebar entries in
-`app/layouts/dashboard.vue` before shipping to end users.
+**Not translated:** the six reference pages are developer documentation for whoever buys the
+template, so their prose stays in English — only the sidebar entries that lead to them are
+translated. They sit in their own sidebar group under a "Reference" separator, so removing them
+is one obvious edit: delete `app/pages/dashboard/{forms,layouts,icons,overlays,wizard,table}.vue`,
+their components (`app/components/{forms,grid,icons,overlays,wizard,table}/`),
+`server/api/icons.get.ts`, and the `reference` array in `app/layouts/dashboard.vue`.
 
 ---
 
-## Connecting a real backend
+## The database
 
-The demo runs on an in-memory store. It resets on restart, which is intentional for a demo and
-unsuitable for anything else.
-
-**One file holds all of it: `server/utils/db.ts`.** Keep the method signatures, change the
-bodies, and no page, component or composable needs to be touched.
+**SQLite via Drizzle**, over the `libsql` driver. Real tables, real migrations, real
+persistence — a session, a pending two-step code and a verification token all survive a restart.
 
 ```
 app/pages, app/components     never call an API directly
   └── app/composables         useAuth, useApiFetch — the only callers
         └── server/api/*      validate input, check the session
-              └── server/utils/db.ts   ← replace this
+              └── server/utils/db.ts        every query lives here
+                    └── server/database/    schema, client, migrations, seed
 ```
 
-Types in `shared/types.ts` describe the API contract; Zod schemas in `shared/schemas.ts` are
-used by the form on the client **and** the route on the server, so validation rules cannot
-drift apart.
+`server/utils/db.ts` is the only file that issues a query. The API routes call nothing else, so
+moving to Postgres means changing the dialect in `server/database/{client,schema}.ts` and the
+queries in that one file — no page, component or composable is affected.
 
-### A typical migration
+### Why libsql
 
-1. Add your database client (Drizzle, Prisma, Mongo — anything).
-2. Rewrite the methods in `server/utils/db.ts` to read and write real rows.
-3. Replace the aggregation in `server/utils/metrics.ts` with your own queries.
-4. Send real email where `server/api/auth/forgot-password.post.ts` currently logs the reset link.
-5. Delete the seed helpers at the top of `db.ts`.
+It ships prebuilt, so `npm install` needs no compiler — unlike `better-sqlite3`, which fails on
+any machine without build tools. And the same driver talks to a local file *or* to Turso, so
+going from a file to a hosted database is one environment variable:
+
+```bash
+DATABASE_URL=libsql://your-db.turso.io
+DATABASE_AUTH_TOKEN=…
+```
+
+### Filtering happens in SQL
+
+The subscribers list runs two queries per request — one for the page, one for the totals — with
+`WHERE`, `ORDER BY` and `LIMIT` done by the database. Aggregates for the metrics pipeline are
+`SUM` and `GROUP BY`, not JavaScript over an array. That is the point of having a database: the
+work does not grow with the row count.
+
+### Migrations
+
+`npm run db:migrate` applies them; `npm run db:generate` creates a new one after a schema
+change. In development a Nitro plugin runs pending migrations on boot, so a fresh clone works
+with no database step. In production it does **not** — migrations are a deploy step, so a
+rollout that fails halfway cannot leave a half-migrated schema behind a live process.
+
+### The seed
+
+`server/database/seed.ts` builds the demo dataset from a fixed-seed PRNG, so the figures are
+identical on every machine and in every screenshot. It clears the tables it owns first, so
+running it twice does not double the data. Delete the file once you have real data — nothing
+else imports it.
+
+### Still to wire up
+
+- Send real email where `server/api/auth/{forgot-password,resend-verification}.post.ts` and
+  `login.post.ts` currently log the link or code to the console.
+- Move the rate limiter in `server/utils/ratelimit.ts` off process memory if you run more than
+  one instance.
+- Turn on SQLite foreign keys (`PRAGMA foreign_keys = ON`) or move to a database that enforces
+  them by default — the schema declares the relationships, but SQLite ignores them unless asked.
 
 ### Other integration points
 
@@ -220,6 +274,41 @@ drift apart.
 
 ---
 
+## The auth flows
+
+Six pages, and two of them change how signing in works — so it is worth knowing the shape.
+
+### Two-step verification
+
+A correct password is **not** a session when two-step is on. The server writes a *challenge*
+under a different session key (`pendingUserId`, never `userId`), so every existing
+authorisation check keeps rejecting the request until the second factor lands. That is the
+whole security property, and it is the one worth keeping if you rewrite this:
+
+```
+POST /api/auth/login          → { requiresTwoFactor: true, user: null }   ← nothing granted
+POST /api/auth/two-factor/verify → promotes the challenge into a real session
+```
+
+Codes are six digits from `randomInt`, single-use, ten-minute lifetime, one live code per
+account, and five wrong guesses end the whole attempt rather than just the code — otherwise an
+attacker simply asks for another and keeps going. Turn it on from **Settings → Account**, which
+re-asks for the password because a stolen session must not be able to weaken the account.
+
+### Email verification
+
+A fresh sign-up is created **unverified but signed in**. Blocking the product until someone
+finds an email loses more sign-ups than it protects, so `/verify-email` offers "continue to the
+dashboard" alongside the resend. Verification runs on the client only — a link in an email is
+often fetched by a scanner before a person opens it, and doing this during SSR would let a
+preview bot burn a single-use token.
+
+In development both flows print their code or link to the server console and surface it in the
+page, the same way `/forgot-password` does, so the whole thing is walkable with no mail
+provider.
+
+---
+
 ## Security notes
 
 What the template already does:
@@ -230,7 +319,11 @@ What the template already does:
   cannot be used to discover which emails are registered
 - Password reset says the same thing whether or not the address exists; tokens are single-use
   and expire after 30 minutes
-- Auth endpoints are rate limited per IP
+- Auth endpoints are rate limited per IP, with resend limited harder than verify
+- A pending two-step challenge is stored under a different key from a real session, so it can
+  never be mistaken for one
+- Two-step codes and verification tokens are single-use and time-limited; changing a security
+  setting re-asks for the password
 - The `redirect` query parameter on `/login` only accepts same-origin paths
 - Every request body and query string is validated with Zod before it reaches any logic
 
@@ -250,8 +343,14 @@ app/
   assets/css/main.css      design tokens — start here to rebrand
   components/
     charts/                AreaChart, BarChart, DonutChart, Sparkline, ChartFrame
-    forms/                 the form reference page, split by control family
-    grid/                  the layout reference page, split by column count
+    forms/                 form reference, split by control family
+    grid/                  layout reference, split by column count
+    icons/                 icon reference — browser, usage rules, in-context
+    overlays/              modal, slideover, drawer, popover and toast reference
+    wizard/                multi-step form reference
+    table/                 UTable reference
+    ReferenceShell.vue     shared chrome for all six reference pages
+    ReferenceRow.vue       one labelled example row
     marketing/             site header and footer
     settings/              one component per settings tab
     PanelSection.vue       titled card with an optional footer — used by both
@@ -336,6 +435,19 @@ Two things worth knowing:
   mark its parent `@container` and use `@md:` / `@2xl:` instead — the last example on the layouts
   page is a container you can drag to see the difference.
 
+### Two tables, on purpose
+
+`/dashboard/subscribers` hand-builds its table markup; `/dashboard/table` uses `UTable`. That is
+not an inconsistency — it is the trade-off, kept visible:
+
+- **Hand-built** reflows into a stacked card list below `lg`, so a phone never scrolls sideways.
+  Use it for anything customer-facing. You write sorting and pagination yourself.
+- **`UTable`** gives sorting, selection, expansion and column visibility from a column array, but
+  a `<table>` cannot reflow — small screens scroll. Use it for internal tools and wide datasets.
+
+The deciding question is whether a customer will open it on a phone. `/dashboard/table` lays the
+comparison out in full.
+
 ### Why the charts are hand-written
 
 Every chart is a small SVG component with no runtime dependency. They inherit the theme through
@@ -360,6 +472,34 @@ reserves their height during SSR so nothing shifts when they appear.
 - The subscribers table becomes a stacked card list on small screens rather than scrolling sideways
 
 ---
+
+## Tests and CI
+
+`npm run test` runs a Vitest suite over the pure modules — formatters, Zod schemas, chart
+maths, password hashing and the metric aggregation. It finishes in under half a second, which
+is the point: a suite nobody minds running is a suite that actually runs.
+
+What it locks down, rather than what it merely covers:
+
+- **The waterfall reconciles.** `opening + new + expansion − contraction − churn === closing`,
+  and the headline MRR equals the plan-mix total, the end of the trend series, and the sum of
+  the subscriber rows. Four figures that must agree, asserted to agree.
+- **`formatRelative` never reads the clock.** It takes `now` as an argument, which is what stops
+  SSR and hydration disagreeing on "3 hours ago".
+- **Locale formatting really reaches `Intl`.** `86.945` for Indonesian, `86,945` for English —
+  if the locale stopped being passed, both would say the same thing and nothing else would fail.
+- **`monotonePath` cannot overshoot.** A plain cubic would dip below values the data never
+  reached, which on a revenue chart means inventing revenue.
+- **`verifyPassword` returns false rather than throwing** on a malformed stored hash, so one
+  corrupt row cannot 500 the sign-in route.
+- **Schemas emit translation keys**, not English prose.
+
+`.github/workflows/ci.yml` runs `lint`, `typecheck`, `i18n:check`, `test` and a production
+build on every push and pull request. `npm run verify` runs the same gate locally.
+
+Rendering and flows are checked by hand rather than in the suite — a screenshot makes a better
+assertion about a chart than any DOM query, and adding `@nuxt/test-utils` would triple the
+install for worse tests.
 
 ## Deployment
 

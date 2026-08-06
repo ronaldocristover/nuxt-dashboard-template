@@ -54,11 +54,11 @@ function copyToken() {
     description="Which control depends on how many options there are and whether more than one can be picked."
   >
     <div class="divide-y divide-default">
-      <FormsRow title="Select" description="Up to about seven options that all fit on screen at once.">
+      <ReferenceRow title="Select" description="Up to about seven options that all fit on screen at once.">
         <USelect v-model="plan" :items="PLANS" class="w-full" />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Searchable select" description="Once a list is long enough to scroll, it needs a search box.">
+      <ReferenceRow title="Searchable select" description="Once a list is long enough to scroll, it needs a search box.">
         <USelectMenu
           v-model="account"
           :items="ACCOUNTS"
@@ -66,9 +66,9 @@ function copyToken() {
           search-input-placeholder="Search accounts"
           class="w-full"
         />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Multiple selection" description="Chosen values stay visible in the trigger, so nothing is picked and then forgotten.">
+      <ReferenceRow title="Multiple selection" description="Chosen values stay visible in the trigger, so nothing is picked and then forgotten.">
         <USelectMenu
           v-model="accounts"
           :items="ACCOUNTS"
@@ -76,33 +76,33 @@ function copyToken() {
           searchable
           class="w-full"
         />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Autocomplete" description="Type to filter, but any typed value is still accepted.">
+      <ReferenceRow title="Autocomplete" description="Type to filter, but any typed value is still accepted.">
         <UInputMenu v-model="country" :items="COUNTRIES" class="w-full" />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow
+      <ReferenceRow
         title="Radio group"
         description="One choice from a few, where the trade-off between them needs explaining."
         wide
       >
         <URadioGroup v-model="cycle" :items="CYCLES" variant="table" />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Checkbox group" description="Any number of independent options, including none.">
+      <ReferenceRow title="Checkbox group" description="Any number of independent options, including none.">
         <UCheckboxGroup v-model="alerts" :items="ALERTS" />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Single checkbox" description="For consent and acknowledgement, where the label is a sentence.">
+      <ReferenceRow title="Single checkbox" description="For consent and acknowledgement, where the label is a sentence.">
         <UCheckbox v-model="agreed" label="Email me when an account at risk crosses $1,000 MRR" />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Switch" description="An immediate on/off setting. If it needs a save button, use a checkbox instead.">
+      <ReferenceRow title="Switch" description="An immediate on/off setting. If it needs a save button, use a checkbox instead.">
         <USwitch v-model="digest" label="Weekly digest" description="Sent Monday at 09:00 in your timezone." />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Field group" description="Joins a field to the action that operates on it.">
+      <ReferenceRow title="Field group" description="Joins a field to the action that operates on it.">
         <UFieldGroup class="w-full">
           <UInput v-model="token" class="w-full tnum" readonly />
           <UButton
@@ -113,7 +113,7 @@ function copyToken() {
             @click="copyToken"
           />
         </UFieldGroup>
-      </FormsRow>
+      </ReferenceRow>
     </div>
   </PanelSection>
 </template>

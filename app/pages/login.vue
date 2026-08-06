@@ -40,7 +40,22 @@ const redirectTo = computed(() => {
 async function onSubmit(event: FormSubmitEvent<SignInInput>) {
   loading.value = true
   try {
-    await signIn(event.data)
+    const result = await signIn(event.data)
+
+    // A correct password is not always a session. With two-step on, the server
+    // holds a challenge and nothing is authenticated until it is answered.
+    if (result.requiresTwoFactor) {
+      await navigateTo({
+        path: '/two-factor',
+        query: {
+          ...(redirectTo.value !== '/dashboard' ? { redirect: redirectTo.value } : {}),
+          // Dev only: carries the code so the flow is walkable without email.
+          ...(result.devCode ? { devCode: result.devCode } : {})
+        }
+      })
+      return
+    }
+
     await navigateTo(redirectTo.value)
   } catch (error) {
     notify(error, t('auth.signIn.failed'))

@@ -23,11 +23,18 @@ export type Translate = (key: string, params?: Record<string, unknown>) => strin
 const identity: Translate = key => key
 
 function emailField(t: Translate) {
+  // Normalise BEFORE validating, not after.
+  //
+  // With `.transform()` at the end, `.email()` saw the raw input — so a pasted
+  // address carrying a trailing space (a spreadsheet cell, a mail client, an
+  // autocomplete) was rejected as "not an email address", which reads as a bug
+  // to whoever pasted something they can see is perfectly valid.
   return z
     .string()
+    .trim()
+    .toLowerCase()
     .min(1, t('validation.email.required'))
     .email(t('validation.email.invalid'))
-    .transform(value => value.trim().toLowerCase())
 }
 
 function passwordField(t: Translate) {

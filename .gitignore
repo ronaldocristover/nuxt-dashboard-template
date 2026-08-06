@@ -21,3 +21,9 @@ node_modules
 .idea
 .vscode/*
 !.vscode/extensions.json
+
+# Test artifacts
+coverage
+
+# Local database
+.data
