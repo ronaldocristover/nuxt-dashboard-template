@@ -37,6 +37,10 @@
     "subscribers": "Subscribers",
     "forms": "Forms",
     "layouts": "Layouts",
+    "icons": "Icons",
+    "overlays": "Overlays",
+    "wizard": "Wizard",
+    "table": "Table",
     "settings": "Settings",
     "backToSite": "Back to site",
     "documentation": "Documentation",
@@ -45,7 +49,8 @@
     "pricing": "Pricing",
     "faq": "FAQ",
     "main": "Main",
-    "mobile": "Mobile"
+    "mobile": "Mobile",
+    "reference": "Reference"
   },
   "account": {
     "menu": "Account menu for {name}",

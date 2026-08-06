@@ -19,20 +19,20 @@ const SIZES = ['xs', 'sm', 'md', 'lg', 'xl'] as const
     description="The default control. Reach for anything else only when the value is not free text."
   >
     <div class="divide-y divide-default">
-      <FormsRow title="Default" description="A plain single-line field with a placeholder.">
+      <ReferenceRow title="Default" description="A plain single-line field with a placeholder.">
         <UInput v-model="plain" placeholder="Acme Corporation" class="w-full" />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="With an icon" description="Use an icon only when it names the field's content faster than the label does.">
+      <ReferenceRow title="With an icon" description="Use an icon only when it names the field's content faster than the label does.">
         <UInput
           v-model="withIcon"
           icon="i-lucide-building-2"
           placeholder="Account name"
           class="w-full"
         />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Prefix and suffix" description="Units belong beside the field, not inside the placeholder.">
+      <ReferenceRow title="Prefix and suffix" description="Units belong beside the field, not inside the placeholder.">
         <div class="space-y-2">
           <UInput v-model="amount" class="w-full" :ui="{ base: 'ps-7 pe-16' }">
             <template #leading>
@@ -49,9 +49,9 @@ const SIZES = ['xs', 'sm', 'md', 'lg', 'xl'] as const
             </template>
           </UInput>
         </div>
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Password" description="Always offer a reveal toggle. Hiding a password nobody can check causes more failed sign-ins than it prevents shoulder-surfing.">
+      <ReferenceRow title="Password" description="Always offer a reveal toggle. Hiding a password nobody can check causes more failed sign-ins than it prevents shoulder-surfing.">
         <UInput
           v-model="secret"
           :type="showSecret ? 'text' : 'password'"
@@ -71,9 +71,9 @@ const SIZES = ['xs', 'sm', 'md', 'lg', 'xl'] as const
             />
           </template>
         </UInput>
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Search" description="A clear button appears once there is something to clear.">
+      <ReferenceRow title="Search" description="A clear button appears once there is something to clear.">
         <UInput
           v-model="search"
           icon="i-lucide-search"
@@ -92,9 +92,9 @@ const SIZES = ['xs', 'sm', 'md', 'lg', 'xl'] as const
             />
           </template>
         </UInput>
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Textarea" description="Grows with its content up to a limit, so long notes do not hide the submit button.">
+      <ReferenceRow title="Textarea" description="Grows with its content up to a limit, so long notes do not hide the submit button.">
         <UTextarea
           v-model="note"
           autoresize
@@ -103,16 +103,16 @@ const SIZES = ['xs', 'sm', 'md', 'lg', 'xl'] as const
           placeholder="Why is this account being flagged?"
           class="w-full"
         />
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Disabled and read-only" description="Disabled means you cannot change it now. Read-only means you can copy it but never change it.">
+      <ReferenceRow title="Disabled and read-only" description="Disabled means you cannot change it now. Read-only means you can copy it but never change it.">
         <div class="space-y-2">
           <UInput placeholder="Disabled" disabled class="w-full" />
           <UInput v-model="readOnly" readonly class="w-full tnum" />
         </div>
-      </FormsRow>
+      </ReferenceRow>
 
-      <FormsRow title="Sizes" description="Auth pages use lg. Dashboard filters use md. Toolbars use sm.">
+      <ReferenceRow title="Sizes" description="Auth pages use lg. Dashboard filters use md. Toolbars use sm.">
         <div class="space-y-2">
           <UInput
             v-for="size in SIZES"
@@ -122,7 +122,7 @@ const SIZES = ['xs', 'sm', 'md', 'lg', 'xl'] as const
             class="w-full"
           />
         </div>
-      </FormsRow>
+      </ReferenceRow>
     </div>
   </PanelSection>
 </template>

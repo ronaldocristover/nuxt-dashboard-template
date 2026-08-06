@@ -14,9 +14,21 @@ const primary = computed<NavigationMenuItem[]>(() => [
   { label: t('nav.overview'), icon: 'i-lucide-layout-dashboard', to: '/dashboard', active: route.path === '/dashboard' },
   { label: t('nav.analytics'), icon: 'i-lucide-chart-line', to: '/dashboard/analytics', active: route.path === '/dashboard/analytics' },
   { label: t('nav.subscribers'), icon: 'i-lucide-users', to: '/dashboard/subscribers', active: route.path === '/dashboard/subscribers' },
+  { label: t('nav.settings'), icon: 'i-lucide-settings', to: '/dashboard/settings', active: route.path === '/dashboard/settings' }
+])
+
+/**
+ * The reference pages are documentation for whoever bought the template, not
+ * product. They sit in their own group so the product navigation above stays
+ * short, and so deleting them before shipping is one obvious edit.
+ */
+const reference = computed<NavigationMenuItem[]>(() => [
   { label: t('nav.forms'), icon: 'i-lucide-square-pen', to: '/dashboard/forms', active: route.path === '/dashboard/forms' },
   { label: t('nav.layouts'), icon: 'i-lucide-layout-grid', to: '/dashboard/layouts', active: route.path === '/dashboard/layouts' },
-  { label: t('nav.settings'), icon: 'i-lucide-settings', to: '/dashboard/settings', active: route.path === '/dashboard/settings' }
+  { label: t('nav.icons'), icon: 'i-lucide-shapes', to: '/dashboard/icons', active: route.path === '/dashboard/icons' },
+  { label: t('nav.overlays'), icon: 'i-lucide-layers', to: '/dashboard/overlays', active: route.path === '/dashboard/overlays' },
+  { label: t('nav.wizard'), icon: 'i-lucide-list-checks', to: '/dashboard/wizard', active: route.path === '/dashboard/wizard' },
+  { label: t('nav.table'), icon: 'i-lucide-table', to: '/dashboard/table', active: route.path === '/dashboard/table' }
 ])
 
 const secondary = computed<NavigationMenuItem[]>(() => [
@@ -43,6 +55,17 @@ const secondary = computed<NavigationMenuItem[]>(() => [
 
       <template #default="{ collapsed }">
         <UNavigationMenu :items="primary" :collapsed="collapsed" orientation="vertical" tooltip />
+
+        <USeparator v-if="!collapsed" :label="$t('nav.reference')" class="my-3" :ui="{ label: 'eyebrow text-dimmed' }" />
+        <USeparator v-else class="my-3" />
+
+        <UNavigationMenu
+          :items="reference"
+          :collapsed="collapsed"
+          orientation="vertical"
+          tooltip
+          :ui="{ link: 'text-muted' }"
+        />
 
         <div class="flex-1" />
 

@@ -37,6 +37,10 @@
     "subscribers": "訂閱客戶",
     "forms": "表單",
     "layouts": "版面",
+    "icons": "圖示",
+    "overlays": "浮層",
+    "wizard": "分步表單",
+    "table": "表格",
     "settings": "設定",
     "backToSite": "回到官網",
     "documentation": "文件",
@@ -45,7 +49,8 @@
     "pricing": "定價",
     "faq": "常見問題",
     "main": "主選單",
-    "mobile": "行動選單"
+    "mobile": "行動選單",
+    "reference": "參考"
   },
   "account": {
     "menu": "{name} 的帳戶選單",

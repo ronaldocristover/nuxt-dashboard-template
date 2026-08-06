@@ -37,6 +37,10 @@
     "subscribers": "订阅客户",
     "forms": "表单",
     "layouts": "布局",
+    "icons": "图标",
+    "overlays": "浮层",
+    "wizard": "分步表单",
+    "table": "表格",
     "settings": "设置",
     "backToSite": "返回官网",
     "documentation": "文档",
@@ -45,7 +49,8 @@
     "pricing": "定价",
     "faq": "常见问题",
     "main": "主导航",
-    "mobile": "移动导航"
+    "mobile": "移动导航",
+    "reference": "参考"
   },
   "account": {
     "menu": "{name} 的账户菜单",

@@ -28,9 +28,16 @@ The domain is fictional; every page is built to be rebranded and rewired.
 - `/dashboard` — KPI cards, the MRR movement breakdown, revenue trend, activity feed, invoices
 - `/dashboard/analytics` — date-range switching, area / grouped-bar / donut charts, channels, cohort retention
 - `/dashboard/subscribers` — server-driven table: search, filter, sort, paginate, multi-select, CSV export, detail slideover
-- `/dashboard/forms` — a live reference for every form control, plus a fully validated example form
-- `/dashboard/layouts` — 21 grid patterns (one column, two, three-plus, combinations, responsive), each showing the exact classes that produce it
 - `/dashboard/settings` — profile, account and password, notifications, billing, team members
+
+**Developer reference** — six pages documenting the template itself
+
+- `/dashboard/forms` — every form control, plus a fully validated example form
+- `/dashboard/layouts` — 21 grid patterns, each showing the exact classes that produce it
+- `/dashboard/icons` — searchable index of both bundled icon sets, with sizing and a11y rules
+- `/dashboard/overlays` — modals, slideovers, drawers, popovers, menus and toasts, all live
+- `/dashboard/wizard` — a four-step flow with per-step validation and an editable review
+- `/dashboard/table` — `UTable` with sorting, selection, expansion and column visibility
 
 **Everywhere**
 
@@ -174,10 +181,12 @@ The product name lives in `app.name` in each `i18n/locales/*.json`, plus
 there are no hard-coded sentences in the pages, apart from the two developer reference pages
 noted below. The logo mark is inline SVG, so there are no image assets to regenerate.
 
-**Not translated:** `/dashboard/forms` and `/dashboard/layouts` are developer documentation
-for whoever buys the template, so their prose stays in English. Delete both pages, their
-components (`app/components/forms/`, `app/components/grid/`) and their sidebar entries in
-`app/layouts/dashboard.vue` before shipping to end users.
+**Not translated:** the six reference pages are developer documentation for whoever buys the
+template, so their prose stays in English — only the sidebar entries that lead to them are
+translated. They sit in their own sidebar group under a "Reference" separator, so removing them
+is one obvious edit: delete `app/pages/dashboard/{forms,layouts,icons,overlays,wizard,table}.vue`,
+their components (`app/components/{forms,grid,icons,overlays,wizard,table}/`),
+`server/api/icons.get.ts`, and the `reference` array in `app/layouts/dashboard.vue`.
 
 ---
 
@@ -250,8 +259,14 @@ app/
   assets/css/main.css      design tokens — start here to rebrand
   components/
     charts/                AreaChart, BarChart, DonutChart, Sparkline, ChartFrame
-    forms/                 the form reference page, split by control family
-    grid/                  the layout reference page, split by column count
+    forms/                 form reference, split by control family
+    grid/                  layout reference, split by column count
+    icons/                 icon reference — browser, usage rules, in-context
+    overlays/              modal, slideover, drawer, popover and toast reference
+    wizard/                multi-step form reference
+    table/                 UTable reference
+    ReferenceShell.vue     shared chrome for all six reference pages
+    ReferenceRow.vue       one labelled example row
     marketing/             site header and footer
     settings/              one component per settings tab
     PanelSection.vue       titled card with an optional footer — used by both
@@ -335,6 +350,19 @@ Two things worth knowing:
   but not the breakpoint. When a component needs to respond to the space it actually occupies,
   mark its parent `@container` and use `@md:` / `@2xl:` instead — the last example on the layouts
   page is a container you can drag to see the difference.
+
+### Two tables, on purpose
+
+`/dashboard/subscribers` hand-builds its table markup; `/dashboard/table` uses `UTable`. That is
+not an inconsistency — it is the trade-off, kept visible:
+
+- **Hand-built** reflows into a stacked card list below `lg`, so a phone never scrolls sideways.
+  Use it for anything customer-facing. You write sorting and pagination yourself.
+- **`UTable`** gives sorting, selection, expansion and column visibility from a column array, but
+  a `<table>` cannot reflow — small screens scroll. Use it for internal tools and wide datasets.
+
+The deciding question is whether a customer will open it on a phone. `/dashboard/table` lays the
+comparison out in full.
 
 ### Why the charts are hand-written
 

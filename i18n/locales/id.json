@@ -37,6 +37,10 @@
     "subscribers": "Pelanggan",
     "forms": "Formulir",
     "layouts": "Tata letak",
+    "icons": "Ikon",
+    "overlays": "Overlay",
+    "wizard": "Wizard",
+    "table": "Tabel",
     "settings": "Pengaturan",
     "backToSite": "Kembali ke situs",
     "documentation": "Dokumentasi",
@@ -45,7 +49,8 @@
     "pricing": "Harga",
     "faq": "Tanya jawab",
     "main": "Utama",
-    "mobile": "Seluler"
+    "mobile": "Seluler",
+    "reference": "Referensi"
   },
   "account": {
     "menu": "Menu akun untuk {name}",
