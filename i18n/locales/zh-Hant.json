@@ -54,7 +54,8 @@
     "mobile": "行動選單",
     "reference": "參考",
     "navigation": "導覽",
-    "sampleTree": "範例樹"
+    "sampleTree": "範例樹",
+    "members": "成員"
   },
   "account": {
     "menu": "{name} 的帳戶選單",
@@ -215,6 +216,13 @@
       "mrrNegative": "MRR 不能為負",
       "tooManyLabels": "最多四個標籤",
       "columnTitleRequired": "請填寫階段名稱"
+    },
+    "member": {
+      "role": "請選擇角色",
+      "department": "請選擇部門",
+      "titleTooLong": "職稱過長",
+      "phoneTooLong": "電話號碼過長",
+      "notesTooLong": "備註過長"
     }
   },
   "errors": {
@@ -755,6 +763,130 @@
       "intro": "輸入此驗證碼以完成登入。",
       "expires": "驗證碼將在 {minutes} 分鐘後失效，且僅能使用一次。",
       "ignore": "如果您此刻並未登入，代表有人知道了您的密碼，請盡快變更。"
+    }
+  },
+  "members": {
+    "title": "成員",
+    "subtitle": "擁有此工作區存取權的所有人，以及他們負責的內容。",
+    "add": "新增成員",
+    "search": "以姓名、信箱或職稱搜尋",
+    "refresh": "重新整理清單",
+    "empty": "沒有符合篩選條件的成員",
+    "emptyBody": "清除篩選條件，或新增成員。",
+    "count": "成員",
+    "activeCount": "活躍",
+    "invitedCount": "已邀請",
+    "showing": "顯示第 {from}–{to} 筆，共 {total} 筆",
+    "perPage": "每頁",
+    "allRoles": "所有角色",
+    "allStatuses": "所有狀態",
+    "allDepartments": "所有部門",
+    "neverSeen": "從未登入",
+    "lastSeen": "最後活躍於 {when}",
+    "invitePending": "邀請待接受",
+    "joined": "加入於 {when}",
+    "invitedBy": "由 {name} 邀請",
+    "noTitle": "未填寫職稱",
+    "columns": {
+      "member": "成員",
+      "role": "角色",
+      "department": "部門",
+      "status": "狀態",
+      "lastSeen": "最後活躍",
+      "actions": "操作"
+    },
+    "roles": {
+      "owner": "擁有者",
+      "admin": "管理員",
+      "member": "成員"
+    },
+    "statuses": {
+      "active": "活躍",
+      "invited": "已邀請"
+    },
+    "departments": {
+      "revenue": "營收",
+      "finance": "財務",
+      "product": "產品",
+      "support": "客戶支援",
+      "leadership": "管理層"
+    },
+    "roleHints": {
+      "owner": "完全控制權，包含帳單與刪除工作區。",
+      "admin": "除帳單與移除擁有者外的全部權限。",
+      "member": "檢視所有報表並處理續約流程。"
+    },
+    "tabs": {
+      "profile": "資料",
+      "access": "權限",
+      "renewals": "續約",
+      "activity": "動態"
+    },
+    "detail": {
+      "back": "全部成員",
+      "edit": "編輯",
+      "remove": "移除",
+      "contact": "聯絡方式",
+      "email": "信箱",
+      "phone": "電話",
+      "location": "所在地",
+      "timezone": "時區",
+      "notes": "備註",
+      "noNotes": "尚無備註。",
+      "notProvided": "未填寫",
+      "history": "歷史",
+      "permissions": "該角色可以做什麼",
+      "accountStatus": "帳戶狀態",
+      "renewalsOwned": "負責的續約",
+      "mrrAtStake": "涉及的 MRR",
+      "noRenewals": "沒有負責的續約",
+      "noRenewalsBody": "流程中的卡片都有負責人，目前沒有指向此成員。",
+      "noActivity": "尚無最新動態",
+      "noActivityBody": "該成員所負責帳戶的動態將顯示於此。",
+      "activityNote": "該成員所負責帳戶上發生的事件。",
+      "openPipeline": "開啟續約流程",
+      "lastOwner": "這是唯一的擁有者。請先將他人設為擁有者，再修改此成員。",
+      "removeTitle": "移除 {name}？",
+      "removeBody": "其存取權將立即失效。他負責的續約仍保留在看板上，並變為無人負責。",
+      "removeConfirm": "移除成員",
+      "removed": "已移除 {name}",
+      "keep": "保留",
+      "joinedLabel": "加入時間",
+      "invitedByLabel": "邀請人"
+    },
+    "form": {
+      "newTitle": "新增成員",
+      "newSubtitle": "對方接受後即可取得存取權。在你儲存之前不會寄出任何內容。",
+      "editTitle": "編輯 {name}",
+      "editSubtitle": "變更將在其下次載入頁面時生效。",
+      "identity": "基本資料",
+      "placement": "所屬團隊",
+      "access": "權限設定",
+      "extra": "其他資訊",
+      "name": "姓名",
+      "namePlaceholder": "Amara Adeyemi",
+      "email": "工作信箱",
+      "emailPlaceholder": "amara{'@'}yourcompany.com",
+      "emailHint": "邀請也會寄到此地址。",
+      "jobTitle": "職稱",
+      "jobTitlePlaceholder": "客戶經理",
+      "department": "部門",
+      "role": "角色",
+      "status": "狀態",
+      "statusHint": "接受邀請前為「已邀請」；若登錄的是已在職人員，請選擇「活躍」。",
+      "phone": "電話",
+      "location": "所在地",
+      "locationPlaceholder": "里斯本，葡萄牙",
+      "timezone": "時區",
+      "notes": "備註",
+      "notesPlaceholder": "團隊其他成員需要了解的資訊。",
+      "notesHint": "所有能開啟此頁面的人都看得到。",
+      "save": "儲存成員",
+      "saveChanges": "儲存變更",
+      "cancel": "取消",
+      "created": "已新增 {name}",
+      "updated": "已更新 {name}",
+      "ownerLocked": "唯一的擁有者無法變更為其他角色。"
     }
   }
 }

@@ -252,12 +252,26 @@ async function main() {
   await db.insert(schema.activity).values(buildActivity(subscribers, 40))
   await db.insert(schema.invoices).values(buildInvoices(subscribers, 24))
 
-  await db.insert(schema.teamMembers).values([
-    { id: 'tm_1', name: owner.name, email: owner.email, role: 'owner', status: 'active', avatarColor: '#2d5bff', lastSeenAt: BOOT.toISOString() },
-    { id: 'tm_2', name: 'Hana Nakamura', email: 'hana@cadence.app', role: 'admin', status: 'active', avatarColor: '#0d9488', lastSeenAt: new Date(BOOT.getTime() - 2 * HOUR).toISOString() },
-    { id: 'tm_3', name: 'Mateo Rossi', email: 'mateo@cadence.app', role: 'member', status: 'active', avatarColor: '#d97706', lastSeenAt: new Date(BOOT.getTime() - 28 * HOUR).toISOString() },
-    { id: 'tm_4', name: 'Priya Ibrahim', email: 'priya@cadence.app', role: 'member', status: 'invited', avatarColor: '#7c3aed', lastSeenAt: null }
-  ])
+  // Twelve, not four: the member list has search, three filters, sorting and
+  // paging, and none of that is demonstrable against a list that fits on one
+  // screen. The first four keep their original ids and names because the kanban
+  // board assigns renewals by owner name.
+  const team: Array<typeof schema.teamMembers.$inferInsert> = [
+    { id: 'tm_1', name: owner.name, email: owner.email, role: 'owner', status: 'active', avatarColor: '#2d5bff', lastSeenAt: BOOT.toISOString(), title: 'Head of Revenue Operations', department: 'leadership', phone: '+62 812 5550 0101', location: 'Jakarta, Indonesia', timezone: 'Asia/Jakarta', invitedBy: '', notes: 'Owns the workspace. Reviews the movement waterfall before every board meeting.', joinedAt: new Date(BOOT.getTime() - 420 * DAY).toISOString() },
+    { id: 'tm_2', name: 'Hana Nakamura', email: 'hana@cadence.app', role: 'admin', status: 'active', avatarColor: '#0d9488', lastSeenAt: new Date(BOOT.getTime() - 2 * HOUR).toISOString(), title: 'Renewals Lead', department: 'revenue', phone: '+81 3 5550 0142', location: 'Tokyo, Japan', timezone: 'Asia/Tokyo', invitedBy: owner.name, notes: 'Runs the at-risk stage. Escalates anything above $2,000 MRR.', joinedAt: new Date(BOOT.getTime() - 380 * DAY).toISOString() },
+    { id: 'tm_3', name: 'Mateo Rossi', email: 'mateo@cadence.app', role: 'member', status: 'active', avatarColor: '#d97706', lastSeenAt: new Date(BOOT.getTime() - 28 * HOUR).toISOString(), title: 'Account Manager', department: 'revenue', phone: '+39 02 5550 0177', location: 'Milan, Italy', timezone: 'Europe/Rome', invitedBy: 'Hana Nakamura', notes: '', joinedAt: new Date(BOOT.getTime() - 300 * DAY).toISOString() },
+    { id: 'tm_4', name: 'Priya Ibrahim', email: 'priya@cadence.app', role: 'member', status: 'invited', avatarColor: '#7c3aed', lastSeenAt: null, title: 'Account Manager', department: 'revenue', phone: '', location: 'Singapore', timezone: 'Asia/Singapore', invitedBy: 'Hana Nakamura', notes: 'Invitation sent, not yet accepted.', joinedAt: new Date(BOOT.getTime() - 6 * DAY).toISOString() },
+    { id: 'tm_5', name: 'Yusuf Petrov', email: 'yusuf@cadence.app', role: 'admin', status: 'active', avatarColor: '#dc2626', lastSeenAt: new Date(BOOT.getTime() - 5 * HOUR).toISOString(), title: 'Financial Controller', department: 'finance', phone: '+44 20 5550 0198', location: 'London, United Kingdom', timezone: 'Europe/London', invitedBy: owner.name, notes: 'Signs off the MRR figure that leaves the building.', joinedAt: new Date(BOOT.getTime() - 350 * DAY).toISOString() },
+    { id: 'tm_6', name: 'Sasha Xu', email: 'sasha@cadence.app', role: 'member', status: 'active', avatarColor: '#0891b2', lastSeenAt: new Date(BOOT.getTime() - 3 * DAY).toISOString(), title: 'Revenue Analyst', department: 'finance', phone: '', location: 'Shenzhen, China', timezone: 'Asia/Shanghai', invitedBy: 'Yusuf Petrov', notes: '', joinedAt: new Date(BOOT.getTime() - 210 * DAY).toISOString() },
+    { id: 'tm_7', name: 'Rafael Halvorsen', email: 'rafael@cadence.app', role: 'member', status: 'active', avatarColor: '#7c3aed', lastSeenAt: new Date(BOOT.getTime() - 9 * HOUR).toISOString(), title: 'Product Manager', department: 'product', phone: '+47 22 5550 0133', location: 'Oslo, Norway', timezone: 'Europe/Oslo', invitedBy: owner.name, notes: 'Reads the cohort chart weekly; owns no renewals.', joinedAt: new Date(BOOT.getTime() - 265 * DAY).toISOString() },
+    { id: 'tm_8', name: 'Amara Adeyemi', email: 'amara@cadence.app', role: 'member', status: 'active', avatarColor: '#0d9488', lastSeenAt: new Date(BOOT.getTime() - 46 * HOUR).toISOString(), title: 'Support Lead', department: 'support', phone: '+234 1 555 0164', location: 'Lagos, Nigeria', timezone: 'Africa/Lagos', invitedBy: 'Hana Nakamura', notes: 'First to know when a champion leaves.', joinedAt: new Date(BOOT.getTime() - 190 * DAY).toISOString() },
+    { id: 'tm_9', name: 'Osman Wijaya', email: 'osman@cadence.app', role: 'member', status: 'active', avatarColor: '#d97706', lastSeenAt: new Date(BOOT.getTime() - 11 * DAY).toISOString(), title: 'Support Specialist', department: 'support', phone: '', location: 'Bandung, Indonesia', timezone: 'Asia/Jakarta', invitedBy: 'Amara Adeyemi', notes: '', joinedAt: new Date(BOOT.getTime() - 120 * DAY).toISOString() },
+    { id: 'tm_10', name: 'Ugo Dubois', email: 'ugo@cadence.app', role: 'member', status: 'invited', avatarColor: '#2d5bff', lastSeenAt: null, title: 'Account Manager', department: 'revenue', phone: '', location: 'Lyon, France', timezone: 'Europe/Paris', invitedBy: 'Hana Nakamura', notes: '', joinedAt: new Date(BOOT.getTime() - 2 * DAY).toISOString() },
+    { id: 'tm_11', name: 'Cyrus Okonkwo', email: 'cyrus@cadence.app', role: 'member', status: 'active', avatarColor: '#dc2626', lastSeenAt: new Date(BOOT.getTime() - 34 * HOUR).toISOString(), title: 'Data Engineer', department: 'product', phone: '', location: 'Remote', timezone: 'UTC', invitedBy: 'Rafael Halvorsen', notes: 'Maintains the billing sync the reports read from.', joinedAt: new Date(BOOT.getTime() - 160 * DAY).toISOString() },
+    { id: 'tm_12', name: 'Ines Ferreira', email: 'ines@cadence.app', role: 'member', status: 'invited', avatarColor: '#0891b2', lastSeenAt: null, title: 'Revenue Analyst', department: 'finance', phone: '', location: 'Lisbon, Portugal', timezone: 'Europe/Lisbon', invitedBy: 'Yusuf Petrov', notes: '', joinedAt: new Date(BOOT.getTime() - 1 * DAY).toISOString() }
+  ]
+
+  await db.insert(schema.teamMembers).values(team)
 
   const monthly = buildMonthlyHistory(mrrTotal)
   const daily = buildDailyHistory()
@@ -281,11 +295,14 @@ async function main() {
 
   await db.insert(schema.boardColumns).values(columns)
 
+  // Drawn from the team above, so every card owner opens to a real member page.
   const OWNERS = [
     { name: 'Hana Nakamura', color: '#0d9488' },
     { name: 'Mateo Rossi', color: '#d97706' },
     { name: 'Priya Ibrahim', color: '#7c3aed' },
-    { name: 'Ronaldo Cristover', color: '#2d5bff' }
+    { name: 'Ronaldo Cristover', color: '#2d5bff' },
+    { name: 'Amara Adeyemi', color: '#0d9488' },
+    { name: 'Ugo Dubois', color: '#2d5bff' }
   ] as const
 
   const LABELS = ['paymentFailed', 'usageDown', 'championLeft', 'contractEnding', 'priceObjection', 'competitor'] as const
@@ -335,7 +352,7 @@ async function main() {
   console.info(
     `[seed] done — 1 user, ${subscribers.length} subscribers, `
     + `${monthly.length} months, ${daily.length} days, MRR ${mrrTotal}, `
-    + `${columns.length} board columns / ${cards.length} cards`
+    + `${columns.length} board columns / ${cards.length} cards, ${team.length} team members`
   )
   console.info(`[seed] sign in with ${DEMO_EMAIL} / ${DEMO_PASSWORD}`)
 }

@@ -173,15 +173,71 @@ export interface SubscribersResponse {
   totals: { mrr: number, seats: number }
 }
 
+export type MemberRole = 'owner' | 'admin' | 'member'
+export type MemberStatus = 'active' | 'invited'
+export type MemberDepartment = 'revenue' | 'finance' | 'product' | 'support' | 'leadership'
+
 export interface TeamMember {
   id: string
   name: string
   email: string
-  role: 'owner' | 'admin' | 'member'
-  status: 'active' | 'invited'
+  role: MemberRole
+  status: MemberStatus
   avatarColor: string
   /** `null` while an invitation is still outstanding. */
   lastSeenAt: string | null
+  title: string
+  department: MemberDepartment
+  phone: string
+  location: string
+  timezone: string
+  notes: string
+  invitedBy: string
+  joinedAt: string
+}
+
+/** One page of the member list, with the counts the filter bar shows. */
+export interface MembersResponse {
+  generatedAt: string
+  rows: TeamMember[]
+  total: number
+  page: number
+  pageSize: number
+  counts: {
+    all: number
+    active: number
+    invited: number
+    byRole: Record<MemberRole, number>
+  }
+}
+
+/** A renewal this member owns, for the detail page's Renewals tab. */
+export interface MemberRenewal {
+  id: string
+  title: string
+  account: string
+  mrr: number
+  dueAt: string | null
+  columnTitle: string
+  columnTone: 'risk' | 'progress' | 'neutral' | 'won' | 'lost'
+}
+
+/**
+ * Everything the detail page needs, in one request.
+ *
+ * The tabs are rendered from one payload rather than fetching per tab: the
+ * whole record is small, and four separate requests would make switching tabs
+ * feel slower than it is.
+ */
+export interface MemberDetail {
+  generatedAt: string
+  member: TeamMember
+  renewals: MemberRenewal[]
+  renewalMrr: number
+  activity: ActivityEvent[]
+  /** False when this is the only owner — the UI disables the moves that would strand the workspace. */
+  canChangeRole: boolean
+  canDelete: boolean
 }
 
 export interface NotificationPreferences {

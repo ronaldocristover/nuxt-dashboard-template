@@ -89,6 +89,10 @@ const PAGES = [
   ['/dashboard/analytics', 'Cohort retention'],
   ['/dashboard/subscribers', 'Subscribers'],
   ['/dashboard/kanban', 'Renewals in flight'],
+  ['/dashboard/members', 'Everyone with access to this workspace'],
+  ['/dashboard/members/new', 'Add a member'],
+  ['/dashboard/members/tm_2', 'Renewals Lead'],
+  ['/dashboard/members/tm_2/edit', 'Save changes'],
   ['/dashboard/forms', 'Forms'],
   ['/dashboard/layouts', 'Layouts'],
   ['/dashboard/icons', 'Icons'],
@@ -124,6 +128,38 @@ for (const [path, needle] of PAGES) {
   // `cadence-locale` is the cookieKey set in nuxt.config.ts.
   const { body } = await page('/dashboard/kanban', { cookie: `${cookie}; cadence-locale=id` })
   check('kanban renders Indonesian when the locale cookie says so', body.includes('Perpanjangan berjalan'), 'expected the id.json heading')
+}
+
+// ── Members ───────────────────────────────────────────────────────────────────
+{
+  const list = await fetch(`${BASE}/api/members?pageSize=5`, { headers: { cookie } }).then(res => res.json())
+  check('/api/members pages the list', list.rows.length === 5 && list.total === 12, `${list.rows.length} of ${list.total}`)
+  check('/api/members counts the whole team, not the page', list.counts.all === 12 && list.counts.invited === 3)
+
+  const found = await fetch(`${BASE}/api/members?q=analyst`, { headers: { cookie } }).then(res => res.json())
+  check('/api/members searches job titles too', found.total === 2, `got ${found.total}`)
+
+  const detail = await fetch(`${BASE}/api/members/tm_2`, { headers: { cookie } }).then(res => res.json())
+  check('member detail carries the renewals they own', detail.renewals.length > 0 && detail.renewalMrr > 0)
+  check('member detail scopes activity to their accounts', Array.isArray(detail.activity))
+
+  // The last owner may be neither demoted nor deleted, or the workspace is left
+  // with nobody able to administer it.
+  const owner = await fetch(`${BASE}/api/members/tm_1`, { headers: { cookie } }).then(res => res.json())
+  check('the only owner cannot be changed or removed', owner.canChangeRole === false && owner.canDelete === false)
+
+  const demote = await fetch(`${BASE}/api/members/tm_1`, {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json', cookie },
+    body: JSON.stringify({
+      name: owner.member.name, email: owner.member.email, role: 'admin', status: 'active',
+      department: 'leadership', title: '', phone: '', location: '', timezone: 'UTC', notes: ''
+    })
+  })
+  check('demoting the only owner → 409', demote.status === 409, `got ${demote.status}`)
+
+  const missing = await fetch(`${BASE}/api/members/nope`, { headers: { cookie } })
+  check('/api/members/<unknown> → 404', missing.status === 404, `got ${missing.status}`)
 }
 
 // ── Guards ────────────────────────────────────────────────────────────────────

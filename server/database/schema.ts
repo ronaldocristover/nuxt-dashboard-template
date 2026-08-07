@@ -83,6 +83,17 @@ export const invoices = sqliteTable('invoices', {
   index('invoices_issued_at_idx').on(table.issuedAt)
 ])
 
+/**
+ * People with access to the workspace.
+ *
+ * `status` distinguishes someone who has signed in from someone still holding
+ * an invitation — which is why `lastSeenAt` is nullable, and why the two are
+ * never inferred from each other.
+ *
+ * The profile columns below exist so a member has something worth opening: a
+ * detail page whose only content is the same three fields as its list row is a
+ * page nobody needs.
+ */
 export const teamMembers = sqliteTable('team_members', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
@@ -90,9 +101,22 @@ export const teamMembers = sqliteTable('team_members', {
   role: text('role', { enum: ['owner', 'admin', 'member'] }).notNull(),
   status: text('status', { enum: ['active', 'invited'] }).notNull(),
   avatarColor: text('avatar_color').notNull(),
-  lastSeenAt: text('last_seen_at')
+  lastSeenAt: text('last_seen_at'),
+  title: text('title').notNull().default(''),
+  department: text('department', {
+    enum: ['revenue', 'finance', 'product', 'support', 'leadership']
+  }).notNull().default('revenue'),
+  phone: text('phone').notNull().default(''),
+  location: text('location').notNull().default(''),
+  timezone: text('timezone').notNull().default('UTC'),
+  notes: text('notes').notNull().default(''),
+  /** Who sent the invitation. Free text, so a departed inviter is still legible. */
+  invitedBy: text('invited_by').notNull().default(''),
+  joinedAt: text('joined_at').notNull().default('')
 }, table => [
-  uniqueIndex('team_members_email_unique').on(table.email)
+  uniqueIndex('team_members_email_unique').on(table.email),
+  index('team_members_role_idx').on(table.role),
+  index('team_members_department_idx').on(table.department)
 ])
 
 /**

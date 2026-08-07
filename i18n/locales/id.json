@@ -54,7 +54,8 @@
     "mobile": "Seluler",
     "reference": "Referensi",
     "navigation": "Navigasi",
-    "sampleTree": "Contoh pohon"
+    "sampleTree": "Contoh pohon",
+    "members": "Anggota"
   },
   "account": {
     "menu": "Menu akun untuk {name}",
@@ -215,6 +216,13 @@
       "mrrNegative": "MRR tidak boleh negatif",
       "tooManyLabels": "Maksimal empat tanda",
       "columnTitleRequired": "Beri nama tahapnya"
+    },
+    "member": {
+      "role": "Pilih peran",
+      "department": "Pilih departemen",
+      "titleTooLong": "Jabatan terlalu panjang",
+      "phoneTooLong": "Nomor telepon terlalu panjang",
+      "notesTooLong": "Catatan terlalu panjang"
     }
   },
   "errors": {
@@ -755,6 +763,130 @@
       "intro": "Masukkan kode ini untuk menyelesaikan proses masuk.",
       "expires": "Kode kedaluwarsa dalam {minutes} menit dan hanya berlaku sekali.",
       "ignore": "Jika Anda sedang tidak masuk, berarti ada yang tahu kata sandi Anda. Segera ganti."
+    }
+  },
+  "members": {
+    "title": "Anggota",
+    "subtitle": "Semua yang punya akses ke ruang kerja ini, beserta tanggung jawabnya.",
+    "add": "Tambah anggota",
+    "search": "Cari berdasarkan nama, email, atau jabatan",
+    "refresh": "Muat ulang daftar",
+    "empty": "Tidak ada yang cocok dengan filter itu",
+    "emptyBody": "Bersihkan filternya, atau tambahkan orang baru.",
+    "count": "Anggota",
+    "activeCount": "Aktif",
+    "invitedCount": "Diundang",
+    "showing": "Menampilkan {from}–{to} dari {total}",
+    "perPage": "Per halaman",
+    "allRoles": "Semua peran",
+    "allStatuses": "Semua status",
+    "allDepartments": "Semua departemen",
+    "neverSeen": "Belum pernah masuk",
+    "lastSeen": "Terakhir terlihat {when}",
+    "invitePending": "Undangan menunggu",
+    "joined": "Bergabung {when}",
+    "invitedBy": "Diundang oleh {name}",
+    "noTitle": "Tanpa jabatan",
+    "columns": {
+      "member": "Anggota",
+      "role": "Peran",
+      "department": "Departemen",
+      "status": "Status",
+      "lastSeen": "Terakhir terlihat",
+      "actions": "Tindakan"
+    },
+    "roles": {
+      "owner": "Pemilik",
+      "admin": "Admin",
+      "member": "Anggota"
+    },
+    "statuses": {
+      "active": "Aktif",
+      "invited": "Diundang"
+    },
+    "departments": {
+      "revenue": "Pendapatan",
+      "finance": "Keuangan",
+      "product": "Produk",
+      "support": "Dukungan",
+      "leadership": "Kepemimpinan"
+    },
+    "roleHints": {
+      "owner": "Kendali penuh, termasuk penagihan dan menghapus ruang kerja.",
+      "admin": "Semuanya kecuali penagihan dan menghapus pemilik.",
+      "member": "Membaca semua laporan dan mengerjakan alur perpanjangan."
+    },
+    "tabs": {
+      "profile": "Profil",
+      "access": "Akses",
+      "renewals": "Perpanjangan",
+      "activity": "Aktivitas"
+    },
+    "detail": {
+      "back": "Semua anggota",
+      "edit": "Ubah",
+      "remove": "Hapus",
+      "contact": "Kontak",
+      "email": "Email",
+      "phone": "Telepon",
+      "location": "Lokasi",
+      "timezone": "Zona waktu",
+      "notes": "Catatan",
+      "noNotes": "Tidak ada catatan.",
+      "notProvided": "Tidak diisi",
+      "history": "Riwayat",
+      "permissions": "Yang bisa dilakukan peran ini",
+      "accountStatus": "Status akun",
+      "renewalsOwned": "Perpanjangan yang dipegang",
+      "mrrAtStake": "MRR dipertaruhkan",
+      "noRenewals": "Tidak ada perpanjangan",
+      "noRenewalsBody": "Kartu di alur perpanjangan punya pemilik. Belum ada yang mengarah ke sini.",
+      "noActivity": "Belum ada yang terbaru",
+      "noActivityBody": "Aktivitas pada akun anggota ini akan muncul di sini.",
+      "activityNote": "Kejadian pada akun yang dipegang anggota ini.",
+      "openPipeline": "Buka alur perpanjangan",
+      "lastOwner": "Ini satu-satunya pemilik. Jadikan orang lain pemilik dulu sebelum mengubah yang ini.",
+      "removeTitle": "Hapus {name}?",
+      "removeBody": "Aksesnya langsung dicabut. Perpanjangan yang dipegangnya tetap di papan dan menjadi tanpa pemilik.",
+      "removeConfirm": "Hapus anggota",
+      "removed": "{name} telah dihapus",
+      "keep": "Batal",
+      "joinedLabel": "Bergabung",
+      "invitedByLabel": "Diundang oleh"
+    },
+    "form": {
+      "newTitle": "Tambah anggota",
+      "newSubtitle": "Mereka mendapat akses begitu menerima undangan. Tidak ada yang dikirim sebelum kamu simpan.",
+      "editTitle": "Ubah {name}",
+      "editSubtitle": "Perubahan berlaku saat mereka memuat halaman berikutnya.",
+      "identity": "Siapa dia",
+      "placement": "Posisinya",
+      "access": "Yang boleh dilakukan",
+      "extra": "Lain-lain",
+      "name": "Nama lengkap",
+      "namePlaceholder": "Amara Adeyemi",
+      "email": "Email kerja",
+      "emailPlaceholder": "amara{'@'}perusahaanmu.com",
+      "emailHint": "Undangannya juga dikirim ke sini.",
+      "jobTitle": "Jabatan",
+      "jobTitlePlaceholder": "Account Manager",
+      "department": "Departemen",
+      "role": "Peran",
+      "status": "Status",
+      "statusHint": "Diundang sampai mereka menerima; aktif jika kamu mencatat orang yang memang sudah bekerja di sini.",
+      "phone": "Telepon",
+      "location": "Lokasi",
+      "locationPlaceholder": "Lisbon, Portugal",
+      "timezone": "Zona waktu",
+      "notes": "Catatan",
+      "notesPlaceholder": "Hal yang perlu diketahui anggota tim lain.",
+      "notesHint": "Terlihat oleh semua orang yang bisa membuka halaman ini.",
+      "save": "Simpan anggota",
+      "saveChanges": "Simpan perubahan",
+      "cancel": "Batal",
+      "created": "{name} telah ditambahkan",
+      "updated": "{name} telah diperbarui",
+      "ownerLocked": "Satu-satunya pemilik tidak bisa dipindah ke peran lain."
     }
   }
 }

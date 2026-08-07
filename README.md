@@ -20,6 +20,10 @@ The domain is fictional; every page is built to be rebranded and rewired.
 <td><img src="docs/screenshots/overview-dark.png" alt="The same overview in dark mode"></td>
 </tr>
 <tr>
+<td><img src="docs/screenshots/members.png" alt="The member list, filtered and paged on the server"></td>
+<td><img src="docs/screenshots/member-detail.png" alt="A member's detail page, showing the renewals they own"></td>
+</tr>
+<tr>
 <td><img src="docs/screenshots/login.png" alt="The sign-in page"></td>
 <td><img src="docs/screenshots/forms.png" alt="The forms reference page"></td>
 </tr>
@@ -51,6 +55,7 @@ drift from what the template actually renders.
 - `/dashboard/analytics` — date-range switching, area / grouped-bar / donut charts, channels, cohort retention
 - `/dashboard/subscribers` — server-driven table: search, filter, sort, paginate, multi-select, CSV export, detail slideover
 - `/dashboard/kanban` — a renewal pipeline: drag or keyboard-move cards between five stages, edit in a slideover, add and rename stages, all persisted
+- `/dashboard/members` — the full CRUD set: a server-driven list, a create page, an edit page, and a detail page with four tabs (profile, access, the renewals they own, activity on their accounts)
 - `/dashboard/settings` — profile, account and password, notifications, billing, team members
 
 **Developer reference** — seven pages documenting the template itself

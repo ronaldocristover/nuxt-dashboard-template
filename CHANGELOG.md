@@ -12,6 +12,19 @@ changed database schema. Those are always called out.
 
 ### Added
 
+- **Member management** at `/dashboard/members` — the full CRUD set that a template needs
+  as a worked example: a server-driven list (search across name, email *and* job title;
+  filter by role, status and department; sort; page), a create page, an edit page, and a
+  detail page with four tabs. The tabs are backed by real data, not filler: profile,
+  access with the role matrix, the renewals this person owns joined to their pipeline
+  stage, and activity on the accounts they own. The open tab lives in the URL, so a link
+  to somebody's renewals is a link to their renewals.
+
+  The rule the server enforces, not just the interface: the last owner can be neither
+  demoted nor deleted, because a workspace without one has nobody able to appoint another.
+  A duplicate email is a 409, and saving your own address unchanged is not a conflict with
+  yourself.
+
 - **Email actually sends.** Five routes used to `console.info` a link or a code; they now
   go through `sendMail` in `server/utils/mail/send.ts`. Drivers: `console` (default, still
   prints, so a fresh clone has working auth flows), `resend` and `postmark` — both plain
@@ -32,6 +45,11 @@ changed database schema. Those are always called out.
 
 ### Fixed
 
+- **`npm run i18n:check` now rejects an unescaped `@`.** vue-i18n reads a bare `@` as
+  linked-message syntax, so a placeholder like `you@company.com` makes the message compiler
+  throw *in the browser* — the server renders fine, so curl, SSR and every status-code check
+  pass while the page shows `nav.overview` where each label should be. This shipped twice.
+  It fails in CI now, with the fix in the error message: write it `{'@'}`.
 - **Chart axis labels were invisible in dark mode.** The hand-written charts labelled
   their axes with `class="fill-dimmed"`. Nuxt UI's semantic colours only exist as
   `text-*` utilities, so `fill-dimmed` generated no CSS at all and the SVG text fell

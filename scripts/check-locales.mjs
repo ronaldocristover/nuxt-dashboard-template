@@ -34,6 +34,22 @@ function placeholders(value) {
   return new Set([...String(value).matchAll(/\{(\w+)\}/g)].map(match => match[1]))
 }
 
+/**
+ * A bare `@` is vue-i18n's linked-message syntax, not an at sign.
+ *
+ * `you@company.com` makes the message compiler throw, and it throws at *runtime
+ * in the browser* — the server renders fine, so curl, SSR and every status-code
+ * check pass while the page shows `nav.overview` where every label should be.
+ * This has happened twice. It is cheap to make it fail here instead.
+ *
+ * Written as `{'@'}`, it is a literal.
+ */
+function unescapedAt(value) {
+  const text = String(value)
+  // Remove every correctly escaped occurrence, then see if any @ survives.
+  return text.replaceAll('{\'@\'}', '').includes('@')
+}
+
 function lookup(object, path) {
   return path.split('.').reduce((node, key) => (node == null ? undefined : node[key]), object)
 }
@@ -44,6 +60,23 @@ const baseKeys = flatten(base)
 const others = readdirSync(DIR).filter(file => file.endsWith('.json') && file !== BASE)
 
 let failed = false
+
+/**
+ * The `@` check runs over every file including `en.json`, because the compiler
+ * does not care which language broke it — one bad message takes the whole page
+ * down in whatever locale it belongs to.
+ */
+for (const file of [BASE, ...others]) {
+  const locale = JSON.parse(readFileSync(join(DIR, file), 'utf8'))
+  const offenders = [...flatten(locale)].filter(key => unescapedAt(lookup(locale, key)))
+
+  if (!offenders.length) continue
+
+  failed = true
+  console.error(`✖ ${file}`)
+  console.error(`   unescaped @ (${offenders.length}): ${offenders.slice(0, 10).join(', ')}`)
+  console.error('   vue-i18n reads a bare @ as a linked message. Write it as {\'@\'}.')
+}
 
 for (const file of others) {
   const locale = JSON.parse(readFileSync(join(DIR, file), 'utf8'))
@@ -75,7 +108,7 @@ for (const file of others) {
 }
 
 if (failed) {
-  console.error('\nLocale files are out of sync with en.json.')
+  console.error('\nLocale files have problems that would break the interface.')
   process.exit(1)
 }
 

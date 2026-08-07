@@ -133,6 +133,41 @@ export function createInviteSchema(t: Translate = identity) {
   })
 }
 
+export const MEMBER_ROLES = ['owner', 'admin', 'member'] as const
+export const MEMBER_STATUSES = ['active', 'invited'] as const
+export const MEMBER_DEPARTMENTS = ['revenue', 'finance', 'product', 'support', 'leadership'] as const
+
+/**
+ * The member form, used by both the create and the edit page.
+ *
+ * One schema for both, because they collect the same fields — a second copy
+ * would be the thing that drifts. What differs is the server's treatment: a
+ * duplicate email is a conflict on create, and a conflict on edit only when it
+ * belongs to somebody else.
+ *
+ * Optional text fields default to `''` rather than staying undefined, so the
+ * database never has to decide between "empty" and "not provided" for a field
+ * where that distinction carries no meaning.
+ */
+export function createMemberSchema(t: Translate = identity) {
+  return z.object({
+    name: z.string().trim().min(2, t('validation.name.required')).max(80, t('validation.name.tooLong')),
+    email: emailField(t),
+    role: z.enum(MEMBER_ROLES, { message: t('validation.member.role') }),
+    status: z.enum(MEMBER_STATUSES).default('invited'),
+    department: z.enum(MEMBER_DEPARTMENTS, { message: t('validation.member.department') }),
+    title: z.string().trim().max(80, t('validation.member.titleTooLong')).default(''),
+    // Deliberately loose. Phone numbers are written a dozen ways and a regex
+    // here would reject somebody's real number for the sake of tidiness.
+    phone: z.string().trim().max(40, t('validation.member.phoneTooLong')).default(''),
+    location: z.string().trim().max(80).default(''),
+    timezone: z.string().trim().min(1, t('validation.timezone')).default('UTC'),
+    notes: z.string().trim().max(2000, t('validation.member.notesTooLong')).default('')
+  })
+}
+
+export const memberSchema = createMemberSchema()
+
 // Server-side instances. Messages stay as keys; the routes never render them.
 export const signInSchema = createSignInSchema()
 export const signUpSchema = createSignUpSchema()
