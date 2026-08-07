@@ -41,6 +41,19 @@ const VERIFY_TTL = 24 * 60 * 60 * 1000
 const CODE_TTL = 10 * 60 * 1000
 const MAX_CODE_ATTEMPTS = 5
 
+/**
+ * The same windows in minutes, for the emails that have to state them.
+ *
+ * Exported from here rather than retyped in the templates, because "this link
+ * expires in 30 minutes" becoming a lie is the kind of drift nobody notices
+ * until a user is locked out arguing with the copy.
+ */
+export const TTL_MINUTES = {
+  reset: RESET_TTL / 60_000,
+  verify: VERIFY_TTL / 60_000,
+  code: CODE_TTL / 60_000
+} as const
+
 function expiry(ttl: number): string {
   return new Date(Date.now() + ttl).toISOString()
 }

@@ -23,12 +23,47 @@ useHead(() => ({
   }
 }))
 
+/**
+ * Share-preview defaults.
+ *
+ * `twitterCard: summary_large_image` without an `og:image` is worse than no
+ * card at all — the platform reserves the large slot and then renders it blank.
+ * So the image is declared here alongside it, absolute (relative paths are
+ * dropped by every scraper) and with explicit dimensions so the preview does
+ * not reflow while it loads.
+ *
+ * Pages may override the title and description; they inherit everything else.
+ */
+const site = useRuntimeConfig().public.appUrl.replace(/\/+$/, '')
+const route = useRoute()
+
+const ogImage = `${site}/og.png`
+
 useSeoMeta({
   titleTemplate: title => (title ? `${title} · ${t('app.name')}` : `${t('app.name')} — ${t('app.description')}`),
+  description: () => t('app.description'),
   ogSiteName: () => t('app.name'),
   ogType: 'website',
-  twitterCard: 'summary_large_image'
+  ogTitle: () => `${t('app.name')} — ${t('app.description')}`,
+  ogDescription: () => t('app.description'),
+  ogUrl: () => `${site}${route.path}`,
+  ogImage,
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  ogImageAlt: () => t('app.ogImageAlt'),
+  ogLocale: () => uiLocale.value.code.replace('-', '_'),
+  twitterCard: 'summary_large_image',
+  twitterTitle: () => `${t('app.name')} — ${t('app.description')}`,
+  twitterDescription: () => t('app.description'),
+  twitterImage: ogImage,
+  twitterImageAlt: () => t('app.ogImageAlt')
 })
+
+// A canonical per path, so the four locales served at one URL are not read as
+// four competing pages.
+useHead(() => ({
+  link: [{ rel: 'canonical', href: `${site}${route.path}` }]
+}))
 </script>
 
 <template>

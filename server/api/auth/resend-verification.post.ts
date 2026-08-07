@@ -1,4 +1,7 @@
-import { db } from '~~/server/utils/db'
+import { db, TTL_MINUTES } from '~~/server/utils/db'
+import { mailLocale } from '~~/server/utils/mail/locale'
+import { verifyEmailMail } from '~~/server/utils/mail/render'
+import { sendMail } from '~~/server/utils/mail/send'
 import { generateToken } from '~~/server/utils/password'
 import { limit } from '~~/server/utils/ratelimit'
 import { requireUser } from '~~/server/utils/session'
@@ -16,12 +19,14 @@ export default defineEventHandler(async (event) => {
   const token = generateToken()
   await db.createVerifyToken(current.id, token)
 
-  const url = `${useRuntimeConfig().appUrl}/verify-email?token=${token}`
+  const url = `${useRuntimeConfig().public.appUrl}/verify-email?token=${token}`
 
-  // ------------------------------------------------------------------
-  // Send the email here. This is the only place a verification link is made.
-  // ------------------------------------------------------------------
-  console.info(`[cadence] verification link for ${current.email}: ${url}`)
+  await sendMail(verifyEmailMail({
+    to: current.email,
+    locale: mailLocale(event),
+    url,
+    expiresInMinutes: TTL_MINUTES.verify
+  }))
 
   return { ok: true, alreadyVerified: false, devUrl: import.meta.dev ? url : undefined }
 })

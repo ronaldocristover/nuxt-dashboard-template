@@ -1,0 +1,91 @@
+Cadence Dashboard Template — License
+
+Copyright (c) 2026 <YOUR NAME OR COMPANY>
+
+  Before selling: replace the copyright line above, and have a lawyer in your
+  jurisdiction review this document. It is written to be readable and to cover
+  the ordinary cases for a commercial template, but it is not legal advice, and
+  a marketplace you sell through (ThemeForest, Gumroad, Lemon Squeezy, and so
+  on) will usually require its own license terms instead of this one.
+
+
+1. WHAT YOU ARE BUYING
+
+   A license to use this template's source code to build applications. You are
+   not buying the copyright, which stays with the copyright holder above.
+
+   One purchase covers one licensee: you, or the single company you bought it
+   for. Everyone in that company may work with it.
+
+
+2. WHAT YOU MAY DO
+
+   a. Build an unlimited number of applications with it, whether for yourself
+      or for a client, and whether internal or public.
+
+   b. Charge your users for access to those applications, including as a paid
+      product or a subscription.
+
+   c. Modify it however you like. You do not have to publish your changes, and
+      you do not have to credit this template.
+
+   d. Hand the modified source to a client as part of delivering work to them,
+      provided the result is an application and not the template itself. If
+      that client will go on to build further applications from it, they need
+      their own license.
+
+   e. Keep using every version you received, forever, even if your access to
+      updates ends.
+
+
+3. WHAT YOU MAY NOT DO
+
+   a. Resell, relicense, sublicense or give away the template, or any part of
+      it, as a template, theme, starter, boilerplate, UI kit or component
+      library — whether modified or not, and whether paid or free.
+
+   b. Publish it in a public repository, gist, tutorial download, course
+      material or asset marketplace in a form from which it could be reused as
+      a template.
+
+   c. Build a product whose main value is the template itself — a page builder,
+      a theme marketplace, or a service that generates applications from it for
+      third parties.
+
+   d. Remove or alter this license file from copies of the source.
+
+   The line is the difference between shipping something built with this and
+   distributing the thing you built it with.
+
+
+4. THIRD-PARTY COMPONENTS
+
+   This template depends on open-source software licensed separately by its
+   authors, including Nuxt (MIT), Nuxt UI (MIT), Tailwind CSS (MIT), Drizzle
+   ORM (Apache-2.0), Lucide icons (ISC), Simple Icons (CC0-1.0), IBM Plex (SIL
+   OFL 1.1) and Bricolage Grotesque (SIL OFL 1.1). Those licenses govern those
+   components; nothing here narrows them. Their terms travel with the files.
+
+   The sample data, company names, people and figures are fictional.
+
+
+5. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+   IN THE SOFTWARE.
+
+   In particular: this template ships authentication, session handling and
+   password storage as a working starting point, not as a security audit of
+   your application. Review them against your own threat model before you take
+   real users.
+
+
+6. TERMINATION
+
+   This license ends if you breach section 3. Applications you had already
+   shipped may stay shipped; you must stop distributing the template itself.

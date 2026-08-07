@@ -1,5 +1,8 @@
 import { signUpSchema } from '#shared/schemas'
-import { db, publicUser } from '~~/server/utils/db'
+import { db, publicUser, TTL_MINUTES } from '~~/server/utils/db'
+import { mailLocale } from '~~/server/utils/mail/locale'
+import { verifyEmailMail } from '~~/server/utils/mail/render'
+import { sendMail } from '~~/server/utils/mail/send'
 import { generateToken, hashPassword } from '~~/server/utils/password'
 import { limit } from '~~/server/utils/ratelimit'
 import { setUserSession } from '~~/server/utils/session'
@@ -34,10 +37,16 @@ export default defineEventHandler(async (event) => {
   const token = generateToken()
   await db.createVerifyToken(user.id, token)
 
-  const url = `${useRuntimeConfig().appUrl}/verify-email?token=${token}`
+  const url = `${useRuntimeConfig().public.appUrl}/verify-email?token=${token}`
 
-  // Send the welcome-and-verify email here.
-  console.info(`[cadence] verification link for ${user.email}: ${url}`)
+  // A failed send must not fail the registration — the account exists, the
+  // session is live, and Settings can resend. `sendMail` never throws.
+  await sendMail(verifyEmailMail({
+    to: user.email,
+    locale: mailLocale(event),
+    url,
+    expiresInMinutes: TTL_MINUTES.verify
+  }))
 
   return {
     user: publicUser(user),

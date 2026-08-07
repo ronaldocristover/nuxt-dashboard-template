@@ -15,7 +15,7 @@ const DISALLOW = [
 ]
 
 export default defineEventHandler((event) => {
-  const base = useRuntimeConfig().appUrl.replace(/\/+$/, '')
+  const base = useRuntimeConfig().public.appUrl.replace(/\/+$/, '')
 
   setResponseHeader(event, 'content-type', 'text/plain; charset=utf-8')
 

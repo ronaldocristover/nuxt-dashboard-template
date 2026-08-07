@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "Cadence",
-    "description": "Revenue reporting for subscription businesses"
+    "description": "Revenue reporting for subscription businesses",
+    "ogImageAlt": "Cadence — a waterfall chart reconciling opening MRR to closing MRR through new, expansion, contraction and churn"
   },
   "language": {
     "label": "Language",
@@ -727,6 +728,33 @@
       "stageName": "Stage name",
       "stagePlaceholder": "In negotiation",
       "stageTone": "Accent"
+    }
+  },
+  "mail": {
+    "footer": "{app} sent this because someone used your email address. Nobody at {app} will ever ask you for your password or a code.",
+    "fallback": "If the button does not work, paste this into your browser:",
+    "reset": {
+      "subject": "Reset your {app} password",
+      "title": "Reset your password",
+      "intro": "Someone asked to reset the password for this account. Choose a new one here.",
+      "button": "Set a new password",
+      "expires": "This link works once, and expires in {minutes} minutes.",
+      "ignore": "If you did not ask for this, ignore this email. Your password stays as it is."
+    },
+    "verify": {
+      "subject": "Confirm your email address for {app}",
+      "title": "Confirm your email address",
+      "intro": "One click and your account is fully set up. You are already signed in — this just confirms the address is yours.",
+      "button": "Confirm my address",
+      "expires": "This link expires in {hours} hours.",
+      "ignore": "If you did not create this account, ignore this email and it will go no further."
+    },
+    "code": {
+      "subject": "{code} is your sign-in code",
+      "title": "Your sign-in code",
+      "intro": "Enter this code to finish signing in.",
+      "expires": "The code expires in {minutes} minutes and works once.",
+      "ignore": "If you are not signing in right now, someone has your password. Change it as soon as you can."
     }
   }
 }

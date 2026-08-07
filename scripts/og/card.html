@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  /* Fonts are loaded from node_modules so the card renders identically offline
+     and in CI. Paths are rewritten to absolute file:// URLs by render.mjs. */
+  @font-face {
+    font-family: 'Bricolage Grotesque';
+    src: url('__BRICOLAGE__') format('woff2');
+    font-weight: 200 800;
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('__PLEX_SANS__') format('woff2');
+    font-weight: 100 700;
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    src: url('__PLEX_MONO__') format('woff2');
+    font-weight: 400;
+  }
+
+  :root {
+    --cobalt-400: #6b84ff;
+    --cobalt-500: #2d5bff;
+    --cobalt-600: #1a42e6;
+    --cobalt-950: #101c47;
+    --ink: #0a1030;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--ink);
+    color: #fff;
+    position: relative;
+  }
+
+  /* A single wash of cobalt from the lower right, where the waterfall sits.
+     The light comes from the data, not from a decorative corner gradient. */
+  .wash {
+    position: absolute;
+    right: -180px;
+    bottom: -260px;
+    width: 900px;
+    height: 900px;
+    background: radial-gradient(circle, rgba(45, 91, 255, 0.45) 0%, rgba(45, 91, 255, 0) 62%);
+  }
+
+  .grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 100% 42px;
+  }
+
+  .frame {
+    position: relative;
+    height: 100%;
+    padding: 52px 68px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .mark { display: flex; align-items: center; gap: 16px; }
+  .mark svg { width: 44px; height: 44px; display: block; }
+  .wordmark {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cobalt-400);
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 58px;
+    line-height: 1.06;
+    font-weight: 600;
+    letter-spacing: -0.032em;
+    max-width: 17ch;
+  }
+
+  h1 em { font-style: normal; color: var(--cobalt-400); }
+
+  .sub {
+    margin-top: 20px;
+    font-size: 20px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.62);
+    max-width: 48ch;
+  }
+
+  .foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 48px; }
+
+  .stack { display: flex; gap: 40px; }
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.42);
+  }
+  .stat-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-top: 6px;
+  }
+
+  /* The waterfall. This is the product's own chart, not an ornament — the four
+     movements that reconcile opening MRR to closing MRR. */
+  .waterfall { display: flex; align-items: flex-end; gap: 13px; height: 132px; }
+  .bar { width: 42px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+  .bar span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 8px;
+    white-space: nowrap;
+  }
+  .bar i { display: block; width: 100%; border-radius: 5px; }
+</style>
+</head>
+<body>
+  <div class="wash"></div>
+  <div class="grid"></div>
+
+  <div class="frame">
+    <div class="mark">
+      <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="28" rx="7" fill="#2D5BFF"/>
+        <g fill="#fff">
+          <rect x="5" y="14" width="3" height="8" rx="1.5" opacity="0.45"/>
+          <rect x="10" y="10" width="3" height="12" rx="1.5" opacity="0.65"/>
+          <rect x="15" y="5" width="3" height="17" rx="1.5" opacity="0.82"/>
+          <rect x="20" y="0" width="3" height="22" rx="1.5"/>
+        </g>
+      </svg>
+      <div class="wordmark">Cadence</div>
+    </div>
+
+    <div>
+      <div class="eyebrow">Nuxt 4 · Tailwind 4 · Nuxt UI</div>
+      <h1>Your MRR moved.<br>Know <em>which four things</em> moved it.</h1>
+      <p class="sub">A production-ready dashboard template. Authentication, analytics, a
+        renewal pipeline and settings — in four languages, on SQLite.</p>
+    </div>
+
+    <div class="foot">
+      <div class="stack">
+        <div>
+          <div class="stat-label">Pages</div>
+          <div class="stat-value">19</div>
+        </div>
+        <div>
+          <div class="stat-label">Languages</div>
+          <div class="stat-value">4</div>
+        </div>
+        <div>
+          <div class="stat-label">Tests</div>
+          <div class="stat-value">94</div>
+        </div>
+      </div>
+
+      <!-- A real waterfall: each movement starts where the last one stopped, and
+           the four of them reconcile Open to Close. `margin-bottom` is the
+           float — the value the bar begins at. -->
+      <div class="waterfall">
+        <div class="bar"><span>Open</span><i style="height: 70px; background: rgba(255,255,255,0.22)"></i></div>
+        <div class="bar"><span>+New</span><i style="height: 34px; margin-bottom: 70px; background: var(--cobalt-500)"></i></div>
+        <div class="bar"><span>+Exp</span><i style="height: 18px; margin-bottom: 104px; background: var(--cobalt-400)"></i></div>
+        <div class="bar"><span>−Con</span><i style="height: 12px; margin-bottom: 110px; background: #f0a13a"></i></div>
+        <div class="bar"><span>−Churn</span><i style="height: 14px; margin-bottom: 96px; background: #ef5b5b"></i></div>
+        <div class="bar"><span>Close</span><i style="height: 96px; background: #fff"></i></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

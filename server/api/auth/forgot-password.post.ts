@@ -1,5 +1,8 @@
 import { forgotPasswordSchema } from '#shared/schemas'
-import { db } from '~~/server/utils/db'
+import { db, TTL_MINUTES } from '~~/server/utils/db'
+import { mailLocale } from '~~/server/utils/mail/locale'
+import { resetPasswordMail } from '~~/server/utils/mail/render'
+import { sendMail } from '~~/server/utils/mail/send'
 import { generateToken } from '~~/server/utils/password'
 import { limit } from '~~/server/utils/ratelimit'
 
@@ -26,13 +29,17 @@ export default defineEventHandler(async (event) => {
     const token = generateToken()
     await db.createResetToken(user.email, token)
 
-    const resetUrl = `${config.appUrl}/reset-password?token=${token}`
+    const resetUrl = `${config.public.appUrl}/reset-password?token=${token}`
 
-    // ------------------------------------------------------------------
-    // Send the email here. Any transactional provider works — Resend,
-    // Postmark, SES. This is the only place a reset link is created.
-    // ------------------------------------------------------------------
-    console.info(`[cadence] password reset for ${user.email}: ${resetUrl}`)
+    // Not awaited for its result beyond logging: the response below must look
+    // identical whether or not the account exists, so it cannot start
+    // depending on whether a send succeeded.
+    await sendMail(resetPasswordMail({
+      to: user.email,
+      locale: mailLocale(event),
+      url: resetUrl,
+      expiresInMinutes: TTL_MINUTES.reset
+    }))
 
     // Surfaced in dev so the flow is testable without an email provider.
     if (import.meta.dev) devResetUrl = resetUrl

@@ -3,7 +3,7 @@
  *
  * `robots.txt` advertised this path before it existed, which pointed every
  * crawler that read it at a 404. It also hard-coded `localhost`, so the URL was
- * wrong in every deployment — the host now comes from `NUXT_APP_URL`.
+ * wrong in every deployment — the host now comes from `NUXT_PUBLIC_APP_URL`.
  *
  * Only public marketing pages are listed. Everything behind the session cookie
  * carries `robots: noindex` and is excluded in `robots.txt`; listing it here
@@ -14,7 +14,7 @@ const PUBLIC_PATHS = [
 ]
 
 export default defineEventHandler((event) => {
-  const base = useRuntimeConfig().appUrl.replace(/\/+$/, '')
+  const base = useRuntimeConfig().public.appUrl.replace(/\/+$/, '')
   const lastmod = new Date().toISOString().slice(0, 10)
 
   const urls = PUBLIC_PATHS.map(entry => `  <url>

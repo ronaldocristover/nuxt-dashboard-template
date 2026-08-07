@@ -46,3 +46,45 @@ jobs:
           # The build must not depend on a real secret, but the server refuses to
           # start auth without one — so give it a throwaway of the right length.
           NUXT_SESSION_PASSWORD: ci-placeholder-session-password-32ch
+
+      # Everything above can pass while a page serves a blank body or renders raw
+      # translation keys — three separate bugs here did exactly that, each behind
+      # a cheerful HTTP 200. This step boots the artefact that would ship and
+      # asserts what is actually in the body.
+      - name: Seed the database
+        run: npm run db:migrate && npm run db:seed
+        env:
+          DATABASE_URL: file:./.data/cadence.db
+
+      - name: Start the production server
+        run: |
+          # Detached, or the step ending would take the server with it.
+          nohup node .output/server/index.mjs > server.log 2>&1 &
+          echo $! > .server.pid
+          # Poll rather than sleep: a fixed wait is either flaky or slow.
+          for attempt in $(seq 1 60); do
+            if curl -sf -o /dev/null http://localhost:3000/; then
+              echo "up after ${attempt} attempt(s)"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server never became ready"
+          cat server.log
+          exit 1
+        env:
+          NUXT_SESSION_PASSWORD: ci-placeholder-session-password-32ch
+          NUXT_PUBLIC_APP_URL: http://localhost:3000
+          DATABASE_URL: file:./.data/cadence.db
+
+      - name: Smoke test
+        run: npm run smoke
+
+      # The server's own log is the first thing worth seeing when smoke fails.
+      - name: Server log
+        if: failure()
+        run: cat server.log || true
+
+      - name: Stop the server
+        if: always()
+        run: kill "$(cat .server.pid)" 2>/dev/null || true

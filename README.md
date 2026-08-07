@@ -8,6 +8,26 @@ single CSS file.
 The demo product is *Cadence*, a revenue-reporting tool for subscription businesses.
 The domain is fictional; every page is built to be rebranded and rewired.
 
+![The overview dashboard](docs/screenshots/overview.png)
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/analytics.png" alt="Analytics, with cohort retention and channel mix"></td>
+<td width="50%"><img src="docs/screenshots/kanban.png" alt="The renewal pipeline, a kanban board"></td>
+</tr>
+<tr>
+<td><img src="docs/screenshots/subscribers.png" alt="The subscribers table, filtered and sorted on the server"></td>
+<td><img src="docs/screenshots/overview-dark.png" alt="The same overview in dark mode"></td>
+</tr>
+<tr>
+<td><img src="docs/screenshots/login.png" alt="The sign-in page"></td>
+<td><img src="docs/screenshots/forms.png" alt="The forms reference page"></td>
+</tr>
+</table>
+
+Every image above is the running application, captured by `npm run shots` — so they cannot
+drift from what the template actually renders.
+
 ---
 
 ## What's included
@@ -97,6 +117,8 @@ Both are shown on the sign-in page while `NUXT_PUBLIC_DEMO_MODE` is `true`. Set 
 | `npm run test` / `test:watch` | Vitest unit suite |
 | `npm run verify` | Everything CI runs: lint, typecheck, locales, tests |
 | `npm run smoke` | Asserts rendered page **content** against a running server (see below) |
+| `npm run shots` | Recaptures `docs/screenshots/` from a running server (needs Chrome) |
+| `npm run og` | Regenerates `public/og.png`, the share-preview card (needs Chrome) |
 
 ---
 
@@ -105,9 +127,13 @@ Both are shown on the sign-in page while `NUXT_PUBLIC_DEMO_MODE` is `true`. Set 
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `NUXT_SESSION_PASSWORD` | **In production** | Seals the session cookie. Must be ≥ 32 characters. Generate with `openssl rand -base64 32`. |
-| `NUXT_APP_URL` | For reset emails | Absolute origin used to build password-reset links. |
+| `NUXT_PUBLIC_APP_URL` | In production | Absolute origin. Builds reset and verification links, `og:image`, and the canonical URL. |
 | `DATABASE_URL` | No | libsql connection string. Defaults to `file:./.data/cadence.db`. |
 | `DATABASE_AUTH_TOKEN` | For Turso | Auth token when `DATABASE_URL` points at a hosted database. |
+| `MAIL_DRIVER` | No | `console` (default), `resend` or `postmark`. |
+| `MAIL_FROM` | With a real driver | The From address, e.g. `Cadence <hello@yourdomain.com>`. |
+| `RESEND_API_KEY` | For Resend | API key. |
+| `POSTMARK_TOKEN` | For Postmark | Server token. `POSTMARK_STREAM` defaults to `outbound`. |
 | `NUXT_PUBLIC_DEMO_MODE` | No | Shows the demo credentials on the sign-in page. Default `true`. |
 
 In development a fallback session secret is used so the template runs with no setup.
@@ -255,14 +281,43 @@ identical on every machine and in every screenshot. It clears the tables it owns
 running it twice does not double the data. Delete the file once you have real data — nothing
 else imports it.
 
+### Email
+
+Five routes send something: a reset link, a verification link on register, a resent
+verification link, and a two-step code on both sign-in and resend. They all go through
+`sendMail` in `server/utils/mail/send.ts`, so changing provider is one file, not five.
+
+Set `MAIL_DRIVER` to `resend` or `postmark` and give it a key. Both are plain JSON over
+HTTPS, so neither adds a dependency. To add your own — SES, SMTP, a queue — write a
+function of `(mail, from)` and put it in the `DRIVERS` map.
+
+The default is `console`, which prints the message. That is deliberate: a fresh clone has
+working auth flows before you have signed up for anything.
+
+Two properties worth keeping if you rewrite this:
+
+- **`sendMail` never throws.** A provider having a bad afternoon must not turn "your
+  account is created" into a 500. The account exists either way, and the user can ask for
+  another link. Failures are logged loudly instead.
+- **`/api/auth/forgot-password` answers identically whether or not the account exists**,
+  and that includes not reacting to a send failure — otherwise the endpoint becomes a way
+  to enumerate registered addresses by a slower route.
+
+The copy lives in the same locale files as the interface (`mail.*`), so it is translated
+once and `npm run i18n:check` covers the emails too. The language is taken from the
+`cadence-locale` cookie — someone reading the site in Indonesian gets the email in
+Indonesian. Expiry windows come from `TTL_MINUTES` in `server/utils/db.ts`, so "expires in
+30 minutes" cannot drift away from the code that enforces it.
+
 ### Still to wire up
 
-- Send real email where `server/api/auth/{forgot-password,resend-verification}.post.ts` and
-  `login.post.ts` currently log the link or code to the console.
 - Move the rate limiter in `server/utils/ratelimit.ts` off process memory if you run more than
   one instance.
 - Turn on SQLite foreign keys (`PRAGMA foreign_keys = ON`) or move to a database that enforces
   them by default — the schema declares the relationships, but SQLite ignores them unless asked.
+  Nothing today relies on the cascade: no route deletes a `users` row, and deleting a board
+  column deletes its cards explicitly. It becomes real the moment you wire up account deletion,
+  which `SettingsAccount.vue` already has a UI for.
 
 ### Other integration points
 
@@ -556,6 +611,13 @@ replace `server/utils/password.ts`, which uses `node:crypto`.
 
 ## License
 
-The template code is yours to use under the terms of your purchase.
-Third-party licenses: Nuxt (MIT), Nuxt UI (MIT), Tailwind CSS (MIT), Lucide icons (ISC),
-IBM Plex (OFL), Bricolage Grotesque (OFL).
+See [LICENSE](LICENSE). In short: build as many applications as you like with it, charge
+for them, modify it freely — but do not redistribute it *as a template*. The line is the
+difference between shipping something built with this and distributing the thing you
+built it with.
+
+Third-party licenses: Nuxt (MIT), Nuxt UI (MIT), Tailwind CSS (MIT), Drizzle ORM
+(Apache-2.0), Lucide icons (ISC), Simple Icons (CC0-1.0), IBM Plex (OFL), Bricolage
+Grotesque (OFL). Those terms govern those components.
+
+Release notes live in [CHANGELOG.md](CHANGELOG.md).

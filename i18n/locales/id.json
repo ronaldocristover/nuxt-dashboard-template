@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "Cadence",
-    "description": "Pelaporan pendapatan untuk bisnis berlangganan"
+    "description": "Pelaporan pendapatan untuk bisnis berlangganan",
+    "ogImageAlt": "Cadence — grafik waterfall yang merekonsiliasi MRR awal ke MRR akhir lewat pelanggan baru, ekspansi, kontraksi, dan churn"
   },
   "language": {
     "label": "Bahasa",
@@ -727,6 +728,33 @@
       "stageName": "Nama tahap",
       "stagePlaceholder": "Dalam negosiasi",
       "stageTone": "Aksen"
+    }
+  },
+  "mail": {
+    "footer": "{app} mengirim ini karena ada yang memakai alamat email Anda. Tidak ada orang di {app} yang akan meminta kata sandi atau kode Anda.",
+    "fallback": "Jika tombolnya tidak berfungsi, tempel tautan ini di peramban Anda:",
+    "reset": {
+      "subject": "Atur ulang kata sandi {app} Anda",
+      "title": "Atur ulang kata sandi",
+      "intro": "Ada yang meminta pengaturan ulang kata sandi untuk akun ini. Pilih kata sandi baru di sini.",
+      "button": "Setel kata sandi baru",
+      "expires": "Tautan ini hanya berlaku sekali dan kedaluwarsa dalam {minutes} menit.",
+      "ignore": "Jika bukan Anda yang meminta, abaikan email ini. Kata sandi Anda tidak berubah."
+    },
+    "verify": {
+      "subject": "Konfirmasi alamat email Anda untuk {app}",
+      "title": "Konfirmasi alamat email Anda",
+      "intro": "Satu klik dan akun Anda siap sepenuhnya. Anda sudah masuk — ini hanya memastikan alamatnya milik Anda.",
+      "button": "Konfirmasi alamat saya",
+      "expires": "Tautan ini kedaluwarsa dalam {hours} jam.",
+      "ignore": "Jika Anda tidak membuat akun ini, abaikan email ini dan tidak akan ada kelanjutannya."
+    },
+    "code": {
+      "subject": "{code} adalah kode masuk Anda",
+      "title": "Kode masuk Anda",
+      "intro": "Masukkan kode ini untuk menyelesaikan proses masuk.",
+      "expires": "Kode kedaluwarsa dalam {minutes} menit dan hanya berlaku sekali.",
+      "ignore": "Jika Anda sedang tidak masuk, berarti ada yang tahu kata sandi Anda. Segera ganti."
     }
   }
 }
