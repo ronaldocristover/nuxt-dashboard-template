@@ -214,7 +214,8 @@ const gradientId = useId()
             :y="yAt(tick)"
             text-anchor="end"
             dominant-baseline="middle"
-            class="fill-dimmed text-[10px] tnum"
+            fill="currentColor"
+            class="tnum text-[10px] text-dimmed"
           >
             {{ tickLabel(tick) }}
           </text>
@@ -241,7 +242,8 @@ const gradientId = useId()
           :x="xAt(index)"
           :y="height - 6"
           :text-anchor="labelAnchor(index)"
-          class="fill-dimmed text-[10px]"
+          fill="currentColor"
+          class="text-[10px] text-dimmed"
         >
           {{ pointLabel(point) }}
         </text>

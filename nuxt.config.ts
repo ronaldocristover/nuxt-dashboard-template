@@ -27,9 +27,14 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Overridden by NUXT_SESSION_PASSWORD. Must be at least 32 characters.
     sessionPassword: '',
-    // Overridden by NUXT_APP_URL. Used to build password-reset links.
-    appUrl: 'http://localhost:3000',
     public: {
+      // Overridden by NUXT_PUBLIC_APP_URL. The absolute origin.
+      //
+      // Public rather than server-only because the head needs it too: `og:image`
+      // and `canonical` must be absolute, and building them from the request
+      // host instead would let a forged Host header rewrite the canonical URL
+      // of every page. One configured origin, trusted by both sides.
+      appUrl: 'http://localhost:3000',
       // Overridden by NUXT_PUBLIC_DEMO_MODE. Shows the demo credentials hint on /login.
       demoMode: true
     }

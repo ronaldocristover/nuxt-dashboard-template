@@ -118,7 +118,8 @@ const summary = computed(() => t('charts.barSummary', {
             :y="yAt(tick)"
             text-anchor="end"
             dominant-baseline="middle"
-            class="fill-dimmed text-[10px] tnum"
+            fill="currentColor"
+            class="tnum text-[10px] text-dimmed"
           >
             {{ fmt.number(tick) }}
           </text>
@@ -160,7 +161,8 @@ const summary = computed(() => t('charts.barSummary', {
           :x="PAD.left + index * geometry.slot + geometry.slot / 2"
           :y="height - 6"
           text-anchor="middle"
-          class="fill-dimmed text-[10px]"
+          fill="currentColor"
+          class="text-[10px] text-dimmed"
         >
           {{ pointLabel(point, index) }}
         </text>

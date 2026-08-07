@@ -1,6 +1,9 @@
 import type { SignInResult } from '#shared/types'
 import { signInSchema } from '#shared/schemas'
-import { db, publicUser } from '~~/server/utils/db'
+import { db, publicUser, TTL_MINUTES } from '~~/server/utils/db'
+import { mailLocale } from '~~/server/utils/mail/locale'
+import { twoStepCodeMail } from '~~/server/utils/mail/render'
+import { sendMail } from '~~/server/utils/mail/send'
 import { verifyPassword, generateCode } from '~~/server/utils/password'
 import { limit } from '~~/server/utils/ratelimit'
 import { setPendingSession, setUserSession } from '~~/server/utils/session'
@@ -37,11 +40,14 @@ export default defineEventHandler(async (event): Promise<SignInResult> => {
     await db.createTwoFactorCode(user.id, code)
     await setPendingSession(event, user.id, remember)
 
-    // ------------------------------------------------------------------
-    // Send the code here — email, SMS, or push. This is the only place a
-    // two-step code is created.
-    // ------------------------------------------------------------------
-    console.info(`[cadence] two-step code for ${user.email}: ${code}`)
+    // Email here; swap the driver for SMS or push if that is your second
+    // factor. This is the only place a two-step code is created.
+    await sendMail(twoStepCodeMail({
+      to: user.email,
+      locale: mailLocale(event),
+      code,
+      expiresInMinutes: TTL_MINUTES.code
+    }))
 
     return {
       requiresTwoFactor: true,

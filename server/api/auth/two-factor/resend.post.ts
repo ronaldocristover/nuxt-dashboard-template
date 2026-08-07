@@ -1,4 +1,7 @@
-import { db } from '~~/server/utils/db'
+import { db, TTL_MINUTES } from '~~/server/utils/db'
+import { mailLocale } from '~~/server/utils/mail/locale'
+import { twoStepCodeMail } from '~~/server/utils/mail/render'
+import { sendMail } from '~~/server/utils/mail/send'
 import { generateCode } from '~~/server/utils/password'
 import { limit } from '~~/server/utils/ratelimit'
 import { getPendingUser } from '~~/server/utils/session'
@@ -20,7 +23,12 @@ export default defineEventHandler(async (event) => {
   const code = generateCode()
   await db.createTwoFactorCode(pending.user.id, code)
 
-  console.info(`[cadence] two-step code for ${pending.user.email}: ${code}`)
+  await sendMail(twoStepCodeMail({
+    to: pending.user.email,
+    locale: mailLocale(event),
+    code,
+    expiresInMinutes: TTL_MINUTES.code
+  }))
 
   return { ok: true, devCode: import.meta.dev ? code : undefined }
 })
