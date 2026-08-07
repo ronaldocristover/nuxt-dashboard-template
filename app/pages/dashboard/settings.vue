@@ -47,6 +47,8 @@ watch(() => route.query.tab, (value) => {
     </template>
 
     <template #body>
+      <AppBreadcrumb />
+
       <div class="mx-auto w-full max-w-3xl space-y-5">
         <UTabs
           v-model="tab"

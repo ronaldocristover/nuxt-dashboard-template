@@ -224,6 +224,8 @@ const showingTo = computed(() => Math.min(showingFrom.value + rows.value.length 
     </template>
 
     <template #body>
+      <AppBreadcrumb />
+
       <div class="space-y-4">
         <!-- Totals reflect the whole filtered set, not just this page. -->
         <div class="flex flex-wrap items-center gap-x-6 gap-y-2">

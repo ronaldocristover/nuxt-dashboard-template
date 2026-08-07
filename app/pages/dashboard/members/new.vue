@@ -40,14 +40,9 @@ async function submit() {
 
     <template #body>
       <div class="space-y-4">
-        <UButton
-          :label="$t('members.detail.back')"
-          icon="i-lucide-arrow-left"
-          color="neutral"
-          variant="link"
-          class="-ml-2"
-          to="/dashboard/members"
-        />
+        <!-- The breadcrumb is the way back up, so the separate back button that
+             sat here would have been a second control doing the same job. -->
+        <AppBreadcrumb :trail="[{ label: $t('breadcrumb.new') }]" />
 
         <div>
           <h2 class="font-display text-xl font-semibold text-highlighted">

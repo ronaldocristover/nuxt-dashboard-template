@@ -23,9 +23,21 @@ export default defineEventHandler(async (event): Promise<MemberDetail> => {
     db.ownerCount()
   ])
 
-  // Events on the accounts they own — which is what a renewal owner needs to
-  // see, and the only member-scoped activity this data model actually holds.
-  const activity = await db.memberActivity([...new Set(renewals.map(renewal => renewal.account))])
+  // Both remaining tabs are scoped by the accounts they own, so the set is
+  // computed once and the two queries run together.
+  const accounts = [...new Set(renewals.map(renewal => renewal.account))]
+
+  const [activity, invoices] = await Promise.all([
+    db.memberActivity(accounts),
+    db.memberInvoices(accounts)
+  ])
+
+  // Summed over every invoice, not the page the table happens to show — a
+  // "failed" figure that only counts the visible rows is worse than none.
+  const invoiceTotals = invoices.reduce(
+    (totals, invoice) => ({ ...totals, [invoice.status]: totals[invoice.status] + invoice.amount }),
+    { paid: 0, open: 0, failed: 0 }
+  )
 
   // A workspace with no owner has nobody who can add one back. The last owner
   // can therefore be neither demoted nor deleted — and the page is told so it
@@ -37,6 +49,8 @@ export default defineEventHandler(async (event): Promise<MemberDetail> => {
     member,
     renewals,
     renewalMrr: renewals.reduce((sum, renewal) => sum + renewal.mrr, 0),
+    invoices,
+    invoiceTotals,
     activity,
     canChangeRole: !isLastOwner,
     canDelete: !isLastOwner && member.role !== 'owner'

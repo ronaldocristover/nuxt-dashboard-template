@@ -31,7 +31,7 @@ useSeoMeta({ title: () => member.value.name, robots: 'noindex' })
  * you where you were, and the back button steps through tabs the way people
  * expect it to.
  */
-const TABS = ['profile', 'access', 'renewals', 'activity'] as const
+const TABS = ['profile', 'access', 'renewals', 'billing', 'activity'] as const
 type TabKey = typeof TABS[number]
 
 const tab = computed<TabKey>(() => {
@@ -53,6 +53,12 @@ const tabItems = computed(() => [
     icon: 'i-lucide-refresh-cw',
     // The count belongs on the tab: it is the reason to open it or not.
     badge: detail.value.renewals.length || undefined
+  },
+  {
+    value: 'billing',
+    label: t('members.tabs.billing'),
+    icon: 'i-lucide-receipt-text',
+    badge: detail.value.invoices.length || undefined
   },
   { value: 'activity', label: t('members.tabs.activity'), icon: 'i-lucide-activity' }
 ])
@@ -135,14 +141,7 @@ async function remove() {
 
     <template #body>
       <div class="space-y-5">
-        <UButton
-          :label="$t('members.detail.back')"
-          icon="i-lucide-arrow-left"
-          color="neutral"
-          variant="link"
-          class="-ml-2"
-          to="/dashboard/members"
-        />
+        <AppBreadcrumb :trail="[{ label: member.name }]" />
 
         <!-- Identity header -->
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -376,6 +375,25 @@ async function remove() {
             </p>
             <p class="mx-auto mt-1 max-w-sm text-sm text-muted">
               {{ $t('members.detail.noRenewalsBody') }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Billing ------------------------------------------------------- -->
+        <div v-else-if="tab === 'billing'">
+          <MemberInvoiceTable
+            v-if="detail.invoices.length"
+            :invoices="detail.invoices"
+            :totals="detail.invoiceTotals"
+          />
+
+          <div v-else class="rounded-[var(--ui-radius)] border border-dashed border-default py-14 text-center">
+            <UIcon name="i-lucide-receipt-text" class="size-8 text-dimmed" />
+            <p class="mt-3 font-medium text-highlighted">
+              {{ $t('members.detail.noInvoices') }}
+            </p>
+            <p class="mx-auto mt-1 max-w-sm text-sm text-muted">
+              {{ $t('members.detail.noInvoicesBody') }}
             </p>
           </div>
         </div>

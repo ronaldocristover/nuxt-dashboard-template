@@ -820,7 +820,8 @@
       "profile": "資料",
       "access": "權限",
       "renewals": "續約",
-      "activity": "動態"
+      "activity": "動態",
+      "billing": "帳單"
     },
     "detail": {
       "back": "全部成員",
@@ -852,7 +853,20 @@
       "removed": "已移除 {name}",
       "keep": "保留",
       "joinedLabel": "加入時間",
-      "invitedByLabel": "邀請人"
+      "invitedByLabel": "邀請人",
+      "invoicesNote": "該成員所負責帳戶的帳單，最新的排在前面。",
+      "invoicePaid": "已付款",
+      "invoiceOpen": "待付款",
+      "invoiceFailed": "付款失敗",
+      "invoiceNumber": "帳單",
+      "invoiceAccount": "帳戶",
+      "invoiceAmount": "金額",
+      "invoiceStatus": "狀態",
+      "invoiceIssued": "開立日期",
+      "noInvoices": "尚無帳單",
+      "noInvoicesBody": "該成員所負責帳戶的帳單將顯示於此。",
+      "invoiceSearch": "以帳單號或帳戶篩選",
+      "invoiceEmpty": "沒有符合篩選條件的帳單"
     },
     "form": {
       "newTitle": "新增成員",
@@ -888,5 +902,10 @@
       "updated": "已更新 {name}",
       "ownerLocked": "唯一的擁有者無法變更為其他角色。"
     }
+  },
+  "breadcrumb": {
+    "home": "儀表板",
+    "new": "新增",
+    "edit": "編輯"
   }
 }

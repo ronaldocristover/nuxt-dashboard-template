@@ -820,7 +820,8 @@
       "profile": "资料",
       "access": "权限",
       "renewals": "续约",
-      "activity": "动态"
+      "activity": "动态",
+      "billing": "账单"
     },
     "detail": {
       "back": "全部成员",
@@ -852,7 +853,20 @@
       "removed": "已移除 {name}",
       "keep": "保留",
       "joinedLabel": "加入时间",
-      "invitedByLabel": "邀请人"
+      "invitedByLabel": "邀请人",
+      "invoicesNote": "该成员所负责账户的账单，最新的排在前面。",
+      "invoicePaid": "已支付",
+      "invoiceOpen": "待支付",
+      "invoiceFailed": "支付失败",
+      "invoiceNumber": "账单",
+      "invoiceAccount": "账户",
+      "invoiceAmount": "金额",
+      "invoiceStatus": "状态",
+      "invoiceIssued": "开具日期",
+      "noInvoices": "暂无账单",
+      "noInvoicesBody": "该成员所负责账户的账单将显示在此处。",
+      "invoiceSearch": "按账单号或账户筛选",
+      "invoiceEmpty": "没有符合筛选条件的账单"
     },
     "form": {
       "newTitle": "添加成员",
@@ -888,5 +902,10 @@
       "updated": "已更新 {name}",
       "ownerLocked": "唯一的所有者无法更改为其他角色。"
     }
+  },
+  "breadcrumb": {
+    "home": "仪表板",
+    "new": "新增",
+    "edit": "编辑"
   }
 }
