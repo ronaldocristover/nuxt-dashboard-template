@@ -51,6 +51,8 @@ const SHOTS = [
   { name: 'analytics', path: '/dashboard/analytics', size: DESKTOP },
   { name: 'subscribers', path: '/dashboard/subscribers', size: DESKTOP },
   { name: 'kanban', path: '/dashboard/kanban', size: DESKTOP },
+  { name: 'members', path: '/dashboard/members', size: DESKTOP },
+  { name: 'member-detail', path: '/dashboard/members/tm_2?tab=renewals', size: DESKTOP },
   { name: 'settings', path: '/dashboard/settings', size: DESKTOP },
   { name: 'forms', path: '/dashboard/forms', size: DESKTOP },
   { name: 'overview-dark', path: '/dashboard', size: DESKTOP, theme: 'dark' },

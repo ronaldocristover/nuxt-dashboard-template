@@ -54,7 +54,8 @@
     "mobile": "移动导航",
     "reference": "参考",
     "navigation": "导航",
-    "sampleTree": "示例树"
+    "sampleTree": "示例树",
+    "members": "成员"
   },
   "account": {
     "menu": "{name} 的账户菜单",
@@ -215,6 +216,13 @@
       "mrrNegative": "MRR 不能为负",
       "tooManyLabels": "最多四个标签",
       "columnTitleRequired": "请填写阶段名称"
+    },
+    "member": {
+      "role": "请选择角色",
+      "department": "请选择部门",
+      "titleTooLong": "职位名称过长",
+      "phoneTooLong": "电话号码过长",
+      "notesTooLong": "备注过长"
     }
   },
   "errors": {
@@ -755,6 +763,130 @@
       "intro": "输入此验证码以完成登录。",
       "expires": "验证码将在 {minutes} 分钟后失效，且仅可使用一次。",
       "ignore": "如果您此刻并未登录，说明有人知道了您的密码，请尽快更改。"
+    }
+  },
+  "members": {
+    "title": "成员",
+    "subtitle": "拥有此工作区访问权限的所有人，以及他们负责的内容。",
+    "add": "添加成员",
+    "search": "按姓名、邮箱或职位搜索",
+    "refresh": "刷新列表",
+    "empty": "没有符合筛选条件的成员",
+    "emptyBody": "清除筛选条件，或添加新成员。",
+    "count": "成员",
+    "activeCount": "活跃",
+    "invitedCount": "已邀请",
+    "showing": "显示第 {from}–{to} 条，共 {total} 条",
+    "perPage": "每页",
+    "allRoles": "所有角色",
+    "allStatuses": "所有状态",
+    "allDepartments": "所有部门",
+    "neverSeen": "从未登录",
+    "lastSeen": "最后活跃于 {when}",
+    "invitePending": "邀请待接受",
+    "joined": "加入于 {when}",
+    "invitedBy": "由 {name} 邀请",
+    "noTitle": "未填写职位",
+    "columns": {
+      "member": "成员",
+      "role": "角色",
+      "department": "部门",
+      "status": "状态",
+      "lastSeen": "最后活跃",
+      "actions": "操作"
+    },
+    "roles": {
+      "owner": "所有者",
+      "admin": "管理员",
+      "member": "成员"
+    },
+    "statuses": {
+      "active": "活跃",
+      "invited": "已邀请"
+    },
+    "departments": {
+      "revenue": "营收",
+      "finance": "财务",
+      "product": "产品",
+      "support": "客户支持",
+      "leadership": "管理层"
+    },
+    "roleHints": {
+      "owner": "完全控制权，包括账单与删除工作区。",
+      "admin": "除账单和移除所有者外的全部权限。",
+      "member": "查看所有报表并处理续约流程。"
+    },
+    "tabs": {
+      "profile": "资料",
+      "access": "权限",
+      "renewals": "续约",
+      "activity": "动态"
+    },
+    "detail": {
+      "back": "全部成员",
+      "edit": "编辑",
+      "remove": "移除",
+      "contact": "联系方式",
+      "email": "邮箱",
+      "phone": "电话",
+      "location": "所在地",
+      "timezone": "时区",
+      "notes": "备注",
+      "noNotes": "暂无备注。",
+      "notProvided": "未填写",
+      "history": "历史",
+      "permissions": "该角色可以做什么",
+      "accountStatus": "账户状态",
+      "renewalsOwned": "负责的续约",
+      "mrrAtStake": "涉及的 MRR",
+      "noRenewals": "没有负责的续约",
+      "noRenewalsBody": "流程中的卡片都有负责人，目前没有指向此成员。",
+      "noActivity": "暂无最新动态",
+      "noActivityBody": "该成员所负责账户的动态将显示在此处。",
+      "activityNote": "该成员所负责账户上发生的事件。",
+      "openPipeline": "打开续约流程",
+      "lastOwner": "这是唯一的所有者。请先将他人设为所有者，再修改此成员。",
+      "removeTitle": "移除 {name}？",
+      "removeBody": "其访问权限将立即失效。他负责的续约仍保留在看板上，并变为无人负责。",
+      "removeConfirm": "移除成员",
+      "removed": "已移除 {name}",
+      "keep": "保留",
+      "joinedLabel": "加入时间",
+      "invitedByLabel": "邀请人"
+    },
+    "form": {
+      "newTitle": "添加成员",
+      "newSubtitle": "对方接受后即可获得访问权限。在你保存之前不会发送任何内容。",
+      "editTitle": "编辑 {name}",
+      "editSubtitle": "更改将在其下次加载页面时生效。",
+      "identity": "基本信息",
+      "placement": "所属团队",
+      "access": "权限设置",
+      "extra": "其他信息",
+      "name": "姓名",
+      "namePlaceholder": "Amara Adeyemi",
+      "email": "工作邮箱",
+      "emailPlaceholder": "amara{'@'}yourcompany.com",
+      "emailHint": "邀请也将发送到此地址。",
+      "jobTitle": "职位",
+      "jobTitlePlaceholder": "客户经理",
+      "department": "部门",
+      "role": "角色",
+      "status": "状态",
+      "statusHint": "接受邀请前为“已邀请”；若录入的是已在职人员，则选择“活跃”。",
+      "phone": "电话",
+      "location": "所在地",
+      "locationPlaceholder": "里斯本，葡萄牙",
+      "timezone": "时区",
+      "notes": "备注",
+      "notesPlaceholder": "团队其他成员需要了解的信息。",
+      "notesHint": "所有能打开此页面的人都可见。",
+      "save": "保存成员",
+      "saveChanges": "保存更改",
+      "cancel": "取消",
+      "created": "已添加 {name}",
+      "updated": "已更新 {name}",
+      "ownerLocked": "唯一的所有者无法更改为其他角色。"
     }
   }
 }

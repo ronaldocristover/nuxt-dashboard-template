@@ -16,6 +16,8 @@ const primary = computed<NavigationMenuItem[]>(() => [
   { label: t('nav.analytics'), icon: 'i-lucide-chart-line', to: '/dashboard/analytics', active: route.path === '/dashboard/analytics' },
   { label: t('nav.subscribers'), icon: 'i-lucide-users', to: '/dashboard/subscribers', active: route.path === '/dashboard/subscribers' },
   { label: t('nav.kanban'), icon: 'i-lucide-kanban', to: '/dashboard/kanban', active: route.path === '/dashboard/kanban' },
+  // `startsWith`, not equality: the detail and edit pages are still Members.
+  { label: t('nav.members'), icon: 'i-lucide-user-round-cog', to: '/dashboard/members', active: route.path.startsWith('/dashboard/members') },
   { label: t('nav.settings'), icon: 'i-lucide-settings', to: '/dashboard/settings', active: route.path === '/dashboard/settings' }
 ])
 

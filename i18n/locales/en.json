@@ -54,7 +54,8 @@
     "mobile": "Mobile",
     "reference": "Reference",
     "navigation": "Navigation",
-    "sampleTree": "Sample tree"
+    "sampleTree": "Sample tree",
+    "members": "Members"
   },
   "account": {
     "menu": "Account menu for {name}",
@@ -215,6 +216,13 @@
       "mrrNegative": "MRR cannot be negative",
       "tooManyLabels": "Four tags at most",
       "columnTitleRequired": "Give the stage a name"
+    },
+    "member": {
+      "role": "Choose a role",
+      "department": "Choose a department",
+      "titleTooLong": "Job title is too long",
+      "phoneTooLong": "Phone number is too long",
+      "notesTooLong": "Notes are too long"
     }
   },
   "errors": {
@@ -755,6 +763,130 @@
       "intro": "Enter this code to finish signing in.",
       "expires": "The code expires in {minutes} minutes and works once.",
       "ignore": "If you are not signing in right now, someone has your password. Change it as soon as you can."
+    }
+  },
+  "members": {
+    "title": "Members",
+    "subtitle": "Everyone with access to this workspace, and what they are responsible for.",
+    "add": "Add member",
+    "search": "Search by name, email or job title",
+    "refresh": "Refresh the list",
+    "empty": "Nobody matches those filters",
+    "emptyBody": "Clear the filters, or add someone new.",
+    "count": "Members",
+    "activeCount": "Active",
+    "invitedCount": "Invited",
+    "showing": "Showing {from}–{to} of {total}",
+    "perPage": "Per page",
+    "allRoles": "All roles",
+    "allStatuses": "All statuses",
+    "allDepartments": "All departments",
+    "neverSeen": "Never signed in",
+    "lastSeen": "Last seen {when}",
+    "invitePending": "Invitation pending",
+    "joined": "Joined {when}",
+    "invitedBy": "Invited by {name}",
+    "noTitle": "No job title",
+    "columns": {
+      "member": "Member",
+      "role": "Role",
+      "department": "Department",
+      "status": "Status",
+      "lastSeen": "Last seen",
+      "actions": "Actions"
+    },
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "member": "Member"
+    },
+    "statuses": {
+      "active": "Active",
+      "invited": "Invited"
+    },
+    "departments": {
+      "revenue": "Revenue",
+      "finance": "Finance",
+      "product": "Product",
+      "support": "Support",
+      "leadership": "Leadership"
+    },
+    "roleHints": {
+      "owner": "Full control, including billing and deleting the workspace.",
+      "admin": "Everything except billing and removing the owner.",
+      "member": "Reads every report and works the renewal pipeline."
+    },
+    "tabs": {
+      "profile": "Profile",
+      "access": "Access",
+      "renewals": "Renewals",
+      "activity": "Activity"
+    },
+    "detail": {
+      "back": "All members",
+      "edit": "Edit",
+      "remove": "Remove",
+      "contact": "Contact",
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Location",
+      "timezone": "Time zone",
+      "notes": "Notes",
+      "noNotes": "Nothing noted.",
+      "notProvided": "Not provided",
+      "history": "History",
+      "permissions": "What this role can do",
+      "accountStatus": "Account status",
+      "renewalsOwned": "Renewals owned",
+      "mrrAtStake": "MRR at stake",
+      "noRenewals": "No renewals assigned",
+      "noRenewalsBody": "Cards on the pipeline are assigned to an owner. None currently point here.",
+      "noActivity": "Nothing recent",
+      "noActivityBody": "Activity on this member's accounts will appear here.",
+      "activityNote": "Events on the accounts this member owns.",
+      "openPipeline": "Open the pipeline",
+      "lastOwner": "This is the only owner. Make someone else an owner before changing this one.",
+      "removeTitle": "Remove {name}?",
+      "removeBody": "They lose access immediately. Renewals they own stay on the board and become unassigned.",
+      "removeConfirm": "Remove member",
+      "removed": "{name} was removed",
+      "keep": "Keep them",
+      "joinedLabel": "Joined",
+      "invitedByLabel": "Invited by"
+    },
+    "form": {
+      "newTitle": "Add a member",
+      "newSubtitle": "They get access as soon as they accept. Nothing is sent until you save.",
+      "editTitle": "Edit {name}",
+      "editSubtitle": "Changes apply the next time they load a page.",
+      "identity": "Who they are",
+      "placement": "Where they sit",
+      "access": "What they can do",
+      "extra": "Anything else",
+      "name": "Full name",
+      "namePlaceholder": "Amara Adeyemi",
+      "email": "Work email",
+      "emailPlaceholder": "amara{'@'}yourcompany.com",
+      "emailHint": "Also where their invitation goes.",
+      "jobTitle": "Job title",
+      "jobTitlePlaceholder": "Account Manager",
+      "department": "Department",
+      "role": "Role",
+      "status": "Status",
+      "statusHint": "Invited until they accept; active if you are recording somebody who already works here.",
+      "phone": "Phone",
+      "location": "Location",
+      "locationPlaceholder": "Lisbon, Portugal",
+      "timezone": "Time zone",
+      "notes": "Notes",
+      "notesPlaceholder": "Anything the rest of the team should know.",
+      "notesHint": "Visible to everyone who can open this page.",
+      "save": "Save member",
+      "saveChanges": "Save changes",
+      "cancel": "Cancel",
+      "created": "{name} was added",
+      "updated": "{name} was updated",
+      "ownerLocked": "The only owner cannot be moved to another role."
     }
   }
 }

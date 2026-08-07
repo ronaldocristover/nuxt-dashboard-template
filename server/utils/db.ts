@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, like, lt, or, sql, sum } from 'drizzle-orm'
+import { and, asc, count, desc, eq, inArray, like, lt, or, sql, sum } from 'drizzle-orm'
 import type {
   ActivityEvent,
   BoardCard,
@@ -6,6 +6,11 @@ import type {
   BoardLabel,
   BoardTone,
   Invoice,
+  MemberDepartment,
+  MemberRenewal,
+  MemberRole,
+  MembersResponse,
+  MemberStatus,
   NotificationPreferences,
   Plan,
   Subscriber,
@@ -77,6 +82,32 @@ function toUser(row: StoredUser): User {
     emailVerifiedAt: row.emailVerifiedAt,
     twoFactorEnabled: row.twoFactorEnabled
   }
+}
+
+/** What `listMembers` accepts. Mirrors the query schema on the route. */
+export interface MemberQuery {
+  q: string
+  role: MemberRole | 'all'
+  status: MemberStatus | 'all'
+  department: MemberDepartment | 'all'
+  sort: 'name' | 'email' | 'role' | 'department' | 'joinedAt' | 'lastSeenAt'
+  order: 'asc' | 'desc'
+  page: number
+  pageSize: number
+}
+
+/** The writable fields of a member — everything the form collects. */
+export interface MemberInput {
+  name: string
+  email: string
+  role: MemberRole
+  status: MemberStatus
+  department: MemberDepartment
+  title: string
+  phone: string
+  location: string
+  timezone: string
+  notes: string
 }
 
 export interface SubscriberQuery {
@@ -495,6 +526,188 @@ export const db = {
       .where(and(eq(schema.teamMembers.id, id), sql`${schema.teamMembers.role} != 'owner'`))
       .returning({ id: schema.teamMembers.id })
     return rows.length > 0
+  },
+
+  // --- Member management -----------------------------------------------------
+
+  /**
+   * One page of members, filtered and sorted in SQL.
+   *
+   * Two queries: the page itself, and the counts the filter chips display.
+   * Counting in SQL rather than over the returned rows is the difference
+   * between a chip that says how many invited members exist and one that says
+   * how many are on this page.
+   */
+  async listMembers(query: MemberQuery): Promise<{
+    rows: TeamMember[]
+    total: number
+    page: number
+    counts: MembersResponse['counts']
+  }> {
+    const database = useDatabase()
+    const table = schema.teamMembers
+
+    const filters = [
+      query.q
+        ? or(
+            like(sql`lower(${table.name})`, `%${query.q.toLowerCase()}%`),
+            like(sql`lower(${table.email})`, `%${query.q.toLowerCase()}%`),
+            like(sql`lower(${table.title})`, `%${query.q.toLowerCase()}%`)
+          )
+        : undefined,
+      query.role === 'all' ? undefined : eq(table.role, query.role),
+      query.status === 'all' ? undefined : eq(table.status, query.status),
+      query.department === 'all' ? undefined : eq(table.department, query.department)
+    ].filter(Boolean)
+
+    const where = filters.length ? and(...filters) : undefined
+
+    const [counted] = await database.select({ total: count() }).from(table).where(where)
+    const total = counted?.total ?? 0
+
+    // Clamp rather than 404 — deleting the last member on page 3 should show
+    // page 2, not an error.
+    const pages = Math.max(1, Math.ceil(total / query.pageSize))
+    const page = Math.min(query.page, pages)
+
+    const direction = query.order === 'asc' ? asc : desc
+    const column = {
+      name: table.name,
+      email: table.email,
+      role: sql`case ${table.role} when 'owner' then 0 when 'admin' then 1 else 2 end`,
+      department: table.department,
+      joinedAt: table.joinedAt,
+      lastSeenAt: table.lastSeenAt
+    }[query.sort]
+
+    const rows = await database
+      .select()
+      .from(table)
+      .where(where)
+      .orderBy(direction(column), asc(table.name))
+      .limit(query.pageSize)
+      .offset((page - 1) * query.pageSize)
+
+    // Counts describe the whole table, not the filtered set: they are what the
+    // filter chips are filtering *from*, so filtering by them must not change
+    // the numbers written on them.
+    const byStatus = await database
+      .select({ status: table.status, total: count() })
+      .from(table)
+      .groupBy(table.status)
+
+    const byRole = await database
+      .select({ role: table.role, total: count() })
+      .from(table)
+      .groupBy(table.role)
+
+    const statusTotals = Object.fromEntries(byStatus.map(row => [row.status, row.total]))
+    const roleTotals = Object.fromEntries(byRole.map(row => [row.role, row.total]))
+
+    return {
+      rows,
+      total,
+      page,
+      counts: {
+        all: byStatus.reduce((sum, row) => sum + row.total, 0),
+        active: statusTotals.active ?? 0,
+        invited: statusTotals.invited ?? 0,
+        byRole: {
+          owner: roleTotals.owner ?? 0,
+          admin: roleTotals.admin ?? 0,
+          member: roleTotals.member ?? 0
+        }
+      }
+    }
+  },
+
+  async findMember(id: string): Promise<TeamMember | undefined> {
+    const [row] = await useDatabase()
+      .select()
+      .from(schema.teamMembers)
+      .where(eq(schema.teamMembers.id, id))
+      .limit(1)
+    return row
+  },
+
+  /** How many owners exist. Guards the moves that would strand the workspace. */
+  async ownerCount(): Promise<number> {
+    const [row] = await useDatabase()
+      .select({ total: count() })
+      .from(schema.teamMembers)
+      .where(eq(schema.teamMembers.role, 'owner'))
+    return row?.total ?? 0
+  },
+
+  async createMember(input: MemberInput & { invitedBy: string }): Promise<TeamMember> {
+    const database = useDatabase()
+
+    const [counted] = await database.select({ total: count() }).from(schema.teamMembers)
+    const total = counted?.total ?? 0
+
+    const [row] = await database
+      .insert(schema.teamMembers)
+      .values({
+        ...input,
+        id: `tm_${Date.now()}_${total + 1}`,
+        avatarColor: AVATAR_COLORS[total % AVATAR_COLORS.length]!,
+        // Someone who has not signed in has not been seen, whatever the form said.
+        lastSeenAt: input.status === 'active' ? nowIso() : null,
+        joinedAt: nowIso()
+      })
+      .returning()
+
+    return row!
+  },
+
+  async updateMember(id: string, input: Partial<MemberInput>): Promise<TeamMember | undefined> {
+    const [row] = await useDatabase()
+      .update(schema.teamMembers)
+      .set(input)
+      .where(eq(schema.teamMembers.id, id))
+      .returning()
+    return row
+  },
+
+  /** Renewals this member owns, newest deadline first, with the stage they sit in. */
+  async memberRenewals(name: string): Promise<MemberRenewal[]> {
+    const rows = await useDatabase()
+      .select({
+        id: schema.boardCards.id,
+        title: schema.boardCards.title,
+        account: schema.boardCards.account,
+        mrr: schema.boardCards.mrr,
+        dueAt: schema.boardCards.dueAt,
+        columnTitle: schema.boardColumns.title,
+        columnTone: schema.boardColumns.tone
+      })
+      .from(schema.boardCards)
+      .innerJoin(schema.boardColumns, eq(schema.boardCards.columnId, schema.boardColumns.id))
+      .where(eq(schema.boardCards.ownerName, name))
+      .orderBy(asc(schema.boardColumns.position), asc(schema.boardCards.position))
+
+    return rows
+  },
+
+  /**
+   * Recent events on the accounts this member owns.
+   *
+   * Not "things this member did" — `activity.actor` records the *customer*, so
+   * matching it against a colleague's name would have returned an empty tab
+   * forever. What a renewal owner actually needs is what moved on the accounts
+   * they are responsible for, which is what this answers.
+   */
+  async memberActivity(accounts: string[], take = 10): Promise<ActivityEvent[]> {
+    if (!accounts.length) return []
+
+    const rows = await useDatabase()
+      .select()
+      .from(schema.activity)
+      .where(inArray(schema.activity.company, accounts))
+      .orderBy(desc(schema.activity.at))
+      .limit(take)
+
+    return rows.map(row => ({ ...row, amount: row.amount ?? undefined }))
   },
 
   // --- Kanban board ----------------------------------------------------------
