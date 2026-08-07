@@ -152,20 +152,38 @@ function buildActivity(subscribers: Array<typeof schema.subscribers.$inferInsert
   })
 }
 
-function buildInvoices(subscribers: Array<typeof schema.subscribers.$inferInsert>, count: number) {
-  return Array.from({ length: count }, (_, i) => {
-    const subscriber = subscribers[intBetween(0, subscribers.length - 1)]!
-    return {
-      id: `inv_${String(i + 1).padStart(4, '0')}`,
-      number: `CAD-2026-${4180 + i}`,
-      subscriber: subscriber.company,
-      amount: Math.max(12, subscriber.mrr || 290),
-      // A past-due account's invoice is the one that failed — that is what
-      // put it past due.
-      status: subscriber.status === 'past_due' ? 'failed' : rand() > 0.18 ? 'paid' : 'open',
-      issuedAt: new Date(BOOT.getTime() - i * intBetween(1, 4) * DAY).toISOString()
-    } as typeof schema.invoices.$inferInsert
-  })
+/**
+ * Invoices, with guaranteed coverage of the accounts that matter.
+ *
+ * `mustCover` is the set of accounts carrying a renewal on the board. Drawing
+ * every invoice at random left a member's Billing tab empty far more often than
+ * not — 24 rows scattered across 148 accounts rarely land on the three someone
+ * owns. The tab was correct and looked broken, which is the worst combination.
+ */
+function buildInvoices(
+  subscribers: Array<typeof schema.subscribers.$inferInsert>,
+  count: number,
+  mustCover: string[] = []
+) {
+  const byCompany = new Map(subscribers.map(row => [row.company, row]))
+
+  // Two or three per owned account, so the table has something to sort and page.
+  const guaranteed = mustCover.flatMap(company =>
+    Array.from({ length: intBetween(2, 3) }, () => byCompany.get(company)).filter(Boolean))
+
+  const random = Array.from({ length: count },
+    () => subscribers[intBetween(0, subscribers.length - 1)]!)
+
+  return [...guaranteed, ...random].map((subscriber, i) => ({
+    id: `inv_${String(i + 1).padStart(4, '0')}`,
+    number: `CAD-2026-${4180 + i}`,
+    subscriber: subscriber!.company,
+    amount: Math.max(12, subscriber!.mrr || 290),
+    // A past-due account's invoice is the one that failed — that is what
+    // put it past due.
+    status: subscriber!.status === 'past_due' ? 'failed' : rand() > 0.18 ? 'paid' : 'open',
+    issuedAt: new Date(BOOT.getTime() - i * intBetween(1, 4) * DAY).toISOString()
+  } as typeof schema.invoices.$inferInsert))
 }
 
 /**
@@ -250,7 +268,8 @@ async function main() {
   }
 
   await db.insert(schema.activity).values(buildActivity(subscribers, 40))
-  await db.insert(schema.invoices).values(buildInvoices(subscribers, 24))
+  // Invoices are inserted after the board, so every account carrying a renewal
+  // is guaranteed some. See below.
 
   // Twelve, not four: the member list has search, three filters, sorting and
   // paging, and none of that is demonstrable against a list that fits on one
@@ -349,10 +368,17 @@ async function main() {
 
   await db.insert(schema.boardCards).values(cards)
 
+  // Now that the board exists, every account carrying a renewal gets invoices —
+  // which is what the member Billing tab reads.
+  const invoices = buildInvoices(subscribers, 24, [...new Set(cards.map(card => card.account))])
+  for (let i = 0; i < invoices.length; i += 50) {
+    await db.insert(schema.invoices).values(invoices.slice(i, i + 50))
+  }
+
   console.info(
     `[seed] done — 1 user, ${subscribers.length} subscribers, `
     + `${monthly.length} months, ${daily.length} days, MRR ${mrrTotal}, `
-    + `${columns.length} board columns / ${cards.length} cards, ${team.length} team members`
+    + `${columns.length} board columns / ${cards.length} cards, ${team.length} team members, ${invoices.length} invoices`
   )
   console.info(`[seed] sign in with ${DEMO_EMAIL} / ${DEMO_PASSWORD}`)
 }

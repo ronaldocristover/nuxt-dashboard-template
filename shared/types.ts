@@ -234,6 +234,10 @@ export interface MemberDetail {
   member: TeamMember
   renewals: MemberRenewal[]
   renewalMrr: number
+  /** Invoices raised against the accounts they own — the Billing tab's table. */
+  invoices: Invoice[]
+  /** Totals across every invoice above, not just the page shown. */
+  invoiceTotals: { paid: number, open: number, failed: number }
   activity: ActivityEvent[]
   /** False when this is the only owner — the UI disables the moves that would strand the workspace. */
   canChangeRole: boolean

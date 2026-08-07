@@ -152,6 +152,8 @@ const cardCount = computed(() =>
     </template>
 
     <template #body>
+      <AppBreadcrumb />
+
       <div class="flex h-full flex-col gap-4">
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div>

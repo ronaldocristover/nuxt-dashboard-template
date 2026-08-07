@@ -21,7 +21,7 @@ The domain is fictional; every page is built to be rebranded and rewired.
 </tr>
 <tr>
 <td><img src="docs/screenshots/members.png" alt="The member list, filtered and paged on the server"></td>
-<td><img src="docs/screenshots/member-detail.png" alt="A member's detail page, showing the renewals they own"></td>
+<td><img src="docs/screenshots/member-detail.png" alt="A member's detail page, showing the invoice table on the billing tab"></td>
 </tr>
 <tr>
 <td><img src="docs/screenshots/login.png" alt="The sign-in page"></td>
@@ -55,7 +55,7 @@ drift from what the template actually renders.
 - `/dashboard/analytics` — date-range switching, area / grouped-bar / donut charts, channels, cohort retention
 - `/dashboard/subscribers` — server-driven table: search, filter, sort, paginate, multi-select, CSV export, detail slideover
 - `/dashboard/kanban` — a renewal pipeline: drag or keyboard-move cards between five stages, edit in a slideover, add and rename stages, all persisted
-- `/dashboard/members` — the full CRUD set: a server-driven list, a create page, an edit page, and a detail page with four tabs (profile, access, the renewals they own, activity on their accounts)
+- `/dashboard/members` — the full CRUD set: a server-driven list, a create page, an edit page, and a detail page with five tabs (profile, access, the renewals they own, a `UTable` of invoices for their accounts, and activity)
 - `/dashboard/settings` — profile, account and password, notifications, billing, team members
 
 **Developer reference** — seven pages documenting the template itself
@@ -529,6 +529,9 @@ reserves their height during SSR so nothing shifts when they appear.
 - Charts carry text summaries; the area chart supports arrow keys, Home, End and Escape
 - Sortable table headers expose `aria-sort` and are real buttons
 - Movement direction is encoded by a hatch pattern as well as colour
+- Every dashboard page carries a breadcrumb, rendered server-side, from the same `nav.*` labels
+  the sidebar uses — so a renamed section is renamed in both. `/dashboard` shows none: a single
+  crumb linking to the page you are already on is decoration.
 - Kanban cards move with **Shift + arrows** — not Ctrl or Cmd, which macOS and Chrome have already
   claimed for switching Spaces and for Back/Forward. Both still work as aliases; Shift is the one
   that always reaches the page. Plain arrows are left alone so the board scrolls.

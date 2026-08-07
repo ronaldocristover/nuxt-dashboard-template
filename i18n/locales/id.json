@@ -820,7 +820,8 @@
       "profile": "Profil",
       "access": "Akses",
       "renewals": "Perpanjangan",
-      "activity": "Aktivitas"
+      "activity": "Aktivitas",
+      "billing": "Tagihan"
     },
     "detail": {
       "back": "Semua anggota",
@@ -852,7 +853,20 @@
       "removed": "{name} telah dihapus",
       "keep": "Batal",
       "joinedLabel": "Bergabung",
-      "invitedByLabel": "Diundang oleh"
+      "invitedByLabel": "Diundang oleh",
+      "invoicesNote": "Faktur yang diterbitkan untuk akun yang dipegang anggota ini. Terbaru di atas.",
+      "invoicePaid": "Lunas",
+      "invoiceOpen": "Belum dibayar",
+      "invoiceFailed": "Gagal",
+      "invoiceNumber": "Faktur",
+      "invoiceAccount": "Akun",
+      "invoiceAmount": "Jumlah",
+      "invoiceStatus": "Status",
+      "invoiceIssued": "Diterbitkan",
+      "noInvoices": "Belum ada faktur",
+      "noInvoicesBody": "Faktur untuk akun anggota ini akan tampil di sini.",
+      "invoiceSearch": "Saring berdasarkan nomor faktur atau akun",
+      "invoiceEmpty": "Tidak ada faktur yang cocok dengan saringan itu"
     },
     "form": {
       "newTitle": "Tambah anggota",
@@ -888,5 +902,10 @@
       "updated": "{name} telah diperbarui",
       "ownerLocked": "Satu-satunya pemilik tidak bisa dipindah ke peran lain."
     }
+  },
+  "breadcrumb": {
+    "home": "Dasbor",
+    "new": "Baru",
+    "edit": "Ubah"
   }
 }

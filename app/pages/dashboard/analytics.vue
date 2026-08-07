@@ -101,6 +101,8 @@ const channelMax = computed(() =>
     </template>
 
     <template #body>
+      <AppBreadcrumb />
+
       <div class="space-y-4 sm:space-y-5">
         <UAlert
           v-if="error"

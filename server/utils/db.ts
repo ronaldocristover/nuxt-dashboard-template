@@ -690,6 +690,24 @@ export const db = {
   },
 
   /**
+   * Invoices raised against the accounts this member owns.
+   *
+   * A failed invoice is the earliest churn signal a renewal owner gets, so this
+   * belongs on their page rather than only in the finance view. Newest first,
+   * because that is the one that matters.
+   */
+  async memberInvoices(accounts: string[], take = 40): Promise<Invoice[]> {
+    if (!accounts.length) return []
+
+    return useDatabase()
+      .select()
+      .from(schema.invoices)
+      .where(inArray(schema.invoices.subscriber, accounts))
+      .orderBy(desc(schema.invoices.issuedAt))
+      .limit(take)
+  },
+
+  /**
    * Recent events on the accounts this member owns.
    *
    * Not "things this member did" — `activity.actor` records the *customer*, so

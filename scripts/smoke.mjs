@@ -160,6 +160,27 @@ for (const [path, needle] of PAGES) {
 
   const missing = await fetch(`${BASE}/api/members/nope`, { headers: { cookie } })
   check('/api/members/<unknown> → 404', missing.status === 404, `got ${missing.status}`)
+
+  // The Billing tab's table reads these. An empty tab is the failure mode: the
+  // seed once scattered invoices at random and rarely hit an owned account.
+  check('member detail carries invoices for their accounts', detail.invoices.length > 0, `${detail.invoices.length}`)
+  check('invoice totals are summed, not left at zero', detail.invoiceTotals.paid + detail.invoiceTotals.open + detail.invoiceTotals.failed > 0)
+}
+
+// ── Breadcrumbs ───────────────────────────────────────────────────────────────
+{
+  // Rendered server-side, so a crawler and a reader see the same trail.
+  for (const [path, ...crumbs] of [
+    ['/dashboard/members', 'Members'],
+    ['/dashboard/members/new', 'Members', 'New'],
+    ['/dashboard/members/tm_2/edit', 'Members', 'Hana Nakamura', 'Edit'],
+    ['/dashboard/kanban', 'Pipeline'],
+    ['/dashboard/forms', 'Forms']
+  ]) {
+    const { body } = await page(path)
+    const hasAll = crumbs.every(crumb => body.includes(crumb))
+    check(`${path} shows the trail ${['Dashboard', ...crumbs].join(' › ')}`, body.includes('Dashboard') && hasAll)
+  }
 }
 
 // ── Guards ────────────────────────────────────────────────────────────────────

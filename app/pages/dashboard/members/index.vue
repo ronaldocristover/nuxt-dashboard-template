@@ -127,6 +127,8 @@ function lastSeen(value: string | null): string {
 
     <template #body>
       <div class="space-y-4">
+        <AppBreadcrumb />
+
         <div>
           <h2 class="font-display text-xl font-semibold text-highlighted">
             {{ $t('members.title') }}

@@ -12,6 +12,16 @@ changed database schema. Those are always called out.
 
 ### Added
 
+- **Breadcrumbs on every dashboard page.** Derived from the route, using the same `nav.*`
+  labels the sidebar reads, so a renamed section is renamed in both. Pages pass only what
+  the URL cannot know — a member's name, not their id. `/dashboard` shows none: one crumb
+  linking to the page you are already on is decoration. On the member pages this replaced
+  the separate "back" buttons, which were a second control doing the same job.
+- **A `UTable` billing tab** on the member detail page — invoices raised against the
+  accounts they own, sortable, filterable and paged, with totals across every invoice
+  rather than the page on screen. `UTable` here and a hand-built table on the member list
+  one screen away, because the list becomes a card stack on a phone and this does not:
+  the template now shows both trade-offs in the same feature.
 - **Member management** at `/dashboard/members` — the full CRUD set that a template needs
   as a worked example: a server-driven list (search across name, email *and* job title;
   filter by role, status and department; sort; page), a create page, an edit page, and a

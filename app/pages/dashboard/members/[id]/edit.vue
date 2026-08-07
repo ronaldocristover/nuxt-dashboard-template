@@ -58,13 +58,11 @@ async function submit() {
 
     <template #body>
       <div class="space-y-4">
-        <UButton
-          :label="member.name"
-          icon="i-lucide-arrow-left"
-          color="neutral"
-          variant="link"
-          class="-ml-2"
-          :to="`/dashboard/members/${id}`"
+        <AppBreadcrumb
+          :trail="[
+            { label: member.name, to: `/dashboard/members/${id}` },
+            { label: $t('breadcrumb.edit') }
+          ]"
         />
 
         <div>

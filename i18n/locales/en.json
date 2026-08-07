@@ -820,7 +820,8 @@
       "profile": "Profile",
       "access": "Access",
       "renewals": "Renewals",
-      "activity": "Activity"
+      "activity": "Activity",
+      "billing": "Billing"
     },
     "detail": {
       "back": "All members",
@@ -852,7 +853,20 @@
       "removed": "{name} was removed",
       "keep": "Keep them",
       "joinedLabel": "Joined",
-      "invitedByLabel": "Invited by"
+      "invitedByLabel": "Invited by",
+      "invoicesNote": "Invoices raised against the accounts this member owns. Newest first.",
+      "invoicePaid": "Paid",
+      "invoiceOpen": "Open",
+      "invoiceFailed": "Failed",
+      "invoiceNumber": "Invoice",
+      "invoiceAccount": "Account",
+      "invoiceAmount": "Amount",
+      "invoiceStatus": "Status",
+      "invoiceIssued": "Issued",
+      "noInvoices": "No invoices yet",
+      "noInvoicesBody": "Invoices raised against this member's accounts will be listed here.",
+      "invoiceSearch": "Filter by invoice number or account",
+      "invoiceEmpty": "No invoice matches that filter"
     },
     "form": {
       "newTitle": "Add a member",
@@ -888,5 +902,10 @@
       "updated": "{name} was updated",
       "ownerLocked": "The only owner cannot be moved to another role."
     }
+  },
+  "breadcrumb": {
+    "home": "Dashboard",
+    "new": "New",
+    "edit": "Edit"
   }
 }
