@@ -57,14 +57,14 @@ async function submit() {
     </template>
 
     <template #body>
-      <div class="space-y-4">
-        <AppBreadcrumb
-          :trail="[
-            { label: member.name, to: `/dashboard/members/${id}` },
-            { label: $t('breadcrumb.edit') }
-          ]"
-        />
+      <AppBreadcrumb
+        :trail="[
+          { label: member.name, to: `/dashboard/members/${id}` },
+          { label: $t('breadcrumb.edit') }
+        ]"
+      />
 
+      <div class="space-y-4">
         <div>
           <h2 class="font-display text-xl font-semibold text-highlighted">
             {{ $t('members.form.editTitle', { name: member.name }) }}

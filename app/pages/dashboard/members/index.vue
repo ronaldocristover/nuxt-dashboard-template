@@ -116,19 +116,14 @@ function lastSeen(value: string | null): string {
             :aria-label="$t('members.refresh')"
             @click="refresh()"
           />
-          <UButton
-            icon="i-lucide-user-plus"
-            :label="$t('members.add')"
-            to="/dashboard/members/new"
-          />
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
-      <div class="space-y-4">
-        <AppBreadcrumb />
+      <AppBreadcrumb />
 
+      <div class="space-y-4">
         <div>
           <h2 class="font-display text-xl font-semibold text-highlighted">
             {{ $t('members.title') }}
@@ -180,6 +175,19 @@ function lastSeen(value: string | null): string {
             <USelect v-model="status" :items="statusItems" value-key="value" class="min-w-36" />
             <USelect v-model="department" :items="departmentItems" value-key="value" class="min-w-40" />
           </div>
+
+          <!--
+            `ms-auto`, not `ml-auto`, so it stays on the trailing edge if the
+            interface is ever read right-to-left. On a phone the row stacks and
+            the button stretches, which is what you want from the one action on
+            the page.
+          -->
+          <UButton
+            icon="i-lucide-user-plus"
+            :label="$t('members.add')"
+            class="justify-center lg:ms-auto"
+            to="/dashboard/members/new"
+          />
         </div>
 
         <!-- Empty state is an invitation to act, not a shrug. -->

@@ -140,9 +140,9 @@ async function remove() {
     </template>
 
     <template #body>
-      <div class="space-y-5">
-        <AppBreadcrumb :trail="[{ label: member.name }]" />
+      <AppBreadcrumb :trail="[{ label: member.name }]" />
 
+      <div class="space-y-4">
         <!-- Identity header -->
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div class="flex items-center gap-4">

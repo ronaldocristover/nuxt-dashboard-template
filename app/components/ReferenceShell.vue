@@ -39,7 +39,7 @@ defineProps<{
     <template #body>
       <div class="mx-auto w-full" :class="width === 'wide' ? 'max-w-7xl' : 'max-w-5xl'">
         <!-- One place, so all seven reference pages get the trail. -->
-        <AppBreadcrumb class="mb-4" />
+        <AppBreadcrumb class="mb-6" />
 
         <div class="mb-5">
           <h2 class="font-display text-xl font-semibold tracking-tight text-highlighted sm:text-2xl">

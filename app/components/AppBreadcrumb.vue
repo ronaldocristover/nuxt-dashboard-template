@@ -52,9 +52,21 @@ const items = computed<BreadcrumbItem[]>(() => {
 </script>
 
 <template>
+  <!--
+    No margin of its own, deliberately.
+
+    The dashboard panel body is `flex flex-col gap-4 sm:gap-6`, so a direct child
+    is already spaced by the layout. Carrying its own `mb-*` on top of that gave
+    four different gaps across the app — and where the crumb was nested as the
+    *first* child of a `space-y-*` stack it got nothing from the stack at all,
+    leaving a 4px gap against a 24px one everywhere else.
+
+    So: put it directly in `#body` and let the panel space it. The one place that
+    cannot (`ReferenceShell`, where it sits inside the max-width wrapper) passes
+    a matching class.
+  -->
   <UBreadcrumb
     v-if="items.length"
     :items="items"
-    class="mb-1"
   />
 </template>
