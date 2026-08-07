@@ -39,11 +39,11 @@ async function submit() {
     </template>
 
     <template #body>
-      <div class="space-y-4">
-        <!-- The breadcrumb is the way back up, so the separate back button that
-             sat here would have been a second control doing the same job. -->
-        <AppBreadcrumb :trail="[{ label: $t('breadcrumb.new') }]" />
+      <!-- The breadcrumb is the way back up, so the separate back button that
+           sat here would have been a second control doing the same job. -->
+      <AppBreadcrumb :trail="[{ label: $t('breadcrumb.new') }]" />
 
+      <div class="space-y-4">
         <div>
           <h2 class="font-display text-xl font-semibold text-highlighted">
             {{ $t('members.form.newTitle') }}
